@@ -1,0 +1,55 @@
+@import "../mixins/common";
+@import "../mixins/animation";
+@import "colors";
+@import "displays";
+
+p {
+  margin: 0;
+  padding: 0;
+}
+
+/* КОНТЕНТ */
+.main-content {
+  position: relative;
+  background-color: #fff;
+  &-body {
+
+  }
+}
+
+/* TOP NAV */
+.nav {
+
+}
+
+/* КНОПКИ */
+.c-btn {
+
+}
+.btn-link {
+
+}
+
+/* ЛИНИИ */
+
+
+/* FOOTER */
+.c-footer {
+  display: flex;
+  &-logo {
+
+  }
+}
+
+/* MODAL */
+.c-modal {
+
+}
+
+/* CONTROLS */
+.c-agreement {
+
+}
+
+/* ANIMATIONS */
+/* https://ru.vuejs.org/v2/guide/transitions.html */

@@ -1,0 +1,8 @@
+@mixin toolbar_panel_mixin() {
+  .toolbar-panel {
+    display: flex;
+    align-items: center;
+    height: 40px;
+    background-color: $color-head;
+  }
+}

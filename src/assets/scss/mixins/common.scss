@@ -1,0 +1,54 @@
+@import "../common/colors";
+
+/* SHADOW */
+@mixin button-shadow($rgb, $opacity) {
+  --webkit-box-shadow: 0 0 6px 1px rgba($rgb, $rgb, $rgb, $opacity);
+  -moz-box-shadow: 0 0 6px 1px rgba($rgb, $rgb, $rgb, $opacity);
+  box-shadow: 0 0 6px 1px rgba($rgb, $rgb, $rgb, $opacity);
+}
+
+/* SCROLL */
+@mixin scrollbarHidden() {
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+  &::-webkit-scrollbar-button { // кнопки края
+    background: #fff;
+    height: 0;
+    width: 0;
+  }
+  &::-webkit-scrollbar-track-piece { // Фон
+    background: #fff;
+  }
+  &::-webkit-scrollbar-thumb { // Динамический скролл
+    background: #fff;
+  }
+}
+@mixin scrollbarBase() {
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  &::-webkit-scrollbar-button { // кнопки края
+    //background: transparent;
+    //height: 30px;
+  }
+  &::-webkit-scrollbar-track-piece { // Фон
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb { // Динамический скролл
+    background: $color-scroll;
+  }
+}
+
+
+
+//::-webkit-scrollbar              { /* 1 - скроллбар */ }
+//::-webkit-scrollbar-button       { /* 2 - кнопка */ }
+//::-webkit-scrollbar-track        { /* 3 - трек */ }
+//::-webkit-scrollbar-track-piece  { /* 4 - видимая часть трека */ }
+//::-webkit-scrollbar-thumb        { /* 5 - ползунок */ }
+//::-webkit-scrollbar-corner       { /* 6 - уголок */ }
+//::-webkit-resizer                { /* 7 - изменение размеров */ }
+// http://htmlbook.ru/blog/polzovatelskie-skrollbary-v-webkit

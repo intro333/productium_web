@@ -1,0 +1,9 @@
+@mixin case_discus_mixin() {
+  .case-discus {
+    height: 128px;
+    &-header {
+      height: 32px;
+      background-color: $color-head;
+    }
+  }
+}

@@ -1,0 +1,25 @@
+@import "../common/colors"; /* ВАЖНО!!! ЭТОТ МОДУЛЬ НЕ НУЖНО ДОБАВЛЯТЬ В НИЖНИЕ МОДУЛИ */
+@import "./toolbar_panel";
+@import "./slide_sidebar.scss";
+@import "./work_area.scss";
+@import "./case_discus_block.scss";
+@import "./case_sidebar.scss";
+
+.case-tracker {
+  display: flex;
+  flex-direction: column;
+  @include toolbar_panel_mixin();
+  &-body {
+    display: flex;
+    height: calc(100vh - 40px);
+    @include slide_sidebar_mixin();
+    @include case_sidebar_mixin();
+    .center-content {
+      display: flex;
+      flex-direction: column;
+      width: calc(100% - 406px);
+      @include work_area_mixin();
+      @include case_discus_mixin();
+    }
+  }
+}
