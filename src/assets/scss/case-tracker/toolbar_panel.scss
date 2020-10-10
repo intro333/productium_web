@@ -4,5 +4,29 @@
     align-items: center;
     height: 40px;
     background-color: $color-head;
+    &-left {
+      display: flex;
+      box-sizing: border-box;
+      padding-left: 24px;
+      height: 100%;
+      width: 200px;
+      .tp-icon {
+        &-box {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100%;
+          width: 24px;
+          margin-right: 8px;
+        }
+        &-img {
+
+        }
+      }
+    }
+    &-right {
+      box-sizing: border-box;
+      width: calc(100% - 200px);
+    }
   }
 }
