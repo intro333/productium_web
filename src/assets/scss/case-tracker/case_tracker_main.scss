@@ -6,11 +6,15 @@
 @import "./case_sidebar.scss";
 
 .case-tracker {
-  display: flex;
-  flex-direction: column;
+  position: relative;
+  //display: flex;
+  //flex-direction: column;
   @include toolbar_panel_mixin();
   &-body {
+    position: absolute;
+    top: 40px;
     display: flex;
+    width: 100%;
     height: calc(100vh - 40px);
     @include slide_sidebar_mixin();
     @include case_sidebar_mixin();
@@ -18,6 +22,8 @@
       display: flex;
       flex-direction: column;
       width: calc(100% - 406px);
+      min-height: 600px;
+      height: calc(100vh - 40px);
       @include work_area_mixin();
       @include case_discus_mixin();
     }

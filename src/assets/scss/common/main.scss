@@ -58,3 +58,17 @@ p {
 .p-cursor-pointer {
   cursor: pointer;
 }
+.scroll-y-container {
+  overflow-y: auto;
+  @include scrollbarBase();
+}
+.select-arrow {
+  width: 7px;
+  height: 4px;
+  margin-left: 4px;
+}
+.text-ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

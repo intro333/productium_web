@@ -1,32 +1,72 @@
 @mixin toolbar_panel_mixin() {
   .toolbar-panel {
+    overflow: hidden;
+    position: fixed;
+    top: 0;
     display: flex;
     align-items: center;
     height: 40px;
+    width: 100%;
     background-color: $color-head;
-    &-left {
-      display: flex;
-      box-sizing: border-box;
-      padding-left: 24px;
-      height: 100%;
-      width: 200px;
-      .tp-icon {
+    .tp {
+      &-block {
+        box-sizing: border-box;
+        display: flex;
+        height: 100%;
+      }
+      &-left {
+        padding-left: 20px;
+        width: 200px;
+      }
+      &-right {
+        width: calc(100% - 200px);
+      }
+      &-icon {
         &-box {
           display: flex;
           justify-content: center;
           align-items: center;
           height: 100%;
-          width: 24px;
-          margin-right: 8px;
+          padding: 0 4px;
+          &-2 {
+            padding: 0 12px;
+            //margin-right: 24px;
+          }
+          &:hover {
+            background-color: $color-hover-box1;
+            cursor: pointer;
+            .tp-icon-item {
+              opacity: 1;
+            }
+          }
+          &.active {
+            background-color: $color-base;
+            .tp-icon-item {
+              opacity: 1;
+            }
+          }
+          &-center-a {
+            position: absolute;
+            left: 50%;
+            transform: translate(-50%, 0);
+          }
+        }
+        &-item {
+          opacity: .7;
         }
         &-img {
-
+          width: 24px;
+          height: 24px;
+          &-rect {
+            width: 16px;
+            height: 16px;
+          }
         }
       }
-    }
-    &-right {
-      box-sizing: border-box;
-      width: calc(100% - 200px);
+      &-text {
+        font-size: 14px;
+        color: white;
+      }
     }
   }
 }

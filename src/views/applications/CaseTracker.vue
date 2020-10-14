@@ -1,7 +1,7 @@
 <template>
   <div class="case-tracker">
     <ToolbarPanel />
-    <div class="case-tracker-body">
+    <div class="case-tracker-body scroll-y-container">
       <SlideSidebar />
       <div class="center-content">
         <WorkArea />

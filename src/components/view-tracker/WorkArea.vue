@@ -1,6 +1,6 @@
 <template>
   <div class="work-area">
-
+    <p>Work AREA</p>
   </div>
 </template>
 

@@ -1,8 +1,7 @@
 @mixin work_area_mixin() {
   .work-area {
     width: 100%;
-    height: calc(100% - 128px);
-    min-height: 600px;
+    height: 100%;
     background-color: $color-block;
   }
 }
