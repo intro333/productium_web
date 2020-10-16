@@ -9,6 +9,9 @@
       </div>
       <CaseSidebar />
     </div>
+    <!-- MODALS -->
+    <ContextMenuBase v-if="getContextMenuBase().state"
+                     :contextMenu="getContextMenuBase" />
   </div>
 </template>
 
@@ -18,6 +21,8 @@ import SlideSidebar from "@/components/view-tracker/SlideSidebar";
 import WorkArea from "@/components/view-tracker/WorkArea";
 import CaseSidebar from "@/components/view-tracker/CaseSidebar";
 import CaseDiscusBlock from "@/components/view-tracker/CaseDiscusBlock";
+import ContextMenuBase from "@/components/modals/context-menu/ContextMenuBase";
+import {mapGetters} from "vuex";
 
 export default {
   name: "CaseTracker",
@@ -27,6 +32,10 @@ export default {
     WorkArea,
     CaseSidebar,
     CaseDiscusBlock,
-  }
+    ContextMenuBase
+  },
+  methods: {
+    ...mapGetters(['getContextMenuBase']),
+  },
 }
 </script>

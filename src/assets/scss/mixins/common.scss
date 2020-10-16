@@ -1,10 +1,10 @@
 @import "../common/colors";
 
 /* SHADOW */
-@mixin button-shadow($rgb, $opacity) {
-  --webkit-box-shadow: 0 0 6px 1px rgba($rgb, $rgb, $rgb, $opacity);
-  -moz-box-shadow: 0 0 6px 1px rgba($rgb, $rgb, $rgb, $opacity);
-  box-shadow: 0 0 6px 1px rgba($rgb, $rgb, $rgb, $opacity);
+@mixin context-menu-shadow($opacity) {
+  --webkit-box-shadow: 0 0 1px 1px rgba(5, 25, 35, $opacity);
+  -moz-box-shadow: 0 0 1px 1px rgba(5, 25, 35, $opacity);
+  box-shadow: 0 0 1px 1px rgba(5, 25, 35, $opacity);
 }
 
 /* SCROLL */

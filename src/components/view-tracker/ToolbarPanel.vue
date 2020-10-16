@@ -6,7 +6,9 @@
              class="tp-icon-img"
              alt="">
       </div>
-      <div class="tp-icon-box">
+      <div @click="openContextMenu('HeaderMenu', 210, 50, 40)"
+           class="tp-icon-box"
+           :class="{active: (contextMenu.state && contextMenu.type === 'HeaderMenu')}">
         <img src="@/assets/img/case-tracker/toolbar_panel/menu.svg"
              class="tp-icon-item tp-icon-img"
              alt="">
@@ -36,6 +38,11 @@
           <p class="tp-icon-item tp-text">color</p>
           <img src="@/assets/img/common/selectArrow.svg"
                class="tp-icon-item select-arrow"
+               alt="">
+        </div>
+        <div class="tp-icon-box tp-icon-box-4 active">
+          <img src="@/assets/img/case-tracker/toolbar_panel/superTool.svg"
+               class="tp-icon-item tp-icon-img"
                alt="">
         </div>
       </div>
@@ -77,7 +84,28 @@
 </template>
 
 <script>
+import {mapActions, mapGetters} from "vuex";
+import {ContextMenuBaseModel} from "@/models/modals/ContextMenuBaseModel";
+
 export default {
-  name: "ToolbarPanel"
+  name: "ToolbarPanel",
+  computed: {
+    contextMenu() {
+      return this.getContextMenuBase();
+    }
+  },
+  methods: {
+    ...mapActions(['setContextMenuBase']),
+    ...mapGetters(['getContextMenuBase']),
+    openContextMenu(type, width, top, left) {
+      this.setContextMenuBase(new ContextMenuBaseModel()
+          .set(true,
+              type,
+              width,
+              top,
+              left)
+      );
+    },
+  }
 }
 </script>
