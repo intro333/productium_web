@@ -1,12 +1,18 @@
 <template>
   <div class="toolbar-panel">
     <div class="tp-block tp-left">
-      <div class="tp-icon-box">
+      <div @mouseenter="showTooltip($event, 'logoRef','Перейти к проектам')"
+           @mouseleave="hideToolTip"
+           ref="logoRef"
+           class="tp-icon-box">
         <img src="@/assets/img/case-tracker/toolbar_panel/logo.svg"
              class="tp-icon-img"
              alt="">
       </div>
-      <div @click="openContextMenu('HeaderMenu', 210, 50, 40)"
+      <div @click="openContextMenu('HeaderMenu', 210, 50, 43)"
+           @mouseenter="showTooltip($event, 'menuRef','Меню')"
+           @mouseleave="hideToolTip"
+           ref="menuRef"
            class="tp-icon-box"
            :class="{active: (contextMenu.state && contextMenu.type === 'HeaderMenu')}">
         <img src="@/assets/img/case-tracker/toolbar_panel/menu.svg"
@@ -16,17 +22,26 @@
     </div>
     <div class="tp-block tp-right">
       <div class="tp-right-first">
-        <div class="tp-icon-box tp-icon-box-2 active">
+        <div @mouseenter="showTooltip($event, 'controlRef','Перемещать')"
+             @mouseleave="hideToolTip"
+             ref="controlRef"
+             class="tp-icon-box tp-icon-box-2">
           <img src="@/assets/img/case-tracker/toolbar_panel/control.svg"
                class="tp-icon-item tp-icon-img"
                alt="">
         </div>
-        <div class="tp-icon-box tp-icon-box-2">
+        <div @mouseenter="showTooltip($event, 'textRef','Текст')"
+             @mouseleave="hideToolTip"
+             ref="textRef"
+             class="tp-icon-box tp-icon-box-2">
           <img src="@/assets/img/case-tracker/toolbar_panel/text.svg"
                class="tp-icon-item tp-icon-img"
                alt="">
         </div>
-        <div class="tp-icon-box tp-icon-box-2">
+        <div @mouseenter="showTooltip($event, 'shapeRef','Прямоугольник')"
+             @mouseleave="hideToolTip"
+             ref="shapeRef"
+             class="tp-icon-box tp-icon-box-2">
           <img src="@/assets/img/case-tracker/toolbar_panel/rectangle.svg"
                class="tp-icon-item tp-icon-img tp-icon-img-rect"
                alt="">
@@ -34,13 +49,19 @@
                class="tp-icon-item select-arrow"
                alt="">
         </div>
-        <div class="tp-icon-box tp-icon-box-2">
+        <div @mouseenter="showTooltip($event, 'colorRef','Цвет')"
+             @mouseleave="hideToolTip"
+             ref="colorRef"
+             class="tp-icon-box tp-icon-box-2">
           <p class="tp-icon-item tp-text">color</p>
           <img src="@/assets/img/common/selectArrow.svg"
                class="tp-icon-item select-arrow"
                alt="">
         </div>
-        <div class="tp-icon-box tp-icon-box-4 active">
+        <div @mouseenter="showTooltip($event, 'superToolRef','СуперТул')"
+             @mouseleave="hideToolTip"
+             ref="superToolRef"
+             class="tp-icon-box tp-icon-box-4 active">
           <img src="@/assets/img/case-tracker/toolbar_panel/superTool.svg"
                class="tp-icon-item tp-icon-img"
                alt="">
@@ -86,13 +107,18 @@
 <script>
 import {mapActions, mapGetters} from "vuex";
 import {ContextMenuBaseModel} from "@/models/modals/ContextMenuBaseModel";
+import ModalsMixin from "@/components/mixins/ModalsMixin";
 
 export default {
   name: "ToolbarPanel",
+  mixins: [ModalsMixin],
+  data: () => ({
+
+  }),
   computed: {
     contextMenu() {
       return this.getContextMenuBase();
-    }
+    },
   },
   methods: {
     ...mapActions(['setContextMenuBase']),
@@ -103,7 +129,8 @@ export default {
               type,
               width,
               top,
-              left)
+              left,
+              'up')
       );
     },
   }

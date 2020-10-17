@@ -6,6 +6,11 @@
   -moz-box-shadow: 0 0 1px 1px rgba(5, 25, 35, $opacity);
   box-shadow: 0 0 1px 1px rgba(5, 25, 35, $opacity);
 }
+@mixin triangle-shadow() {
+  --webkit-box-shadow: -3px 3px 3px 0 rgba(219, 219, 219, .6);
+  -moz-box-shadow: -3px 3px 3px 0 rgba(219, 219, 219, .6);
+  box-shadow: -3px 3px 3px 0 rgba(219, 219, 219, .6);
+}
 
 /* SCROLL */
 @mixin scrollbarHidden() {

@@ -12,6 +12,8 @@
     <!-- MODALS -->
     <ContextMenuBase v-if="getContextMenuBase().state"
                      :contextMenu="getContextMenuBase" />
+    <Tooltip v-if="getTooltip().state"
+                     :tooltip="getTooltip" />
   </div>
 </template>
 
@@ -23,10 +25,12 @@ import CaseSidebar from "@/components/view-tracker/CaseSidebar";
 import CaseDiscusBlock from "@/components/view-tracker/CaseDiscusBlock";
 import ContextMenuBase from "@/components/modals/context-menu/ContextMenuBase";
 import {mapGetters} from "vuex";
+import Tooltip from "@/components/modals/Tooltip";
 
 export default {
   name: "CaseTracker",
   components: {
+    Tooltip,
     ToolbarPanel,
     SlideSidebar,
     WorkArea,
@@ -35,7 +39,7 @@ export default {
     ContextMenuBase
   },
   methods: {
-    ...mapGetters(['getContextMenuBase']),
+    ...mapGetters(['getContextMenuBase', 'getTooltip']),
   },
 }
 </script>

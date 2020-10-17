@@ -3,9 +3,10 @@
     <div class="p-context-menu-background"
          @click="close"></div>
     <div class="p-context-menu-content"
-         :style="{'width': `${cm.width}px`, 'top': `${cm.top}px`, left: `${cm.left}px` }">
+         :class="{'p-triangle': cm.triangle, 'p-triangle-up': (cm.triangle === 'up'), 'p-triangle-down': (cm.triangle === 'down')}"
+         :style="{'width': `${cm.width}px`, top: `${cm.top}px`, left: `${cm.left}px` }">
       <HeaderMenu v-if="cm.type === 'HeaderMenu'"
-                  :body="cm.body" />
+                  :contextMenu="contextMenu" />
     </div>
   </div>
 </template>
@@ -38,7 +39,6 @@ export default {
   methods: {
     ...mapActions(['setContextMenuBase']),
     close() {
-      console.log(1)
       this.setContextMenuBase(
           new ContextMenuBaseModel()
       );
