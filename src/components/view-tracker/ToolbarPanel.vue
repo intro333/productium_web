@@ -9,7 +9,7 @@
              class="tp-icon-img"
              alt="">
       </div>
-      <div @click="openContextMenu('HeaderMenu', 210, 50, 43)"
+      <div @click="openContextMenu('HeaderMenu', 210, 'menuRef')"
            @mouseenter="showTooltip($event, 'menuRef','Меню')"
            @mouseleave="hideToolTip"
            ref="menuRef"
@@ -38,10 +38,12 @@
                class="tp-icon-item tp-icon-img"
                alt="">
         </div>
-        <div @mouseenter="showTooltip($event, 'shapeRef','Прямоугольник')"
+        <div @click="openContextMenu('ShapesModal', 165, 'shapeRef')"
+             @mouseenter="showTooltip($event, 'shapeRef','Прямоугольник')"
              @mouseleave="hideToolTip"
              ref="shapeRef"
-             class="tp-icon-box tp-icon-box-2">
+             class="tp-icon-box tp-icon-box-2"
+             :class="{hovered: (contextMenu.state && contextMenu.type === 'ShapesModal')}">
           <img src="@/assets/img/case-tracker/toolbar_panel/rectangle.svg"
                class="tp-icon-item tp-icon-img tp-icon-img-rect"
                alt="">
@@ -49,7 +51,8 @@
                class="tp-icon-item select-arrow"
                alt="">
         </div>
-        <div @mouseenter="showTooltip($event, 'colorRef','Цвет')"
+        <div @click="openContextMenu('ColorModal', 260, 'colorRef')"
+             @mouseenter="showTooltip($event, 'colorRef','Цвет')"
              @mouseleave="hideToolTip"
              ref="colorRef"
              class="tp-icon-box tp-icon-box-2">
@@ -108,6 +111,7 @@
 import {mapActions, mapGetters} from "vuex";
 import {ContextMenuBaseModel} from "@/models/modals/ContextMenuBaseModel";
 import ModalsMixin from "@/components/mixins/ModalsMixin";
+import {getModalPositionFunc} from "@/functions/calculations";
 
 export default {
   name: "ToolbarPanel",
@@ -123,15 +127,19 @@ export default {
   methods: {
     ...mapActions(['setContextMenuBase']),
     ...mapGetters(['getContextMenuBase']),
-    openContextMenu(type, width, top, left) {
-      this.setContextMenuBase(new ContextMenuBaseModel()
-          .set(true,
-              type,
-              width,
-              top,
-              left,
-              'up')
-      );
+    openContextMenu(type, width, _refStr) {
+      if (this.isItemMenuHovered && (this.$refs[_refStr] &&
+          this.$refs[_refStr].getBoundingClientRect())) {
+        const modalPosition = getModalPositionFunc(this.$refs[_refStr]);
+        this.setContextMenuBase(new ContextMenuBaseModel()
+            .set(true,
+                type,
+                width,
+                modalPosition.top,
+                modalPosition.left,
+                'up')
+        );
+      }
     },
   }
 }

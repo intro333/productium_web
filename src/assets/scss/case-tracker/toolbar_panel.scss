@@ -46,7 +46,7 @@
           &-4 {
             padding: 0 8px;
           }
-          &:hover {
+          &:hover, &.hovered {
             background-color: $color-hover-box1;
             cursor: pointer;
             .tp-icon-item {

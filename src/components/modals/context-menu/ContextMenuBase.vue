@@ -7,6 +7,10 @@
          :style="{'width': `${cm.width}px`, top: `${cm.top}px`, left: `${cm.left}px` }">
       <HeaderMenu v-if="cm.type === 'HeaderMenu'"
                   :contextMenu="contextMenu" />
+      <ShapesModal v-if="cm.type === 'ShapesModal'"
+                  :contextMenu="contextMenu" />
+      <ColorModal v-if="cm.type === 'ColorModal'"
+                  :contextMenu="contextMenu" />
     </div>
   </div>
 </template>
@@ -15,12 +19,16 @@
 import {mapActions} from "vuex";
 import HeaderMenu from "@/components/modals/context-menu/HeaderMenu";
 import {ContextMenuBaseModel} from "@/models/modals/ContextMenuBaseModel";
+import ShapesModal from "@/components/modals/context-menu/ShapesModal";
+import ColorModal from "@/components/modals/context-menu/ColorModal";
 
 export default {
   name: "ContextMenuBase",
   props: ['contextMenu'],
   components: {
-    HeaderMenu
+    HeaderMenu,
+    ShapesModal,
+    ColorModal,
   },
   data: () => ({
 

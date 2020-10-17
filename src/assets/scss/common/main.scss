@@ -93,6 +93,34 @@ p {
           background-color: $color-base;
         }
       }
+      &-shape {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        height: 26px;
+        padding: 0 8px;
+        &-text {
+          font-size: 12px;
+          color: white;
+          &:hover {
+            cursor: default;
+          }
+        }
+        &-icon {
+          width: 18px;
+          height: 18px;
+          margin-right: 8px;
+        }
+        &-arrow {
+          width: 22.63px;
+          height: auto;
+        }
+        &-selected {
+          width: 10px;
+          height: 8px;
+          margin-right: 8px;
+        }
+      }
       .cm-divider {
         margin: 10px 0;
         border-top: 1px solid $color-divider;
@@ -197,4 +225,48 @@ p {
   display: flex;
   justify-content: center;
   align-content: center;
+}
+.p-color-picker {
+  display: flex;
+  align-items: center;
+  padding: 18px 24px;
+  &-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    height: 22px;
+    &:not(:last-child) {
+      margin-right: 8px;
+    }
+    &:hover {
+      cursor: pointer;
+    }
+    .cp-first {
+      height: 18px;
+    }
+    .cp-second {
+      width: 100%;
+      height: 2px;
+      background-color: transparent;
+      &-selected {
+        background-color: #FFFFFF;
+      }
+    }
+    .cp-text {
+      font-size: 14px;
+      color: white;
+    }
+    .cp-color {
+      box-sizing: border-box;
+      width: 18px;
+      &-black {
+        background-color: #000000;
+        border: 1px solid #FFFFFF;
+      }
+      &-white {
+        background-color: #FFFFFF;
+      }
+    }
+  }
 }
