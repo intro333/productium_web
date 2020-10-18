@@ -38,16 +38,20 @@
                class="tp-icon-item tp-icon-img"
                alt="">
         </div>
-        <div @click="openContextMenu('ShapesModal', 165, 'shapeRef')"
-             @mouseenter="showTooltip($event, 'shapeRef','Прямоугольник')"
-             @mouseleave="hideToolTip"
-             ref="shapeRef"
-             class="tp-icon-box tp-icon-box-2"
+        <div ref="shapeRef"
+             class="tp-icon-box tp-icon-box-5"
              :class="{hovered: (contextMenu.state && contextMenu.type === 'ShapesModal')}">
-          <img src="@/assets/img/case-tracker/toolbar_panel/rectangle.svg"
-               class="tp-icon-item tp-icon-img tp-icon-img-rect"
-               alt="">
-          <img src="@/assets/img/common/selectArrow.svg"
+          <div @mouseenter="showTooltip($event, 'shapeRef','Прямоугольник')"
+               @mouseleave="hideToolTip"
+               class="tp-icon-item-box">
+            <img src="@/assets/img/case-tracker/toolbar_panel/rectangle.svg"
+                 class="tp-icon-item tp-icon-img tp-icon-img-rect"
+                 alt="">
+          </div>
+          <img @click="openContextMenu('ShapesModal', 165, 'shapeRef')"
+               @mouseenter="showTooltip($event, 'shapeRef','Инструменты')"
+               @mouseleave="hideToolTip"
+               src="@/assets/img/common/selectArrow.svg"
                class="tp-icon-item select-arrow"
                alt="">
         </div>
@@ -55,7 +59,8 @@
              @mouseenter="showTooltip($event, 'colorRef','Цвет')"
              @mouseleave="hideToolTip"
              ref="colorRef"
-             class="tp-icon-box tp-icon-box-2">
+             class="tp-icon-box tp-icon-box-2-2"
+             :class="{hovered: (contextMenu.state && contextMenu.type === 'ColorModal')}">
           <p class="tp-icon-item tp-text">color</p>
           <img src="@/assets/img/common/selectArrow.svg"
                class="tp-icon-item select-arrow"
@@ -89,7 +94,7 @@
                alt="">
           <p class="tp-icon-item tp-text">Пригласить</p>
         </div>
-        <div class="tp-icon-box tp-icon-box-2">
+        <div class="tp-icon-box tp-icon-box-2-2">
           <p class="tp-icon-item tp-text">100%</p>
           <img src="@/assets/img/common/selectArrow.svg"
                class="tp-icon-item select-arrow"
@@ -97,12 +102,26 @@
         </div>
       </div>
     </div>
-    <div class="tp-icon-box tp-icon-box-center-a">
-      <p class="tp-text text-ellipsis"
-         style="max-width: 150px;">Project name</p>
-      <img src="@/assets/img/common/selectArrow.svg"
+    <div class="tp-icon-box tp-icon-box-2-2 tp-icon-box-center-a no-hover"
+         :class="{hovered: (contextMenu.state && contextMenu.type === 'ProjectNameModal')}">
+      <input v-if="project.nameIsEdited"
+             ref="projectNameInputRef"
+             @input="changeProjectNameText"
+             @blur="changeProjectNameEditable(false)"
+             @keyup.enter="changeProjectNameEditable(false)"
+             v-model="project.name"
+             class="tp-text tp-text-input text-ellipsis">
+      <span v-if="!project.nameIsEdited"
+            @click="changeProjectNameEditable(true)"
+            class="tp-text tp-text-input-readonly text-ellipsis">{{project.name}}</span>
+      <img v-if="!project.nameIsEdited"
+           @click="openContextMenu('ProjectNameModal', 134, 'projectNameArrowRef')"
+           ref="projectNameArrowRef"
+           src="@/assets/img/common/selectArrow.svg"
            class="tp-icon-item select-arrow"
            alt="">
+      <div v-if="project.nameIsEdited"
+           class="tp-icon-item select-arrow"></div>
     </div>
   </div>
 </template>
@@ -117,7 +136,10 @@ export default {
   name: "ToolbarPanel",
   mixins: [ModalsMixin],
   data: () => ({
-
+    project: {
+      name: "Untitled",
+      nameIsEdited: false
+    }
   }),
   computed: {
     contextMenu() {
@@ -128,8 +150,8 @@ export default {
     ...mapActions(['setContextMenuBase']),
     ...mapGetters(['getContextMenuBase']),
     openContextMenu(type, width, _refStr) {
-      if (this.isItemMenuHovered && (this.$refs[_refStr] &&
-          this.$refs[_refStr].getBoundingClientRect())) {
+      // if (this.isItemMenuHovered && (this.$refs[_refStr] &&
+      if (this.$refs[_refStr] && this.$refs[_refStr].getBoundingClientRect()) {
         const modalPosition = getModalPositionFunc(this.$refs[_refStr]);
         this.setContextMenuBase(new ContextMenuBaseModel()
             .set(true,
@@ -140,6 +162,21 @@ export default {
                 'up')
         );
       }
+    },
+    changeProjectNameEditable(state) {
+      this.project.nameIsEdited = state;
+      setTimeout(() => {
+        if (this.$refs['projectNameInputRef']) {
+          const inputRef = this.$refs['projectNameInputRef'];
+          inputRef.focus();
+        }
+        if (!state && this.project.name === '') {
+          this.project.name = 'Untitled'
+        }
+      }, 20)
+    },
+    changeProjectNameText() {
+
     },
   }
 }

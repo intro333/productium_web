@@ -214,7 +214,7 @@ p {
 .select-arrow {
   width: 7px;
   height: 4px;
-  margin-left: 4px;
+  padding-left: 4px;
 }
 .text-ellipsis {
   overflow: hidden;
@@ -260,12 +260,9 @@ p {
     .cp-color {
       box-sizing: border-box;
       width: 18px;
-      &-black {
+      &-000000 {
         background-color: #000000;
         border: 1px solid #FFFFFF;
-      }
-      &-white {
-        background-color: #FFFFFF;
       }
     }
   }

@@ -6,6 +6,7 @@
          class="p-color-picker-item">
       <div class="cp-first"
            :class="[isColorAuto(item) ? 'cp-text' : ('cp-color ' + 'cp-color-' + item.color)]"
+           :style="{'background-color': !isColorAuto(item) ? `#${item.color}` : ''}"
       >{{isColorAuto(item) ? 'auto' : ''}}</div>
       <div class="cp-second"
            :class="{'cp-second-selected': selectedColor === item.color}"></div>
@@ -23,10 +24,25 @@ export default {
         color: 'auto',
       },
       {
-        color: 'black',
+        color: '000000',
       },
       {
-        color: 'white',
+        color: 'FFFFFF',
+      },
+      {
+        color: 'F30C0C',
+      },
+      {
+        color: 'EDE40D',
+      },
+      {
+        color: '14E01C',
+      },
+      {
+        color: '0D31ED',
+      },
+      {
+        color: 'F40CEB',
       },
     ],
   }),

@@ -33,6 +33,7 @@ export default {
     }
   },
   data: () => ({
+    subMenu: null,
     mainMenuList: [
       {
         isItemOfMenu: true,
@@ -132,7 +133,6 @@ export default {
         ]
       },
     ],
-    subMenu: null,
   }),
   methods: {
     setSubMenu(subMenu) {

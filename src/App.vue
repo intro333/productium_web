@@ -13,6 +13,10 @@ html,
 body {
   height: 100%;
   line-height: 1.15 !important;
+  input {
+    font-family: Inter, sans-serif;
+    //letter-spacing: .6px;
+  }
   &.modal-open {
     overflow: hidden;
     &-mobile {

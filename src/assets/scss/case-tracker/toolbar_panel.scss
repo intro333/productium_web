@@ -40,18 +40,27 @@
           &-2 {
             padding: 0 12px;
           }
+          &-2-2 {
+            padding: 0 0 0 12px;
+          }
           &-3 {
             padding: 0 4px;
           }
           &-4 {
             padding: 0 8px;
           }
+          &-5 {
+            padding: 0;
+          }
           &:hover, &.hovered {
             background-color: $color-hover-box1;
-            cursor: pointer;
+            cursor: default;
             .tp-icon-item {
               opacity: 1;
             }
+          }
+          &.no-hover {
+            background-color: $color-head;
           }
           &.active {
             background-color: $color-base;
@@ -64,9 +73,20 @@
             left: 50%;
             transform: translate(-50%, 0);
           }
+          .select-arrow {
+            height: 100%;
+            padding-right: 12px;
+          }
         }
         &-item {
           opacity: .7;
+          &-box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            padding-left: 12px;
+          }
         }
         &-img {
           width: 24px;
@@ -92,6 +112,22 @@
       &-text {
         font-size: 14px;
         color: white;
+        &-input {
+          outline: none;
+          border: none;
+          background-color: transparent;
+          height: 100%;
+          max-width: 150px;
+          text-align: center;
+          padding-bottom: 1px;
+          &:hover {
+            cursor: default;
+          }
+          &-readonly {
+            max-width: 150px;
+            text-align: center;
+          }
+        }
       }
     }
   }

@@ -11,6 +11,8 @@
                   :contextMenu="contextMenu" />
       <ColorModal v-if="cm.type === 'ColorModal'"
                   :contextMenu="contextMenu" />
+      <ProjectNameModal v-if="cm.type === 'ProjectNameModal'"
+                  :contextMenu="contextMenu" />
     </div>
   </div>
 </template>
@@ -21,6 +23,7 @@ import HeaderMenu from "@/components/modals/context-menu/HeaderMenu";
 import {ContextMenuBaseModel} from "@/models/modals/ContextMenuBaseModel";
 import ShapesModal from "@/components/modals/context-menu/ShapesModal";
 import ColorModal from "@/components/modals/context-menu/ColorModal";
+import ProjectNameModal from "@/components/modals/context-menu/ProjectNameModal";
 
 export default {
   name: "ContextMenuBase",
@@ -29,6 +32,7 @@ export default {
     HeaderMenu,
     ShapesModal,
     ColorModal,
+    ProjectNameModal,
   },
   data: () => ({
 
