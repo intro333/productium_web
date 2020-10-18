@@ -5,11 +5,12 @@ export class ContextMenuBaseModel {
   width = 0;
   top = 0;
   left = 0;
-  triangle = null; // up | down
+  triangle = null; // up | down | null
   body = null;
 
   /* MORE FIELDS (optional) */
-  //
+  position = 'fixed';
+  zIndex = 5;
 
   set(state, type, width, top, left, triangle, body= null) {
     this.state = state;

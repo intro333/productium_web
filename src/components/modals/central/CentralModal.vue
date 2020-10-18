@@ -19,20 +19,24 @@
       </div>
       <ShareModal v-if="cm.type === 'ShareModal'"
                    :contextMenu="contextMenu" />
+      <SimpleNotifyInside v-if="getSimpleNotifyInside().state"
+                          :notify="getSimpleNotifyInside" />
     </div>
   </div>
 </template>
 
 <script>
-import {mapActions} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 import {CentralModalModel} from "@/models/modals/CentralModalModel";
 import ShareModal from "@/components/modals/central/ShareModal";
+import SimpleNotifyInside from "@/components/modals/notify/SimpleNotifyInside";
 
 export default {
   name: "CentralModal",
   props: ['contextMenu'],
   components: {
-    ShareModal
+    ShareModal,
+    SimpleNotifyInside,
   },
   data: () => ({
 
@@ -50,6 +54,7 @@ export default {
   },
   methods: {
     ...mapActions(['setCentralModal']),
+    ...mapGetters(['getSimpleNotifyInside']),
     close() {
       this.setCentralModal(
           new CentralModalModel()

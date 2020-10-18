@@ -1,17 +1,20 @@
 import {ContextMenuBaseModel} from "@/models/modals/ContextMenuBaseModel";
 import {TooltipModel} from "@/models/modals/TooltipModel";
 import {CentralModalModel} from "@/models/modals/CentralModalModel";
+import {SimpleNotifyInsideModel} from "@/models/modals/SimpleNotifyInsideModel";
 
 const state = {
   contextMenuBase: new ContextMenuBaseModel(),
   centralModal: new CentralModalModel(),
   tooltip: new TooltipModel(),
+  simpleNotifyInside: new SimpleNotifyInsideModel(),
 };
 
 const getters = {
   getContextMenuBase: state => state.contextMenuBase,
   getCentralModal: state => state.centralModal,
   getTooltip: state => state.tooltip,
+  getSimpleNotifyInside: state => state.simpleNotifyInside,
 };
 
 const actions = {
@@ -24,12 +27,16 @@ const actions = {
   setTooltip({commit}, tooltip) {
     commit('SET_TOOLTIP', tooltip);
   },
+  setSimpleNotifyInside({commit}, notify) {
+    commit('SET_SIMPLE_NOTIFY_INSIDE', notify);
+  },
 };
 
 const mutations = {
   SET_CONTEXT_MENU_BASE(state, menu) { state.contextMenuBase = menu; },
   SET_CENTRAL_MODAL(state, modal) { state.centralModal = modal; },
-  SET_TOOLTIP(state, tooltip) { state.tooltip = tooltip;},
+  SET_TOOLTIP(state, tooltip) { state.tooltip = tooltip; },
+  SET_SIMPLE_NOTIFY_INSIDE(state, notify) { state.simpleNotifyInside = notify; },
 };
 
 export default {
