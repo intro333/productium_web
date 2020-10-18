@@ -88,7 +88,8 @@
           <div class="p-flex-center tp-icon-user-i"
                style="background-color: #466a96;">DM</div>
         </div>
-        <div class="tp-icon-box tp-icon-box-2">
+        <div @click="openShareModal"
+             class="tp-icon-box tp-icon-box-2">
           <img src="@/assets/img/common/share.svg"
                class="tp-icon-item tp-icon-img-first"
                alt="">
@@ -109,11 +110,13 @@
              @input="changeProjectNameText"
              @blur="changeProjectNameEditable(false)"
              @keyup.enter="changeProjectNameEditable(false)"
-             v-model="project.name"
+             :value="project.name"
              class="tp-text tp-text-input text-ellipsis">
-      <span v-if="!project.nameIsEdited"
-            @click="changeProjectNameEditable(true)"
-            class="tp-text tp-text-input-readonly text-ellipsis">{{project.name}}</span>
+      <div v-if="!project.nameIsEdited"
+           @click="changeProjectNameEditable(true)"
+           class="tp-icon-item-box tp-icon-item-box-2">
+        <span class="tp-text tp-text-input-readonly text-ellipsis">{{project.name}}</span>
+      </div>
       <img v-if="!project.nameIsEdited"
            @click="openContextMenu('ProjectNameModal', 134, 'projectNameArrowRef')"
            ref="projectNameArrowRef"
@@ -131,6 +134,7 @@ import {mapActions, mapGetters} from "vuex";
 import {ContextMenuBaseModel} from "@/models/modals/ContextMenuBaseModel";
 import ModalsMixin from "@/components/mixins/ModalsMixin";
 import {getModalPositionFunc} from "@/functions/calculations";
+import {CentralModalModel} from "@/models/modals/CentralModalModel";
 
 export default {
   name: "ToolbarPanel",
@@ -147,7 +151,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setContextMenuBase']),
+    ...mapActions(['setContextMenuBase', 'setCentralModal']),
     ...mapGetters(['getContextMenuBase']),
     openContextMenu(type, width, _refStr) {
       // if (this.isItemMenuHovered && (this.$refs[_refStr] &&
@@ -175,8 +179,19 @@ export default {
         }
       }, 20)
     },
-    changeProjectNameText() {
-
+    changeProjectNameText($event) {
+      const name = $event.target.value;
+      if (name.length <= 40) {
+        this.project.name = name;
+      }
+    },
+    openShareModal() {
+      this.setCentralModal(
+          new CentralModalModel()
+              .set(true,
+              'ShareModal',
+              500,)
+      );
     },
   }
 }

@@ -1,10 +1,10 @@
 <template>
-  <div class="p-context-menu">
-    <div class="p-context-menu-background"
+  <div class="p-modal">
+    <div class="p-modal-background"
          @click="close"></div>
-    <div class="p-context-menu-content"
+    <div class="p-modal-context-menu"
          :class="{'p-triangle': cm.triangle, 'p-triangle-up': (cm.triangle === 'up'), 'p-triangle-down': (cm.triangle === 'down')}"
-         :style="{'width': `${cm.width}px`, top: `${cm.top}px`, left: `${cm.left}px` }">
+         :style="{'width': `${cm.width}px`, top: `${cm.top}px`, left: `${cm.left}px`}">
       <HeaderMenu v-if="cm.type === 'HeaderMenu'"
                   :contextMenu="contextMenu" />
       <ShapesModal v-if="cm.type === 'ShapesModal'"

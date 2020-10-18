@@ -6,6 +6,11 @@
   -moz-box-shadow: 0 0 1px 1px rgba(5, 25, 35, $opacity);
   box-shadow: 0 0 1px 1px rgba(5, 25, 35, $opacity);
 }
+@mixin central-modal-shadow($opacity) {
+  --webkit-box-shadow: 0 0 10px 0px rgba(0, 0, 0, $opacity);
+  -moz-box-shadow: 0 0 10px 0px rgba(0, 0, 0, $opacity);
+  box-shadow: 0 0 10px 0px rgba(0, 0, 0, $opacity);
+}
 @mixin triangle-shadow() {
   --webkit-box-shadow: -3px 3px 3px 0 rgba(219, 219, 219, .6);
   -moz-box-shadow: -3px 3px 3px 0 rgba(219, 219, 219, .6);

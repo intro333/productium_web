@@ -7,7 +7,7 @@
 
     <!-- SUB LIST -->
     <div v-if="subMenu"
-         class="p-context-menu-content"
+         class="p-modal-context-menu"
          :style="{'width': `225px`, top: '5px', left: `${cm.width + 3}px` }">
       <div class="cm-list">
           <ContextMenuItem v-for="(sItem, i) in subMenu"
@@ -26,11 +26,6 @@ export default {
   props: ['contextMenu'],
   components: {
     ContextMenuItem
-  },
-  computed: {
-    cm() {
-      return this.contextMenu();
-    }
   },
   data: () => ({
     subMenu: null,
@@ -134,6 +129,11 @@ export default {
       },
     ],
   }),
+  computed: {
+    cm() {
+      return this.contextMenu();
+    }
+  },
   methods: {
     setSubMenu(subMenu) {
       this.subMenu = subMenu;

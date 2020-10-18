@@ -1,4 +1,5 @@
 @import "../mixins/common";
+@import "../mixins/widgets";
 @import "../mixins/animation";
 @import "colors";
 @import "displays";
@@ -42,10 +43,7 @@ p {
 }
 
 /* MODALS */
-.c-modal {
-
-}
-.p-context-menu {
+.p-modal {
   position: fixed;
   left: 0;
   top: 0;
@@ -53,6 +51,9 @@ p {
   height: 100%;
   background-color: transparent;
   z-index: 8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   &-background {
     position: absolute;
     left: 0;
@@ -61,7 +62,7 @@ p {
     height: 100%;
     z-index: 9;
   }
-  &-content {
+  &-context-menu {
     z-index: 10;
     position: absolute;
     border-radius: 2px;
@@ -152,6 +153,160 @@ p {
           border-color: transparent transparent $color-head $color-head;
           transform: rotate(135deg);
           @include triangle-shadow();
+        }
+      }
+    }
+  }
+  &-central {
+    z-index: 10;
+    position: relative;
+    background-color: #fff;
+    border-radius: 2px;
+    @include central-modal-shadow(.25);
+    display: flex;
+    flex-direction: column;
+    .mc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      height: 50px;
+      border-bottom: 1px solid $color-divider;
+      .share {
+        &-first {
+          display: flex;
+          align-items: center;
+          &-pre {
+            font-size: 12px;
+            font-weight: 200;
+            margin-right: 5px;
+          }
+          &-name {
+            font-size: 14px;
+          }
+        }
+      }
+      &-close {
+        position: absolute;
+        right: 14px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 30px;
+        height: 30px;
+        &:hover {
+          cursor: pointer;
+        }
+        &-icon {
+          width: 10px;
+          height: 10px;
+        }
+      }
+    }
+    .share-modal {
+      &-padding {
+        padding: 16px 24px;
+        &.wout-top {
+          padding: 0 24px 16px;
+        }
+      }
+      .add-user {
+        &-box {
+          display: flex;
+          justify-content: space-between;
+          height: 30px;
+        }
+        &-item {
+          border-radius: 2px;
+          box-sizing: border-box;
+        }
+        &-input {
+          width: 332px;
+          outline: none;
+          border: 1px solid rgb(0, 0, 0, .3);
+          padding: 0 8px;
+          &::placeholder {
+            color: #000;
+            opacity: .3;
+          }
+        }
+        &-button {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 112px;
+          height: 100%;
+          background-color: $color-base;
+          color: #fff;
+          font-size: 12px;
+          &:hover {
+            cursor: pointer;
+          }
+        }
+      }
+      .user-list {
+        display: flex;
+        flex-direction: column;
+        .ul-item {
+          display: flex;
+          justify-content: space-between;
+          &:not(:first-child) {
+            margin-top: 16px;
+          }
+          &:hover {
+            cursor: default;
+          }
+          &-left {
+            display: flex;
+            align-items: center;
+            &-icon {
+              @include w-icon-user();
+              margin-right: 8px;
+            }
+            &-text {
+              font-size: 12px;
+            }
+          }
+          &-right {
+            display: flex;
+            align-items: center;
+            &-text {
+              font-size: 12px;
+            }
+            &-arrow {
+              padding-left: 8px;
+            }
+            &:hover {
+              cursor: pointer;
+            }
+          }
+        }
+      }
+      &-divider {
+        border-bottom: 1px solid $color-divider;
+      }
+      &-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 24px;
+        height: 50px;
+        .text-link-box {
+          display: flex;
+          &:hover {
+            cursor: pointer;
+            .text-link {
+              text-decoration: underline;
+            }
+          }
+        }
+        .text-link {
+          font-size: 12px;
+          &-icon {
+            width: 14px;
+            height: 14px;
+            margin-right: 10px;
+          }
         }
       }
     }
@@ -266,4 +421,7 @@ p {
       }
     }
   }
+}
+.text-link {
+  color: $color-link;
 }
