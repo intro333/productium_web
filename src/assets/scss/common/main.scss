@@ -73,6 +73,9 @@ p {
       display: flex;
       flex-direction: column;
       padding: 12px 0;
+      &-2 {
+        padding: 0 0 12px 0;
+      }
       &-item {
         display: flex;
         justify-content: space-between;
@@ -153,6 +156,31 @@ p {
           border-color: transparent transparent $color-head $color-head;
           transform: rotate(135deg);
           @include triangle-shadow();
+        }
+      }
+      &-right {
+        &:after {
+          left: auto;
+          right: 15px;
+        }
+      }
+    }
+    .p-scale {
+      display: flex;
+      flex-direction: column;
+      &-input {
+        outline: none;
+        border: 1px solid $color-base;
+        border-radius: 4px;
+        height: 30px;
+        background-color: transparent;
+        color: #ffffff;
+        font-size: 12px;
+        padding: 0 6px;
+        box-sizing: border-box;
+        width: 100%;
+        &-box {
+          padding: 16px 24px 6px 16px;
         }
       }
     }
@@ -269,8 +297,11 @@ p {
           }
           &-right {
             display: flex;
+            justify-content: flex-end;
             align-items: center;
             &-text {
+              min-width: 160px;
+              text-align: right;
               font-size: 12px;
             }
             &-arrow {

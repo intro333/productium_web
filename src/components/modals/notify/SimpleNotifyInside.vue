@@ -16,17 +16,23 @@ import {SimpleNotifyInsideModel} from "@/models/modals/SimpleNotifyInsideModel";
 export default {
   name: "SimpleNotifyInside",
   props: ['notify'],
+  data: () => ({
+    timeoutId: null
+  }),
   computed: {
     nf() {
       return this.notify();
     }
   },
   mounted() {
-    console.log(1)
+    this.timeoutId = setTimeout(() => {
+      this.close();
+    }, 1000);
   },
   methods: {
     ...mapActions(['setSimpleNotifyInside']),
     close() {
+      clearTimeout(this.timeoutId);
       this.setSimpleNotifyInside(
           new SimpleNotifyInsideModel()
       )

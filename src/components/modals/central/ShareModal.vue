@@ -17,7 +17,8 @@
         </div>
         <div @click="openRolesSelect(i, user)"
              class="ul-item-right">
-          <span class="ul-item-right-text">{{getUserRole(user.role)}}</span>
+          <span :ref="'roleNameRef_' + i"
+                class="ul-item-right-text">{{getUserRole(user.role)}}</span>
           <img src="@/assets/img/case-tracker/toolbar_panel/share/selectArrow.svg"
                class="ul-item-right-arrow select-arrow"
                alt="">
@@ -77,10 +78,11 @@ export default {
   methods: {
     ...mapActions(['setContextMenuBase', 'setSimpleNotifyInside']),
     openRolesSelect(i, user) {
-      if (this.$refs['roleRef_' + i]) {
-        const _ref = this.$refs['roleRef_' + i];
+      if (this.$refs['roleNameRef_' + i]) {
+        const _ref = this.$refs['roleNameRef_' + i];
         if (_ref && _ref[0] && _ref[0].getBoundingClientRect()) {
           const modalPosition = getModalPositionFunc(_ref[0]);
+          console.log(1, modalPosition);
           this.setContextMenuBase(new ContextMenuBaseModel()
               .set(true,
                   'SelectPopup',

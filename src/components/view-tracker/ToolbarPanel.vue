@@ -95,7 +95,9 @@
                alt="">
           <p class="tp-icon-item tp-text">Пригласить</p>
         </div>
-        <div class="tp-icon-box tp-icon-box-2-2">
+        <div @click="openContextMenu('ScaleModal', 208, 'scaleRef', true)"
+             ref="scaleRef"
+             class="tp-icon-box tp-icon-box-2-2">
           <p class="tp-icon-item tp-text">100%</p>
           <img src="@/assets/img/common/selectArrow.svg"
                class="tp-icon-item select-arrow"
@@ -153,10 +155,10 @@ export default {
   methods: {
     ...mapActions(['setContextMenuBase', 'setCentralModal']),
     ...mapGetters(['getContextMenuBase']),
-    openContextMenu(type, width, _refStr) {
+    openContextMenu(type, width, _refStr, isRight = null) {
       // if (this.isItemMenuHovered && (this.$refs[_refStr] &&
       if (this.$refs[_refStr] && this.$refs[_refStr].getBoundingClientRect()) {
-        const modalPosition = getModalPositionFunc(this.$refs[_refStr]);
+        const modalPosition = getModalPositionFunc(this.$refs[_refStr], isRight, width);
         this.setContextMenuBase(new ContextMenuBaseModel()
             .set(true,
                 type,
@@ -164,6 +166,9 @@ export default {
                 modalPosition.top,
                 modalPosition.left,
                 'up')
+            .more({
+              isRight
+            })
         );
       }
     },
