@@ -3,7 +3,8 @@
     <SelectPopupItem v-for="(item, i) in cm.body.selectOptions"
                      :key="i"
                      :item="item"
-                     :isActive="item.isActive" />
+                     :isActive="item.isActive"
+                     :dontShowIsActive="item.dontShowIsActive" />
   </div>
 </template>
 

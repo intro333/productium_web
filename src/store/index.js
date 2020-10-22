@@ -5,6 +5,7 @@ Vue.use(Vuex);
 
 import common from './modules/common';
 import modals from './modules/modals';
+import slides from './modules/slides';
 
 export default new Vuex.Store({
   state: {
@@ -16,5 +17,6 @@ export default new Vuex.Store({
   modules: {
     common,
     modals,
+    slides,
   }
 })
