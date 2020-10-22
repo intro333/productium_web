@@ -39,9 +39,9 @@ const mutations = {
   SET_SIMPLE_NOTIFY_INSIDE(state, notify) { state.simpleNotifyInside = notify; },
 };
 
-export default {
-  state,
-  getters,
-  actions,
-  mutations
-}
+  export default {
+    state,
+    getters,
+    actions,
+    mutations
+  }

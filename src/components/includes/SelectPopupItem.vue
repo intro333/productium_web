@@ -1,12 +1,13 @@
 <template>
   <div :key="i"
        @click="clickItem"
-       class="cm-list-item cm-list-shape">
+       class="cm-list-item cm-list-shape"
+       style="height: 23px;">
     <img v-if="isActive"
          src="@/assets/img/case-tracker/toolbar_panel/shapes/selected.svg"
          class="cm-list-shape-selected"
          alt="">
-    <div v-if="!isActive"
+    <div v-if="!dontShowIsActive && !isActive"
          class="cm-list-shape-selected"> </div>
     <span class="cm-list-shape-text">{{item.title}}</span>
   </div>
@@ -21,7 +22,8 @@ export default {
   props: {
     i: Number,
     item: Object,
-    isActive: Boolean
+    isActive: Boolean,
+    dontShowIsActive: Boolean,
   },
   methods: {
     ...mapActions(['setContextMenuBase']),

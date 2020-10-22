@@ -82,7 +82,6 @@ export default {
         const _ref = this.$refs['roleNameRef_' + i];
         if (_ref && _ref[0] && _ref[0].getBoundingClientRect()) {
           const modalPosition = getModalPositionFunc(_ref[0]);
-          console.log(1, modalPosition);
           this.setContextMenuBase(new ContextMenuBaseModel()
               .set(true,
                   'SelectPopup',
