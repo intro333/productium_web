@@ -41,42 +41,59 @@
       </div>
       <div class="csb-cases-list">
         <div v-for="(_case, i) in caseListFiltered"
-             :key="i"
-             class="csb-cases-item"
-             :class="{'rgb-base-20': _case.isSelected}">
-          <div class="csb-cases-item-left">
-            <img v-if="_case.children.length"
-                 src="@/assets/img/common/triangle.svg"
-                 class="triangle-rotate csb-cases-item-triangle"
-                 :class="{'triangle-rotate-open': true}"
-                 alt="">
-            <div v-if="!_case.children.length"
-                 class="csb-cases-item-triangle"></div>
-            <div @click="selectCase(_case)"
-                 class="csb-cases-item-text-box">
-              <div class="case-status-main csb-cases-item-status"
-                   :class="{commented: _case.haveNewComments, [_case.status]: true}">
-                <div class="case-status-inside"></div>
+             class="csb-cases-item-container"
+             :key="i">
+          <div class="csb-cases-item"
+               :class="{'rgb-base-20': _case.isSelected}">
+            <div class="csb-cases-item-left">
+              <div v-if="_case.children.length"
+                   @click="showOrHideCaseChildren(_case)"
+                   class="csb-cases-item-triangle">
+                <img src="@/assets/img/common/triangle.svg"
+                     class="triangle-rotate"
+                     :class="{'triangle-rotate-open': _case.isOpen}"
+                     alt="">
               </div>
-              <span v-if="!_case.isEdited"
-                    :ref="'caseNameInputRef_' + i"
-                    v-on:dblclick="caseDoubleClick($event, _case, i)"
-                    class="csb-cases-item-text text-ellipsis">{{_case.title}}</span>
-              <input v-if="_case.isEdited"
-                     :ref="'caseNameInputRef_' + i"
-                     @input="changeCaseNameText($event, _case)"
-                     @blur="changeCaseNameEditable(_case, i, false)"
-                     @keyup.enter="changeCaseNameEditable(_case,  i, false)"
-                     :value="_case.title"
-                     class="csb-cases-item-text csb-cases-item-input text-ellipsis">
+              <div v-if="!_case.children.length"
+                   class="csb-cases-item-triangle"></div>
+              <div @click="selectCase(_case)"
+                   class="csb-cases-item-text-box">
+                <div class="case-status-main csb-cases-item-status"
+                     :class="{commented: _case.haveNewComments, [_case.status]: true}">
+                  <div class="case-status-inside"></div>
+                </div>
+                <span v-if="!_case.isEdited"
+                      :ref="'caseNameInputRef_' + i"
+                      v-on:dblclick="caseDoubleClick($event, _case, i)"
+                      class="csb-cases-item-text text-ellipsis">{{_case.title}}</span>
+                <input v-if="_case.isEdited"
+                       :ref="'caseNameInputRef_' + i"
+                       @input="changeCaseNameText($event, _case)"
+                       @blur="changeCaseNameEditable(_case, i, false)"
+                       @keyup.enter="changeCaseNameEditable(_case,  i, false)"
+                       :value="_case.title"
+                       class="csb-cases-item-text csb-cases-item-input text-ellipsis">
+              </div>
+            </div>
+            <div @click="openCaseOptionsMenu(167, 'caseOptionsRef_' + i, _case, i)"
+                 :ref="'caseOptionsRef_' + i"
+                 class="csb-cases-item-options-box">
+              <img src="@/assets/img/common/options.svg"
+                   class="csb-cases-item-options"
+                   alt="">
             </div>
           </div>
-          <div @click="openCaseOptionsMenu(167, 'caseOptionsRef_' + i, _case, i)"
-               :ref="'caseOptionsRef_' + i"
-               class="csb-cases-item-options-box">
-            <img src="@/assets/img/common/options.svg"
-                 class="csb-cases-item-options"
-                 alt="">
+          <div v-if="_case.children.length && _case.isOpen"
+               class="csb-cases-item-children"
+               :class="{'rgb-base-10': _case.isSelected}">
+            <div v-for="(_child, k) in _case.children"
+                 :key="k"
+                 class="csb-cases-item-child">
+              <img :src="getCaseShapeChildImg(_child)"
+                   class="csb-cases-item-child-img"
+                   alt="">
+              <span class="csb-cases-item-child-text text-ellipsis">{{_child.title}}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -102,6 +119,7 @@ export default {
         status: 'in-work',
         isSelected: false,
         isEdited: false,
+        isOpen: false,
         haveNewComments: false,
         children: []
       },
@@ -111,12 +129,24 @@ export default {
         status: 'done',
         isSelected: true,
         isEdited: false,
+        isOpen: false,
         haveNewComments: true,
         children: [
           {
             id: 1,
-            title: 'rectangle'
-          }
+            title: 'Rectangle 1',
+            shapeType: 'rectangle'
+          },
+          {
+            id: 2,
+            title: 'Rectangle 2',
+            shapeType: 'rectangle'
+          },
+          {
+            id: 3,
+            title: 'Circle 1',
+            shapeType: 'circle'
+          },
         ]
       },
     ],
@@ -280,6 +310,12 @@ export default {
             })
         );
       }
+    },
+    showOrHideCaseChildren(_case) {
+      _case.isOpen = !_case.isOpen;
+    },
+    getCaseShapeChildImg(_child) {
+      return require('@/assets/img/case-tracker/case-sidebar/' + _child.shapeType + '.svg')
     }
   }
 }

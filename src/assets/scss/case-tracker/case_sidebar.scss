@@ -72,6 +72,27 @@
           margin-top: 12px;
           padding: 0 8px;
           height: 27px;
+          &-container {
+            display: flex;
+            flex-direction: column;
+          }
+          &-children {
+
+          }
+          &-child {
+            display: flex;
+            align-items: center;
+            padding: 6px 5px 6px 37px;
+            &-img {
+              width: 14px;
+              height: 14px;
+              margin-right: 8px;
+            }
+            &-text {
+              max-width: 141px;
+              font-size: 12px;
+            }
+          }
           &:hover {
             cursor: default;
           }
@@ -84,6 +105,15 @@
           &-triangle {
             width: 8px;
             padding-right: 8px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            .triangle-rotate {
+              margin-bottom: 2px;
+            }
+            .triangle-rotate-open {
+              margin-bottom: 0;
+            }
           }
           &-status {
             width: 15px;
@@ -103,7 +133,6 @@
           &-text {
             max-width: 141px;
             font-size: 12px;
-            width: 100%;
             &-box {
               display: flex;
               align-items: center;
