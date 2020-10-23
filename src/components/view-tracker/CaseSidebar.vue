@@ -84,6 +84,7 @@
             </div>
           </div>
           <div v-if="_case.children.length && _case.isOpen"
+               @click="selectCase(_case)"
                class="csb-cases-item-children"
                :class="{'rgb-base-10': _case.isSelected}">
             <div v-for="(_child, k) in _case.children"
@@ -144,6 +145,27 @@ export default {
           },
           {
             id: 3,
+            title: 'Circle 1',
+            shapeType: 'circle'
+          },
+        ]
+      },
+      {
+        id: 3,
+        title: 'Задача 3.',
+        status: 'done',
+        isSelected: false,
+        isEdited: false,
+        isOpen: true,
+        haveNewComments: false,
+        children: [
+          {
+            id: 4,
+            title: 'Rectangle 1',
+            shapeType: 'rectangle'
+          },
+          {
+            id: 5,
             title: 'Circle 1',
             shapeType: 'circle'
           },
