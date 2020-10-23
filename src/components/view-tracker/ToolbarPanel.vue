@@ -156,7 +156,6 @@ export default {
     ...mapActions(['setContextMenuBase', 'setCentralModal']),
     ...mapGetters(['getContextMenuBase']),
     openContextMenu(type, width, _refStr, isRight = null) {
-      // if (this.isItemMenuHovered && (this.$refs[_refStr] &&
       if (this.$refs[_refStr] && this.$refs[_refStr].getBoundingClientRect()) {
         const modalPosition = getModalPositionFunc(this.$refs[_refStr], isRight, width);
         this.setContextMenuBase(new ContextMenuBaseModel()
@@ -175,7 +174,7 @@ export default {
     changeProjectNameEditable(state) {
       this.project.nameIsEdited = state;
       setTimeout(() => {
-        if (this.$refs['projectNameInputRef']) {
+        if (state && this.$refs['projectNameInputRef']) {
           const inputRef = this.$refs['projectNameInputRef'];
           inputRef.focus();
         }

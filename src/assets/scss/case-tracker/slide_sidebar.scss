@@ -57,14 +57,8 @@
           border: 2px solid $color-base;
         }
         &-notify {
-          position: absolute;
           top: -6px;
           right: -7px;
-          height: 9px;
-          width: 9px;
-          background-color: $color-base;
-          border-radius: 50%;
-          border: 1px solid #ffffff;
         }
       }
       &-options {

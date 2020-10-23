@@ -5,5 +5,140 @@
     height: 100vh;
     background-color: #ffffff;
     border-left: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 16px 0;
+    .csb {
+      &-container {
+        padding: 0 16px 0 8px;
+      }
+      &-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 16px;
+        &-tabs {
+          display: flex;
+          &-item {
+            font-size: 12px;
+            margin-right: 16px;
+            &:hover {
+              cursor: pointer;
+            }
+          }
+        }
+        &-img {
+          width: 16px;
+          height: 16px;
+          margin-left: 5px;
+          &.not-selected {
+            opacity: .5;
+          }
+          &-box {
+            position: relative;
+          }
+          &-notify {
+            top: -2px;
+            right: -2px;
+            height: 8px;
+            width: 8px;
+          }
+        }
+      }
+      &-cases {
+        padding-top: 16px;
+        &-filter {
+          display: flex;
+          justify-content: flex-end;
+          &:hover {
+            cursor: default;
+          }
+          &-box {
+            display: flex;
+            align-items: center;
+          }
+          &-text {
+            font-size: 12px;
+          }
+          &-arrow {
+            width: 7px;
+            height: 4px;
+            padding-left: 3px;
+          }
+        }
+        &-list {
+          //padding-top: 6px;
+        }
+        &-item {
+          display: flex;
+          margin-top: 12px;
+          padding: 0 8px;
+          height: 27px;
+          &:hover {
+            cursor: default;
+          }
+          &-left {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+          }
+          &-triangle {
+            width: 8px;
+            padding-right: 8px;
+          }
+          &-status {
+            width: 15px;
+            height: 15px;
+            margin-right: 2px;
+            &.in-work {
+              .case-status-inside {
+                background-color: rgb(0, 0, 0, .5);
+              }
+            }
+            &.done {
+              .case-status-inside {
+                background-color: $color-status-success;
+              }
+            }
+          }
+          &-text {
+            max-width: 141px;
+            font-size: 12px;
+            width: 100%;
+            &-box {
+              display: flex;
+              align-items: center;
+              height: 100%;
+              width: 100%;
+            }
+          }
+          &-input {
+            outline: none;
+            border: none;
+            background-color: transparent;
+            height: 100%;
+            //max-width: 150px;
+            //text-align: center;
+            //padding-bottom: 1px;
+            &:hover {
+              cursor: default;
+            }
+          }
+          &-options {
+            &-box {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              width: 10px;
+              height: 100%;
+              &:hover {
+                cursor: pointer;
+              }
+            }
+            width: 2px;
+            height: 10px;
+          }
+        }
+      }
+    }
   }
 }

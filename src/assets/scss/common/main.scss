@@ -419,6 +419,49 @@ p {
 .c-agreement {
 
 }
+.triangle-rotate {
+  width: 8px;
+  height: 8px;
+  transform: rotate(145deg);
+  &-open {
+    transform: rotate(0);
+  }
+}
+
+/* Notify */
+.notify-circle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 9px;
+  width: 9px;
+  background-color: $color-base;
+  border-radius: 50%;
+  border: 1px solid #ffffff;
+}
+.case-status {
+  &-main {
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 15px;
+    width: 15px;
+    background-color: transparent;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    &.commented {
+      border: 2px solid $color-base;
+    }
+  }
+  &-inside {
+    box-sizing: border-box;
+    height: 9px;
+    width: 9px;
+    border-radius: 50%;
+    border: 1px solid transparent;
+  }
+}
 
 /* ANIMATIONS */
 /* https://ru.vuejs.org/v2/guide/transitions.html */
@@ -430,6 +473,12 @@ p {
 .scroll-y-container {
   overflow-y: auto;
   @include scrollbarBase();
+}
+.scroll-x-container {
+  white-space: nowrap;
+  overflow-x: auto;
+  //overflow-y: hidden;
+  @include scrollDivHoriz();
 }
 .select-arrow {
   width: 7px;
@@ -489,4 +538,22 @@ p {
 }
 .text-link {
   color: $color-link;
+}
+.rgb {
+  &-black {
+    &-50 {
+      color: rgb(0, 0, 0, .5);
+    }
+    &-30 {
+      color: rgb(0, 0, 0, .3);
+    }
+  }
+  &-base {
+    &-20 {
+      background-color: rgb(0, 166, 237, .2);
+    }
+    &-10 {
+      background-color: rgb(0, 166, 237, .1);
+    }
+  }
 }

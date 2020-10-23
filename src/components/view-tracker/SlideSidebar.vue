@@ -14,12 +14,12 @@
                alt="">
         </div>
         <div v-if="_slide.isNotify"
-             class="sl-b-slide-notify"
+             class="notify-circle sl-b-slide-notify"
              :class="{'of-selected': _slide.isSelected}"></div>
       </div>
       <img @click="openOptionsMenu(134, 'optionsRef', i)"
            :ref="'optionsRef_' + i"
-           src="@/assets/img/case-tracker/slide-sidebar/options.svg"
+           src="@/assets/img/common/options.svg"
            class="sl-b-options"
            alt="">
     </div>
@@ -48,14 +48,14 @@ export default {
   data: () => ({
     initSlide: {
       id: 1,
-      status: 'in_work',
+      status: 'in-work',
       isSelected: false,
       isNotify: false
     },
     slides: [
       {
         id: 1,
-        status: 'in_work',
+        status: 'in-work',
         isSelected: false,
         isNotify: false
       },
@@ -67,13 +67,13 @@ export default {
       },
       {
         id: 4,
-        status: 'in_work',
+        status: 'in-work',
         isSelected: true,
         isNotify: true
       },
       {
         id: 5,
-        status: 'in_work',
+        status: 'in-work',
         isSelected: false,
         isNotify: true
       },
@@ -98,7 +98,6 @@ export default {
       const _ref = this.$refs['optionsRef_' + i];
       if (_ref && _ref[0] && _ref[0].getBoundingClientRect()) {
         const modalPosition = getModalPositionFunc(_ref[0]);
-        console.log(1, modalPosition)
         this.setContextMenuBase(new ContextMenuBaseModel()
             .set(true,
                 'SelectPopup',
@@ -109,6 +108,7 @@ export default {
                 {
                   selectOptions: [
                     {
+                      isItemOfMenu: true,
                       title: 'Удалить',
                       dontShowIsActive: true,
                       action: () => {
@@ -116,16 +116,15 @@ export default {
                       },
                     },
                     {
+                      isItemOfMenu: true,
                       title: 'Дублировать',
                       dontShowIsActive: true,
                       action: () => {
 
                       }
-                    },
+                    }
                   ]
-                }).more({
-
-            })
+                })
         );
       }
     },
