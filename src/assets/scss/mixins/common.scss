@@ -66,7 +66,22 @@
     background: $color-scroll;
   }
 }
-
+@mixin scrollDivHoriz() {
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+  &::-webkit-scrollbar-button { // кнопки края
+    //background: transparent;
+    //height: 30px;
+  }
+  &::-webkit-scrollbar-track-piece { // Фон
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb { // Динамический скролл
+    background: $color-scroll;
+  }
+}
 
 
 //::-webkit-scrollbar              { /* 1 - скроллбар */ }

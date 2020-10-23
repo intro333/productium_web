@@ -1,5 +1,6 @@
 <template>
-  <div :key="i"
+  <div v-if="item.isItemOfMenu"
+       :key="i"
        @click="clickItem"
        class="cm-list-item cm-list-shape"
        style="height: 23px;">
@@ -11,6 +12,7 @@
          class="cm-list-shape-selected"> </div>
     <span class="cm-list-shape-text">{{item.title}}</span>
   </div>
+  <div v-else class="cm-divider"> </div>
 </template>
 
 <script>

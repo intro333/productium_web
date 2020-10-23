@@ -92,6 +92,7 @@ export default {
                   {
                     selectOptions: [
                       {
+                        isItemOfMenu: true,
                         title: userRoleToTitle('guest'),
                         isActive: user.role === 'guest',
                         action: () => {
@@ -99,6 +100,7 @@ export default {
                         }
                       },
                       {
+                        isItemOfMenu: true,
                         title: userRoleToTitle('editor'),
                         isActive: user.role === 'editor',
                         action: () => {
@@ -106,6 +108,7 @@ export default {
                         }
                       },
                       {
+                        isItemOfMenu: true,
                         title: userRoleToTitle('manager'),
                         isActive: user.role === 'manager',
                         action: () => {
