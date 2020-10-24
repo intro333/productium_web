@@ -1,7 +1,50 @@
 @mixin work_area_mixin() {
   .work-area {
+    box-sizing: border-box;
     width: 100%;
     height: 100%;
     background-color: $color-block;
+    .wa {
+      &-empty {
+        box-sizing: border-box;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        margin-top: 1px;
+        height: calc(100% - 2px);
+        &-info {
+          &-box {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+          }
+          text-align: center;
+          font-size: 14px;
+          &-link {
+            color: $color-base;
+            &:hover {
+              cursor: pointer;
+            }
+          }
+          &-more {
+            text-align: center;
+            font-size: 14px;
+            opacity: .5;
+          }
+          &-input {
+            position: absolute;
+            opacity: 0;
+            overflow: hidden;
+            right: 0;
+            width: 105px;
+          }
+        }
+        &-is-dropped {
+          //border: 2px dashed rgb(0, 0, 0, .3);
+          background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' stroke='%230000004D' stroke-width='4' stroke-dasharray='20%2c 20' stroke-dashoffset='50' stroke-linecap='butt'/%3e%3c/svg%3e");
+        }
+      }
+    }
   }
 }
