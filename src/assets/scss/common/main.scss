@@ -462,6 +462,65 @@ p {
     border: 1px solid transparent;
   }
 }
+.p-notifications {
+  display: flex;
+  flex-direction: column;
+  &-item {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 16px 12px 8px;
+    &-box {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 40px - 44px - 15px - 42px - 18px);
+    }
+    &:hover {
+      cursor: default;
+    }
+    .nf {
+      &-header {
+        display: flex;
+        align-items: center;
+        &-user {
+          &-icon {
+            @include w-icon-user();
+            margin-right: 8px;
+          }
+          &-name {
+            font-size: 12px;
+          }
+        }
+      }
+      &-short-info {
+        font-size: 10px;
+        letter-spacing: .1px;
+      }
+      &-date-time {
+        margin-top: 4px;
+      }
+      &-slide-name {
+
+      }
+      &-comment {
+        font-size: 12px;
+        margin-top: 4px;
+        color: #000;
+      }
+    }
+  }
+  &-more {
+    &-box {
+      display: flex;
+      justify-content: center;
+      margin-top: 14px;
+      padding: 4px 0;
+      &:hover {
+        cursor: pointer;
+      }
+    }
+    font-size: 12px;
+  }
+}
 
 /* ANIMATIONS */
 /* https://ru.vuejs.org/v2/guide/transitions.html */
@@ -472,7 +531,7 @@ p {
 }
 .scroll-y-container {
   overflow-y: auto;
-  @include scrollbarBase();
+  @include scrollbarSmall();
 }
 .scroll-x-container {
   white-space: nowrap;
@@ -555,5 +614,14 @@ p {
     &-10 {
       background-color: rgb(0, 166, 237, .1);
     }
+  }
+}
+.p-textarea {
+  &-disabled {
+    outline: none;
+    border: none;
+    background-color: transparent;
+    resize: none;
+    overflow:hidden;
   }
 }
