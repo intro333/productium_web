@@ -18,13 +18,14 @@
               class="csb-header-tabs-item"
               :class="{'rgb-black-30': !isTabSelected('wiki')}">Вики</span>
       </div>
-      <div class="csb-header-img-box">
-        <img @click="selectTab('notify')"
-             src="@/assets/img/common/notifyIcon.svg"
+      <div @click="selectTab('notify')"
+           class="csb-header-img-box">
+        <img src="@/assets/img/common/notifyIcon.svg"
              class="csb-header-img"
              :class="{'not-selected': !isTabSelected('notify')}"
              alt="">
-        <div class="notify-circle csb-header-img-notify"></div>
+        <div v-if="isNotReadNotifications"
+             class="notify-circle csb-header-img-notify"></div>
       </div>
     </div>
     <div v-if="selectedTab === 'cases'"
@@ -99,18 +100,27 @@
         </div>
       </div>
     </div>
+    <div class="csb-notify">
+      <Notifications v-if="selectedTab === 'notify'"
+                     :notifications="notifications" />
+    </div>
+    <!-- TODO helpIcon.svg   -->
   </div>
 </template>
 
 <script>
 import {getModalPositionFunc} from "@/functions/calculations";
 import {ContextMenuBaseModel} from "@/models/modals/ContextMenuBaseModel";
-import {mapActions} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 import ModalsMixin from "@/components/mixins/ModalsMixin";
+import Notifications from "@/components/common/Notifications";
 
 export default {
   name: "CaseSidebar",
   mixins: [ModalsMixin],
+  components: {
+    Notifications
+  },
   data: () => ({
     selectedTab: 'cases', // cases | notes | wiki | notify
     caseList: [
@@ -214,9 +224,18 @@ export default {
       });
       return result;
     },
+    notifications() {
+      return this.getCaseCommentNotifications()
+          .filter(_n => _n.projectId === 1); // TODO установить фильтр по активному проекту
+    },
+    isNotReadNotifications() {
+      return this.notifications
+          .filter(_n => _n.status === 'notRead').length
+    }
   },
   methods: {
     ...mapActions(['setContextMenuBase']),
+    ...mapGetters(['getCaseCommentNotifications']),
     selectTab(tabName) {
       this.selectedTab = tabName;
     },
