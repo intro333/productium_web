@@ -123,68 +123,12 @@ export default {
   },
   data: () => ({
     selectedTab: 'cases', // cases | notes | wiki | notify
-    caseList: [
-      {
-        id: 1,
-        title: 'Задача 1',
-        status: 'in-work',
-        isSelected: false,
-        isEdited: false,
-        isOpen: false,
-        haveNewComments: false,
-        children: []
-      },
-      {
-        id: 2,
-        title: 'Баг с выпадающим списком, когда на него нажимаешь.',
-        status: 'done',
-        isSelected: true,
-        isEdited: false,
-        isOpen: false,
-        haveNewComments: true,
-        children: [
-          {
-            id: 1,
-            title: 'Rectangle 1',
-            shapeType: 'rectangle'
-          },
-          {
-            id: 2,
-            title: 'Rectangle 2',
-            shapeType: 'rectangle'
-          },
-          {
-            id: 3,
-            title: 'Circle 1',
-            shapeType: 'circle'
-          },
-        ]
-      },
-      {
-        id: 3,
-        title: 'Задача 3.',
-        status: 'done',
-        isSelected: false,
-        isEdited: false,
-        isOpen: true,
-        haveNewComments: false,
-        children: [
-          {
-            id: 4,
-            title: 'Rectangle 1',
-            shapeType: 'rectangle'
-          },
-          {
-            id: 5,
-            title: 'Circle 1',
-            shapeType: 'circle'
-          },
-        ]
-      },
-    ],
     caseFilterSelected: 0,
   }),
   computed: {
+    caseList() {
+      return this.getCaseList();
+    },
     caseFilters() {
       return [
         {
@@ -235,7 +179,7 @@ export default {
   },
   methods: {
     ...mapActions(['setContextMenuBase']),
-    ...mapGetters(['getCaseCommentNotifications']),
+    ...mapGetters(['getCaseCommentNotifications', 'getCaseList']),
     selectTab(tabName) {
       this.selectedTab = tabName;
     },
