@@ -10,6 +10,8 @@ const state = {
       isDiscusEdited: false,
       isOpen: false,
       haveNewComments: false,
+      discus: '',
+      resolut: '',
       children: []
     },
     {
@@ -22,6 +24,8 @@ const state = {
       isDiscusEdited: false,
       isOpen: false,
       haveNewComments: true,
+      discus: '',
+      resolut: '',
       children: [
         {
           id: 1,
@@ -50,6 +54,8 @@ const state = {
       isDiscusEdited: false,
       isOpen: true,
       haveNewComments: false,
+      discus: '',
+      resolut: '',
       children: [
         {
           id: 4,

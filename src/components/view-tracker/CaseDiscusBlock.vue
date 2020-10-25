@@ -40,7 +40,13 @@
     </div>
     <div class="case-discus-body">
       <div class="cd-b-edit-area">
-        <textarea class="cd-b-edit-area-text p-textarea-custom"
+        <textarea ref="caseDiscusTextareaRef"
+                  @click="changeCaseDiscusTextareaEdited(true)"
+                  @keyup.esc="changeCaseDiscusTextareaEdited(false)"
+                  @blur="changeCaseDiscusTextareaEdited(false)"
+                  @input="changeCaseDiscusTextareaText"
+                  :value="selectedCase[discusBlockActivityState]"
+                  class="cd-b-edit-area-text p-textarea-custom"
                   :readonly="!selectedCase.isDiscusEdited"
                   :class="{'ea-readonly': !selectedCase.isDiscusEdited}"
                   placeholder="Опишите задачу..."></textarea>
@@ -64,6 +70,7 @@ export default {
   name: "CaseDiscusBlock",
   mixins: [CaseMixin],
   data: () => ({
+    discusBlockActivityState: 'discus',
     discusBlockButtons: [
       {
         title: 'обсуждение',
@@ -93,6 +100,14 @@ export default {
     },
     selectDiscusBlockActivity(_state) {
       this.selectedCase.discusBlockActivityState = _state;
+      this.discusBlockActivityState = _state;
+    },
+    changeCaseDiscusTextareaEdited(_state) {
+      this.selectedCase.isDiscusEdited = _state;
+    },
+    changeCaseDiscusTextareaText($event) {
+      const text = $event.target.value;
+      this.selectedCase[this.discusBlockActivityState] = text;
     },
   }
 }
