@@ -7,18 +7,20 @@
                :class="{[selectedCase.status]: true}"></div>
           <div v-if="!selectedCase.isEdited"
                ref="caseNameInputRef"
-               v-on:dblclick="changeCaseNameEditable(true)"
+               v-on:dblclick="changeCaseNameEditable(selectedCase,  'caseNameInputRef',true)"
                class="cd-left-case-title-box">
             <span class="cd-left-case-title text-ellipsis">{{selectedCase.title}}</span>
           </div>
           <input v-if="selectedCase.isEdited"
                  ref="caseNameInputRef"
-                 @input="changeCaseNameText($event)"
-                 @blur="changeCaseNameEditable(false)"
-                 @keyup.enter="changeCaseNameEditable(false)"
+                 @input="changeCaseNameText($event, selectedCase)"
+                 @blur="changeCaseNameEditable(selectedCase,  'caseNameInputRef', false)"
+                 @keyup.enter="changeCaseNameEditable(selectedCase, 'caseNameInputRef',false)"
                  :value="selectedCase.title"
                  class="cd-left-case-title cd-left-case-input text-ellipsis">
-          <img src="@/assets/img/common/selectArrow.svg"
+          <img @click="openCaseOptionsMenu(167, 'caseNameOptionsRef', selectedCase)"
+               ref="caseNameOptionsRef"
+               src="@/assets/img/common/selectArrow.svg"
                class="cd-left-case-arrow select-arrow"
                alt="">
         </template>
@@ -32,9 +34,11 @@
 
 <script>
 import {mapGetters} from "vuex";
+import CaseMixin from "@/components/mixins/CaseMixin";
 
 export default {
   name: "CaseDiscusBlock",
+  mixins: [CaseMixin],
   data: () => ({
 
   }),
@@ -51,27 +55,7 @@ export default {
   },
   methods: {
     ...mapGetters(['getCaseList']),
-    changeCaseNameEditable(state) {
-      this.selectedCase.isEdited = state;
-      this.caseRefFocusHandler(state);
-    },
-    caseRefFocusHandler(state) {
-      setTimeout(() => {
-        const _ref = this.$refs['caseNameInputRef'];
-        if (state && _ref) {
-          _ref.focus();
-        }
-        if (!state && this.selectedCase.title === '') {
-          this.selectedCase.title = 'Case ' + this.selectedCase.id
-        }
-      }, 20)
-    },
-    changeCaseNameText($event) {
-      const name = $event.target.value;
-      if (name.length <= 200) {
-        this.selectedCase.title = name;
-      }
-    },
+
   }
 }
 </script>
