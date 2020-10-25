@@ -214,6 +214,9 @@ p {
           }
         }
       }
+      .comments {
+
+      }
       &-close {
         position: absolute;
         right: 14px;
@@ -541,7 +544,7 @@ p {
 }
 .select-arrow {
   width: 7px;
-  height: 4px;
+  height: 100%;
   padding-left: 4px;
 }
 .text-ellipsis {

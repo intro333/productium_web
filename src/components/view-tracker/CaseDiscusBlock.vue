@@ -1,32 +1,7 @@
 <template>
   <div class="case-discus">
     <div class="case-discus-header">
-      <div class="cd-h-left">
-        <template v-if="selectedCase">
-          <div class="cd-h-left-case-status"
-               :class="{[selectedCase.status]: true}"></div>
-          <div v-if="!selectedCase.isEdited"
-               ref="caseNameInputRef"
-               v-on:dblclick="changeCaseNameEditable(selectedCase,  'caseNameInputRef',true)"
-               class="cd-h-left-case-title-box">
-            <span class="cd-h-left-case-title text-ellipsis">{{selectedCase.title}}</span>
-          </div>
-          <input v-if="selectedCase.isEdited"
-                 ref="caseNameInputRef"
-                 @input="changeCaseNameText($event, selectedCase)"
-                 @blur="changeCaseNameEditable(selectedCase,  'caseNameInputRef', false)"
-                 @keyup.enter="changeCaseNameEditable(selectedCase, 'caseNameInputRef',false)"
-                 :value="selectedCase.title"
-                 class="cd-h-left-case-title cd-h-left-case-input text-ellipsis">
-          <img v-if="!selectedCase.isEdited"
-               @click="openCaseOptionsMenu(167, 'caseNameOptionsRef', 'caseNameInputRef',
-               selectedCase, 'down', false)"
-               ref="caseNameOptionsRef"
-               src="@/assets/img/common/selectArrow.svg"
-               class="cd-h-left-case-arrow select-arrow"
-               alt="">
-        </template>
-      </div>
+      <CaseNameWithStatusAndOptions :selectedCase="selectedCase" />
       <div class="cd-h-right">
         <div v-for="(_item, i) in discusBlockButtons"
              :key="i"
@@ -55,7 +30,8 @@
         <div class="cd-b-comments-box">
           <span class="cd-b-comments-text">14<span class="cd-b-comments-text-link"
           >+3</span></span>
-          <span class="cd-b-comments-text cd-b-comments-text-clicable">comments</span>
+          <span @click="openCommentModal()"
+                class="cd-b-comments-text cd-b-comments-text-clickable">comments</span>
         </div>
       </div>
     </div>
@@ -63,11 +39,14 @@
 </template>
 
 <script>
-import {mapGetters} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 import CaseMixin from "@/components/mixins/CaseMixin";
+import CaseNameWithStatusAndOptions from "@/components/includes/CaseNameWithStatusAndOptions";
+import {CentralModalModel} from "@/models/modals/CentralModalModel";
 
 export default {
   name: "CaseDiscusBlock",
+  components: {CaseNameWithStatusAndOptions},
   mixins: [CaseMixin],
   data: () => ({
     discusBlockActivityState: 'discus',
@@ -94,6 +73,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['setCentralModal']),
     ...mapGetters(['getCaseList']),
     isActiveDiscusBlockActivityState(_state) {
       return this.selectedCase.discusBlockActivityState === _state;
@@ -109,6 +89,14 @@ export default {
       const text = $event.target.value;
       this.selectedCase[this.discusBlockActivityState] = text;
     },
+    openCommentModal() {
+      this.setCentralModal(
+          new CentralModalModel()
+              .set(true,
+                  'CommentsModal',
+                  400,)
+      );
+    }
   }
 }
 </script>
