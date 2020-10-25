@@ -18,7 +18,9 @@
                  @keyup.enter="changeCaseNameEditable(selectedCase, 'caseNameInputRef',false)"
                  :value="selectedCase.title"
                  class="cd-left-case-title cd-left-case-input text-ellipsis">
-          <img @click="openCaseOptionsMenu(167, 'caseNameOptionsRef', selectedCase)"
+          <img v-if="!selectedCase.isEdited"
+               @click="openCaseOptionsMenu(167, 'caseNameOptionsRef', 'caseNameInputRef',
+               selectedCase, 'down', false)"
                ref="caseNameOptionsRef"
                src="@/assets/img/common/selectArrow.svg"
                class="cd-left-case-arrow select-arrow"

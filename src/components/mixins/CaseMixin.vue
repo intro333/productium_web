@@ -33,20 +33,27 @@ export default {
         _case.title = name;
       }
     },
-    openCaseOptionsMenu(width, _refStr, _case, isMultiple=false, i=0) {
-      let _ref = this.$refs[_refStr];
+    openCaseOptionsMenu(width,
+                        _refOptionsStr,
+                        _refCaseStr,
+                        _case,
+                        triangle,
+                        isRight,
+                        isMultiple=false,
+                        i=0) {
+      let _ref = this.$refs[_refOptionsStr];
       if (isMultiple) {
         _ref = _ref[0] ? _ref[0] : null;
       }
       if (_ref && _ref.getBoundingClientRect()) {
-        const modalPosition = getModalPositionFunc(_ref, true, width);
+        const modalPosition = getModalPositionFunc(_ref, isRight, width);
         this.setContextMenuBase(new ContextMenuBaseModel()
             .set(true,
                 'SelectPopup',
                 width,
                 modalPosition.top,
                 modalPosition.left,
-                'up',
+                triangle,
                 {
                   selectOptions: [
                     {
@@ -72,7 +79,7 @@ export default {
                       isItemOfMenu: true,
                       title: 'Переименовать',
                       action: () => {
-                        this.changeCaseNameEditable(_case,  _refStr, true, true, i);
+                        this.changeCaseNameEditable(_case,  _refCaseStr, true, isMultiple, i);
                       }
                     },
                     {
@@ -85,7 +92,7 @@ export default {
                   ]
                 })
             .more({
-              isRight: true
+              isRight
             })
         );
       }

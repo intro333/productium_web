@@ -1,9 +1,9 @@
 <template>
   <div class="case-tracker">
     <ToolbarPanel />
-    <div class="case-tracker-body scroll-y-container">
+    <div class="case-tracker-body">
       <SlideSidebar />
-      <div class="center-content">
+      <div class="center-content scroll-y-container">
         <WorkArea />
         <CaseDiscusBlock />
       </div>

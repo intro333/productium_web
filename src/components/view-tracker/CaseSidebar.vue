@@ -77,7 +77,8 @@
                        class="csb-cases-item-text csb-cases-item-input text-ellipsis">
               </div>
             </div>
-            <div @click="openCaseOptionsMenu(167, 'caseOptionsRef_' + i, _case, true, i)"
+            <div @click="openCaseOptionsMenu(167, 'caseOptionsRef_' + i,
+            caseRef(_case, i), _case, 'up', true, true, i)"
                  :ref="'caseOptionsRef_' + i"
                  class="csb-cases-item-options-box">
               <img src="@/assets/img/common/options.svg"

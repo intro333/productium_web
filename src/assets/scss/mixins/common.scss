@@ -12,9 +12,9 @@
   box-shadow: 0 0 10px 0px rgba(0, 0, 0, $opacity);
 }
 @mixin triangle-shadow() {
-  --webkit-box-shadow: -3px 3px 3px 0 rgba(219, 219, 219, .6);
-  -moz-box-shadow: -3px 3px 3px 0 rgba(219, 219, 219, .6);
-  box-shadow: -3px 3px 3px 0 rgba(219, 219, 219, .6);
+  --webkit-box-shadow: -2px 2px 3px 0 rgba(219, 219, 219, .6);
+  -moz-box-shadow: -2px 2px 3px 0 rgba(219, 219, 219, .6);
+  box-shadow: -2px 2px 3px 0 rgba(219, 219, 219, .6);
 }
 
 /* SCROLL */
