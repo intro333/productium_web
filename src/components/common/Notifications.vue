@@ -13,7 +13,7 @@
         </div>
         <p class="nf-short-info nf-date-time rgb-black-50">{{getNotifyDateTime(_notify.updated_at)}}</p>
         <p class="nf-short-info nf-slide-name rgb-black-50">слайд {{_notify.slideOrder+1}}</p>
-        <textarea class="nf-comment p-textarea-disabled"
+        <textarea class="nf-comment p-textarea-custom tc-disabled"
                   readonly disabled
                   cols="181"
                   rows="2"

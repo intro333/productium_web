@@ -64,19 +64,21 @@
                   <div class="case-status-inside"></div>
                 </div>
                 <span v-if="!_case.isEdited"
-                      :ref="'caseNameInputRef_' + i"
-                      v-on:dblclick="caseDoubleClick($event, _case, i)"
-                      class="csb-cases-item-text text-ellipsis">{{_case.title}}</span>
+                      :ref="caseRef(_case, i)"
+                      v-on:dblclick="changeCaseNameEditable(_case, caseRef(_case, i), true, true, i)"
+                      class="csb-cases-item-text text-ellipsis"
+                      style="width: 100%;">{{_case.title}}</span>
                 <input v-if="_case.isEdited"
                        :ref="'caseNameInputRef_' + i"
                        @input="changeCaseNameText($event, _case)"
-                       @blur="changeCaseNameEditable(_case, i, false)"
-                       @keyup.enter="changeCaseNameEditable(_case,  i, false)"
+                       @blur="changeCaseNameEditable(_case, caseRef(_case, i), false, true, i)"
+                       @keyup.enter="changeCaseNameEditable(_case,  caseRef(_case, i), false, true, i)"
                        :value="_case.title"
                        class="csb-cases-item-text csb-cases-item-input text-ellipsis">
               </div>
             </div>
-            <div @click="openCaseOptionsMenu(167, 'caseOptionsRef_' + i, _case, i)"
+            <div @click="openCaseOptionsMenu(167, 'caseOptionsRef_' + i,
+            caseRef(_case, i), _case, 'up', true, true, i)"
                  :ref="'caseOptionsRef_' + i"
                  class="csb-cases-item-options-box">
               <img src="@/assets/img/common/options.svg"
@@ -111,80 +113,25 @@
 <script>
 import {getModalPositionFunc} from "@/functions/calculations";
 import {ContextMenuBaseModel} from "@/models/modals/ContextMenuBaseModel";
-import {mapActions, mapGetters} from "vuex";
+import {mapGetters} from "vuex";
 import ModalsMixin from "@/components/mixins/ModalsMixin";
 import Notifications from "@/components/common/Notifications";
+import CaseMixin from "@/components/mixins/CaseMixin";
 
 export default {
   name: "CaseSidebar",
-  mixins: [ModalsMixin],
+  mixins: [ModalsMixin, CaseMixin],
   components: {
     Notifications
   },
   data: () => ({
     selectedTab: 'cases', // cases | notes | wiki | notify
-    caseList: [
-      {
-        id: 1,
-        title: 'Задача 1',
-        status: 'in-work',
-        isSelected: false,
-        isEdited: false,
-        isOpen: false,
-        haveNewComments: false,
-        children: []
-      },
-      {
-        id: 2,
-        title: 'Баг с выпадающим списком, когда на него нажимаешь.',
-        status: 'done',
-        isSelected: true,
-        isEdited: false,
-        isOpen: false,
-        haveNewComments: true,
-        children: [
-          {
-            id: 1,
-            title: 'Rectangle 1',
-            shapeType: 'rectangle'
-          },
-          {
-            id: 2,
-            title: 'Rectangle 2',
-            shapeType: 'rectangle'
-          },
-          {
-            id: 3,
-            title: 'Circle 1',
-            shapeType: 'circle'
-          },
-        ]
-      },
-      {
-        id: 3,
-        title: 'Задача 3.',
-        status: 'done',
-        isSelected: false,
-        isEdited: false,
-        isOpen: true,
-        haveNewComments: false,
-        children: [
-          {
-            id: 4,
-            title: 'Rectangle 1',
-            shapeType: 'rectangle'
-          },
-          {
-            id: 5,
-            title: 'Circle 1',
-            shapeType: 'circle'
-          },
-        ]
-      },
-    ],
     caseFilterSelected: 0,
   }),
   computed: {
+    caseList() {
+      return this.getCaseList();
+    },
     caseFilters() {
       return [
         {
@@ -234,8 +181,10 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['setContextMenuBase']),
-    ...mapGetters(['getCaseCommentNotifications']),
+    ...mapGetters(['getCaseCommentNotifications', 'getCaseList']),
+    caseRef(_case, i) {
+      return 'caseNameInputRef_' + i;
+    },
     selectTab(tabName) {
       this.selectedTab = tabName;
     },
@@ -267,90 +216,10 @@ export default {
         );
       }
     },
-    changeCaseNameText($event, _case) {
-      const name = $event.target.value;
-      if (name.length <= 200) {
-        _case.title = name;
-      }
-    },
-    changeCaseNameEditable(_case, i, state) {
-      _case.isEdited = state;
-      this.caseRefFocusHandler(_case, i, state);
-    },
-    caseDoubleClick($event, _case, i) {
-      this.changeCaseNameEditable(_case, i, true);
-      // this.hideToolTip();
-    },
-    caseRefFocusHandler(_case, i, state) {
-      setTimeout(() => {
-        const _ref = this.$refs['caseNameInputRef_' + i];
-        if (state && _ref && _ref[0]) {
-          const inputRef = _ref[0];
-          inputRef.focus();
-        }
-        if (!state && _case.title === '') {
-          _case.title = 'Case ' + (i + 1)
-        }
-      }, 20)
-    },
     selectCase(_case) {
       this.caseList.forEach(_c => {
         _c.isSelected = _c.id === _case.id;
       });
-    },
-    openCaseOptionsMenu(width, _refStr, _case, i) {
-      const _ref = this.$refs[_refStr];
-      if (_ref && _ref[0] && _ref[0].getBoundingClientRect()) {
-        const modalPosition = getModalPositionFunc(_ref[0], true, width);
-        this.setContextMenuBase(new ContextMenuBaseModel()
-            .set(true,
-                'SelectPopup',
-                width,
-                modalPosition.top,
-                modalPosition.left,
-                'up',
-                {
-                  selectOptions: [
-                    {
-                      isItemOfMenu: true,
-                      title: 'В работе',
-                      isActive: _case.status === 'in-work',
-                      action: () => {
-                        _case.status = 'in-work'
-                      },
-                    },
-                    {
-                      isItemOfMenu: true,
-                      title: 'Готово',
-                      isActive: _case.status === 'done',
-                      action: () => {
-                        _case.status = 'done'
-                      }
-                    },
-                    {
-                      isItemOfMenu: false,
-                    },
-                    {
-                      isItemOfMenu: true,
-                      title: 'Переименовать',
-                      action: () => {
-                        this.changeCaseNameEditable(_case, i, true);
-                      }
-                    },
-                    {
-                      isItemOfMenu: true,
-                      title: 'Удалить',
-                      action: () => {
-
-                      }
-                    },
-                  ]
-                })
-            .more({
-              isRight: true
-            })
-        );
-      }
     },
     showOrHideCaseChildren(_case) {
       _case.isOpen = !_case.isOpen;
