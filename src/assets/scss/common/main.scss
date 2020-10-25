@@ -617,11 +617,21 @@ p {
   }
 }
 .p-textarea {
-  &-disabled {
+  &-custom {
     outline: none;
     border: none;
     background-color: transparent;
     resize: none;
-    overflow:hidden;
+    &.tc-disabled {
+      overflow:hidden;
+    }
+  }
+}
+.p-text {
+  &-box {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    height: 100%;
   }
 }

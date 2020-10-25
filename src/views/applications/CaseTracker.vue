@@ -3,7 +3,7 @@
     <ToolbarPanel />
     <div class="case-tracker-body">
       <SlideSidebar />
-      <div class="center-content scroll-y-container">
+      <div class="center-content">
         <WorkArea />
         <CaseDiscusBlock />
       </div>

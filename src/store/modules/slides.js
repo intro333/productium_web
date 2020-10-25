@@ -3,9 +3,11 @@ const state = {
     {
       id: 1,
       title: 'Задача 1',
-      status: 'in-work',
+      status: 'in-work', // in-work | done
+      discusBlockActivityState: 'discus', // discus | resolut
       isSelected: false,
       isEdited: false,
+      isDiscusEdited: false,
       isOpen: false,
       haveNewComments: false,
       children: []
@@ -14,8 +16,10 @@ const state = {
       id: 2,
       title: 'Баг с выпадающим списком, когда на него нажимаешь.',
       status: 'done',
+      discusBlockActivityState: 'discus',
       isSelected: true,
       isEdited: false,
+      isDiscusEdited: false,
       isOpen: false,
       haveNewComments: true,
       children: [
@@ -40,8 +44,10 @@ const state = {
       id: 3,
       title: 'Задача 3.',
       status: 'done',
+      discusBlockActivityState: 'discus',
       isSelected: false,
       isEdited: false,
+      isDiscusEdited: false,
       isOpen: true,
       haveNewComments: false,
       children: [

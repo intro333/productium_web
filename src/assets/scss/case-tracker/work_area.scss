@@ -2,8 +2,7 @@
   .work-area {
     box-sizing: border-box;
     width: 100%;
-    min-height: 600px;
-    height: 100%;
+    height: calc(100% - 128px);
     background-color: $color-block;
     .wa {
       &-empty {

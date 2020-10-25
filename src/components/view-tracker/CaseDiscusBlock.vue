@@ -1,15 +1,15 @@
 <template>
   <div class="case-discus">
     <div class="case-discus-header">
-      <div class="cd-left">
+      <div class="cd-h-left">
         <template v-if="selectedCase">
-          <div class="cd-left-case-status"
+          <div class="cd-h-left-case-status"
                :class="{[selectedCase.status]: true}"></div>
           <div v-if="!selectedCase.isEdited"
                ref="caseNameInputRef"
                v-on:dblclick="changeCaseNameEditable(selectedCase,  'caseNameInputRef',true)"
-               class="cd-left-case-title-box">
-            <span class="cd-left-case-title text-ellipsis">{{selectedCase.title}}</span>
+               class="cd-h-left-case-title-box">
+            <span class="cd-h-left-case-title text-ellipsis">{{selectedCase.title}}</span>
           </div>
           <input v-if="selectedCase.isEdited"
                  ref="caseNameInputRef"
@@ -17,18 +17,40 @@
                  @blur="changeCaseNameEditable(selectedCase,  'caseNameInputRef', false)"
                  @keyup.enter="changeCaseNameEditable(selectedCase, 'caseNameInputRef',false)"
                  :value="selectedCase.title"
-                 class="cd-left-case-title cd-left-case-input text-ellipsis">
+                 class="cd-h-left-case-title cd-h-left-case-input text-ellipsis">
           <img v-if="!selectedCase.isEdited"
                @click="openCaseOptionsMenu(167, 'caseNameOptionsRef', 'caseNameInputRef',
                selectedCase, 'down', false)"
                ref="caseNameOptionsRef"
                src="@/assets/img/common/selectArrow.svg"
-               class="cd-left-case-arrow select-arrow"
+               class="cd-h-left-case-arrow select-arrow"
                alt="">
         </template>
       </div>
-      <div class="cd-right">
-
+      <div class="cd-h-right">
+        <div v-for="(_item, i) in discusBlockButtons"
+             :key="i"
+             @click="selectDiscusBlockActivity(_item.discusBlockActivityState)"
+             class="p-text-box">
+          <span class="cd-h-right-item"
+                :class="{active: isActiveDiscusBlockActivityState(_item.discusBlockActivityState)}"
+          >{{_item.title}}</span>
+        </div>
+      </div>
+    </div>
+    <div class="case-discus-body">
+      <div class="cd-b-edit-area">
+        <textarea class="cd-b-edit-area-text p-textarea-custom"
+                  :readonly="!selectedCase.isDiscusEdited"
+                  :class="{'ea-readonly': !selectedCase.isDiscusEdited}"
+                  placeholder="Опишите задачу..."></textarea>
+      </div>
+      <div class="cd-b-comments">
+        <div class="cd-b-comments-box">
+          <span class="cd-b-comments-text">14<span class="cd-b-comments-text-link"
+          >+3</span></span>
+          <span class="cd-b-comments-text cd-b-comments-text-clicable">comments</span>
+        </div>
       </div>
     </div>
   </div>
@@ -42,7 +64,16 @@ export default {
   name: "CaseDiscusBlock",
   mixins: [CaseMixin],
   data: () => ({
-
+    discusBlockButtons: [
+      {
+        title: 'обсуждение',
+        discusBlockActivityState: 'discus'
+      },
+      {
+        title: 'решение',
+        discusBlockActivityState: 'resolut'
+      },
+    ]
   }),
   computed: {
     selectedCase() {
@@ -57,7 +88,12 @@ export default {
   },
   methods: {
     ...mapGetters(['getCaseList']),
-
+    isActiveDiscusBlockActivityState(_state) {
+      return this.selectedCase.discusBlockActivityState === _state;
+    },
+    selectDiscusBlockActivity(_state) {
+      this.selectedCase.discusBlockActivityState = _state;
+    },
   }
 }
 </script>
