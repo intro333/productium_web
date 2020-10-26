@@ -100,7 +100,16 @@ export default {
                       shortUserName: 'DD',
                       color: '#7c4a4a',
                     },
-                    comments: []
+                    comments: [
+                      {
+                        message: 'Привет. Здесь надо поменять скругление и может вообще убрать stroke.',
+                        user: {
+                          userName: 'Derzhaev D',
+                          shortUserName: 'DD',
+                          color: '#7c4a4a',
+                        }
+                      }
+                    ]
                   })
       );
     }

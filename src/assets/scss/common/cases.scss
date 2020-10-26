@@ -56,12 +56,15 @@
 .p-comments {
   max-width: 500px;
   padding: 16px 0 24px 0;
-  &-body {
+  &-list {
     display: flex;
     flex-direction: column;
   }
   &-padding {
     padding: 0 16px;
+  }
+  &-padding-2 {
+    padding: 0 24px 0 16px;
   }
   .pc {
     &-input-area {
@@ -71,7 +74,7 @@
         position: relative;
         display: flex;
       }
-      &-icon {
+      &-user {
         @include w-icon-user();
         margin-right: 8px;
         margin-top: 3px;
@@ -80,15 +83,30 @@
         box-sizing: border-box;
         border-radius: 2px;
         border: 1px solid rgb(0, 0, 0, .2);
-        padding: 7px 8px;
+        padding: 7px 30px 7px 8px;
         font-size: 12px;
-        width: calc(100% - 32px);
+        width: 100%;
         &-empty {
           height: 31px;
           &::placeholder {
             color: rgb(0, 0, 0, .3);
           }
         }
+        &-box {
+          position: relative;
+          width: calc(100% - 32px);
+          height: 31px;
+          &-edited {
+            height: 74px;
+          }
+        }
+      }
+      &-add-img {
+        position: absolute;
+        width: 18px;
+        height: 16px;
+        bottom: 8px;
+        right: 8px;
       }
       &-right {
         display: flex;
@@ -100,6 +118,56 @@
         font-weight: 400;
         color: rgb(0, 0, 0, .3);
         margin-left: 40px;
+      }
+    }
+    &-comment-item {
+      position: relative;
+      display: flex;
+      margin-bottom: 24px;
+      &-user {
+        @include w-icon-user();
+        margin-right: 16px;
+      }
+      &-body {
+        display: flex;
+        flex-direction: column;
+        width: 320px;
+        &-name {
+          font-size: 12px;
+          color: rgb(0, 0, 0, .5);
+        }
+        &-message {
+          font-size: 12px;
+          margin-top: 4px;
+        }
+        &-bottom {
+          margin-top: 4px;
+          font-size: 12px;
+        }
+        &-date {
+          color: rgb(0, 0, 0, .3);
+          margin-right: 16px;
+        }
+        &-reply {
+          color: $color-link;
+          &:hover {
+            cursor: pointer;
+          }
+        }
+        &-img {
+          width: 7px;
+          height: 4px;
+          &-box {
+            position: absolute;
+            right: 0;
+            top: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 13px;
+            height: 13px;
+          }
+        }
       }
     }
   }

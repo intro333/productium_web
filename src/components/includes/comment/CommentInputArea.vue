@@ -1,14 +1,20 @@
 <template>
   <div class="pc-input-area p-comments-padding">
     <div class="pc-input-area-left">
-      <div class="pc-input-area-icon"
+      <div class="pc-input-area-user"
            :style="{'background-color': currentUserInfo.color}"
       >{{currentUserInfo.shortUserName}}</div>
-      <textarea v-model="text"
-                rows="4"
-                class="pc-input-area-text p-textarea-custom scroll-textarea"
-                :class="{'pc-input-area-text-empty': textIsEmpty()}"
-                placeholder="Напишите комментарий..."></textarea>
+      <div class="pc-input-area-text-box"
+           :class="{'pc-input-area-text-box-edited': !textIsEmpty()}">
+        <textarea v-model="text"
+                  rows="4"
+                  class="pc-input-area-text p-textarea-custom scroll-textarea"
+                  :class="{'pc-input-area-text-empty': textIsEmpty()}"
+                  placeholder="Напишите комментарий..."></textarea>
+        <img src="@/assets/img/common/media/addImageIcon.svg"
+             class="pc-input-area-add-img"
+             alt="">
+      </div>
     </div>
     <div class="pc-input-area-right">
       <span class="pc-input-area-descr">Нажмите ENTER, чтобы отправить комментарий</span>
