@@ -200,6 +200,9 @@ p {
       padding: 0 24px;
       height: 50px;
       border-bottom: 1px solid $color-divider;
+      &.short-left {
+        padding: 0 24px 0 16px !important;
+      }
       .share {
         &-first {
           display: flex;
@@ -213,9 +216,6 @@ p {
             font-size: 14px;
           }
         }
-      }
-      .comments {
-
       }
       &-close {
         position: absolute;
@@ -541,6 +541,10 @@ p {
   overflow-x: auto;
   //overflow-y: hidden;
   @include scrollDivHoriz();
+}
+.scroll-textarea {
+  overflow-y: auto;
+  @include scrollbarTextarea();
 }
 .select-arrow {
   width: 7px;

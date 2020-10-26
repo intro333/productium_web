@@ -4,7 +4,8 @@
          @click="close"></div>
     <div class="p-modal-central"
          :style="{'width': `${cm.width}px`}">
-      <div class="mc-header">
+      <div class="mc-header"
+           :class="{'short-left': cm.type === 'CommentsModal'}">
         <div v-if="cm.type === 'ShareModal'"
              class="share-first">
           <span class="share-first-pre">Поделиться</span>
@@ -22,6 +23,8 @@
       </div>
       <ShareModal v-if="cm.type === 'ShareModal'"
                    :contextMenu="contextMenu" />
+      <CommentsModal v-if="cm.type === 'CommentsModal'"
+                   :contextMenu="contextMenu" />
       <SimpleNotifyInside v-if="getSimpleNotifyInside().state"
                           :notify="getSimpleNotifyInside" />
     </div>
@@ -34,23 +37,16 @@ import {CentralModalModel} from "@/models/modals/CentralModalModel";
 import ShareModal from "@/components/modals/central/ShareModal";
 import SimpleNotifyInside from "@/components/modals/notify/SimpleNotifyInside";
 import CaseNameWithStatusAndOptions from "@/components/includes/CaseNameWithStatusAndOptions";
+import CommentsModal from "@/components/modals/central/CommentsModal";
 
 export default {
   name: "CentralModal",
   props: ['contextMenu'],
   components: {
     ShareModal,
+    CommentsModal,
     SimpleNotifyInside,
     CaseNameWithStatusAndOptions,
-  },
-  data: () => ({
-
-  }),
-  mounted() {
-
-  },
-  destroyed() {
-
   },
   computed: {
     cm() {

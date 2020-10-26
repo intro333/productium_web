@@ -1,3 +1,6 @@
+@import "../mixins/widgets";
+@import "colors";
+
 .case-info {
   display: flex;
   justify-content: flex-start;
@@ -47,6 +50,57 @@
       height: 100%;
       padding: 0 4px;
       opacity: .7;
+    }
+  }
+}
+.p-comments {
+  max-width: 500px;
+  padding: 16px 0 24px 0;
+  &-body {
+    display: flex;
+    flex-direction: column;
+  }
+  &-padding {
+    padding: 0 16px;
+  }
+  .pc {
+    &-input-area {
+      display: flex;
+      flex-direction: column;
+      &-left {
+        position: relative;
+        display: flex;
+      }
+      &-icon {
+        @include w-icon-user();
+        margin-right: 8px;
+        margin-top: 3px;
+      }
+      &-text {
+        box-sizing: border-box;
+        border-radius: 2px;
+        border: 1px solid rgb(0, 0, 0, .2);
+        padding: 7px 8px;
+        font-size: 12px;
+        width: calc(100% - 32px);
+        &-empty {
+          height: 31px;
+          &::placeholder {
+            color: rgb(0, 0, 0, .3);
+          }
+        }
+      }
+      &-right {
+        display: flex;
+        flex-direction: column;
+        margin-top: 2px;
+      }
+      &-descr {
+        font-size: 10px;
+        font-weight: 400;
+        color: rgb(0, 0, 0, .3);
+        margin-left: 40px;
+      }
     }
   }
 }

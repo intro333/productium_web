@@ -21,7 +21,7 @@
                   @blur="changeCaseDiscusTextareaEdited(false)"
                   @input="changeCaseDiscusTextareaText"
                   :value="selectedCase[discusBlockActivityState]"
-                  class="cd-b-edit-area-text p-textarea-custom"
+                  class="cd-b-edit-area-text p-textarea-custom scroll-textarea"
                   :readonly="!selectedCase.isDiscusEdited"
                   :class="{'ea-readonly': !selectedCase.isDiscusEdited}"
                   placeholder="Опишите задачу..."></textarea>
@@ -94,7 +94,14 @@ export default {
           new CentralModalModel()
               .set(true,
                   'CommentsModal',
-                  400,)
+                  400,
+                  {
+                    currentUserInfo: {
+                      shortUserName: 'DD',
+                      color: '#7c4a4a',
+                    },
+                    comments: []
+                  })
       );
     }
   }

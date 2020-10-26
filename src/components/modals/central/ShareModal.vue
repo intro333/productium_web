@@ -12,7 +12,7 @@
            class="ul-item">
         <div class="ul-item-left">
           <div class="p-flex-center ul-item-left-icon"
-               :style="{'background-color': `#${user.color}`}">{{user.shortUserName}}</div>
+               :style="{'background-color': user.color}">{{user.shortUserName}}</div>
           <span class="ul-item-left-text">{{user.name}}</span>
         </div>
         <div @click="openRolesSelect(i, user)"
@@ -54,19 +54,19 @@ export default {
         name: 'Dmitriy',
         shortUserName: 'DD',
         role: 'editor',
-        color: '7c4a4a',
+        color: '#7c4a4a',
       },
       {
         name: 'Alex Gour',
         shortUserName: 'AG',
         role: 'guest',
-        color: 'F30C0C',
+        color: '#F30C0C',
       },
       {
         name: 'Dmitriy M',
         shortUserName: 'DM',
         role: 'manager',
-        color: '466a96',
+        color: '#466a96',
       },
     ]
   }),
