@@ -104,10 +104,34 @@ export default {
                       {
                         message: 'Привет. Здесь надо поменять скругление и может вообще убрать stroke.',
                         user: {
-                          userName: 'Derzhaev D',
-                          shortUserName: 'DD',
-                          color: '#7c4a4a',
-                        }
+                          userName: 'Dmitry Kolunov',
+                          shortUserName: 'DK',
+                          color: '#FF2727',
+                        },
+                        updatedAt: '2020-10-27 18:24:45',
+                        children: [
+                          {
+                            message: 'И тебе привет. я думаю можно сделать как здесь тогда https://ru.wikipedia.org/wiki/Google_%D0%9F%D0%B5%D1%80%D0%B5%D0%B2%D0%BE%D0%B4%D1%87%D0%B8%D0%BA',
+                            user: {
+                              userName: 'Genom 89',
+                              shortUserName: '',
+                              color: '#b2b2b2',
+                            },
+                            updatedAt: '2020-10-28 17:36:49',
+                            children: [
+                              {
+                                message: 'Привет. Здесь надо поменять скругление и может вообще убрать stroke.',
+                                user: {
+                                  userName: 'Dmitry Kolunov',
+                                  shortUserName: 'DK',
+                                  color: '#FF2727',
+                                },
+                                updatedAt: '2020-10-29 00:36:14',
+                                children: []
+                              }
+                            ]
+                          }
+                        ]
                       }
                     ]
                   })

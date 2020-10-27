@@ -24,8 +24,19 @@ p {
 }
 
 /* КНОПКИ */
-.c-btn {
-
+.p-btn {
+  &-preview {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(0, 0, 0, .4);
+    width: 18px;
+    height: 18px;
+    &-icon {
+      width: 12px;
+      height: 12px;
+    }
+  }
 }
 .btn-link {
 
@@ -539,7 +550,6 @@ p {
 .scroll-x-container {
   white-space: nowrap;
   overflow-x: auto;
-  //overflow-y: hidden;
   @include scrollDivHoriz();
 }
 .scroll-textarea {
