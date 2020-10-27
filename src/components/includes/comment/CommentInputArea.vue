@@ -11,7 +11,10 @@
                   class="pc-input-area-text p-textarea-custom scroll-textarea"
                   :class="{'pc-input-area-text-empty': textIsEmpty()}"
                   placeholder="Напишите комментарий..."></textarea>
-        <img src="@/assets/img/common/media/addImageIcon.svg"
+        <img @mouseenter="showTooltip($event, 'addImageIcon','Изображение к комментарию')"
+             @mouseleave="hideToolTip"
+             ref="addImageIcon"
+             src="@/assets/img/common/media/addImageIcon.svg"
              class="pc-input-area-add-img"
              alt="">
       </div>
@@ -23,11 +26,14 @@
 </template>
 
 <script>
+import ModalsMixin from "@/components/mixins/ModalsMixin";
+
 export default {
   name: "CommentInputArea",
   props: {
     currentUserInfo: Object
   },
+  mixins: [ModalsMixin],
   data: () => ({
     text: ''
   }),
