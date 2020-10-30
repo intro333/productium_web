@@ -1,6 +1,6 @@
 <template>
-  <div class="p-comments scroll-y-container">
-    <div class="p-comments-list p-comments-padding-2">
+  <div class="p-comments">
+    <div class="p-comments-list p-comments-padding-2 scroll-y-container">
       <CommentItem v-for="(_item, i) in cm.body.comments"
                    :comment="_item"
                    :key="i" />

@@ -27,7 +27,8 @@
         </div>
       </div>
     </div>
-    <div class="pc-preview scroll-x-container">
+    <div v-if="images.length"
+         class="pc-preview scroll-x-container">
       <div v-for="(_img, i) in images"
            :key="i"
            class="pc-preview-item"
