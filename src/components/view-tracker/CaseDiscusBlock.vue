@@ -127,8 +127,35 @@ export default {
                                   color: '#FF2727',
                                 },
                                 updatedAt: '2020-10-29 00:36:14',
+                                children: [],
+                                images: [
+                                  {
+                                    id: 15,
+                                    src: '',
+                                    orientation: 'portrait'
+                                  }
+                                ]
+                              },
+                              {
+                                message: 'Привет. Здесь надо поменять.',
+                                user: {
+                                  userName: 'Dmitry Kolunov',
+                                  shortUserName: 'DK',
+                                  color: '#FF2727',
+                                },
+                                updatedAt: '2020-10-29 01:36:15',
                                 children: []
-                              }
+                              },
+                              {
+                                message: 'Привет. Здесь надо .',
+                                user: {
+                                  userName: 'Genom 89',
+                                  shortUserName: 'DK',
+                                  color: '#b2b2b2',
+                                },
+                                updatedAt: '2020-10-29 01:37:15',
+                                children: []
+                              },
                             ]
                           }
                         ]

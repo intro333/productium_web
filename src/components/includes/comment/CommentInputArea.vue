@@ -23,7 +23,9 @@
                  accept="image/png,image/jpeg,image/jpg,image/svg"
                  @change="uploadImageToMessage"
                  type="file"
-                 class="pc-input-area-add-img-input">
+                 :disabled="!imagesIsCanUpload"
+                 class="pc-input-area-add-img-input"
+                 :class="{'disabled-pointer': !imagesIsCanUpload}">
         </div>
       </div>
     </div>
@@ -61,6 +63,12 @@ export default {
     text: '',
     images: [] /* { src: '', orientation: '' } */
   }),
+  computed: {
+    imagesIsCanUpload() {
+      console.log(1, this.images.length);
+      return this.images.length < 2; // TODO Для MVP можно загрузить не больше 2х изображений
+    },
+  },
   methods: {
     textIsEmpty() {
       return this.text === '';
@@ -92,7 +100,7 @@ export default {
     },
     sendMessage() {
       
-    }
+    },
   }
 }
 </script>
