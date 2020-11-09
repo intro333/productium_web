@@ -12,7 +12,7 @@
            class="ul-item">
         <div class="ul-item-left">
           <div class="p-flex-center ul-item-left-icon"
-               :style="{'background-color': user.color}">{{user.shortUserName}}</div>
+               :style="{'background-color': user.color}">{{user.shortName}}</div>
           <span class="ul-item-left-text">{{user.name}}</span>
         </div>
         <div @click="openRolesSelect(i, user)"
@@ -52,19 +52,19 @@ export default {
     shareUsers: [
       {
         name: 'Dmitriy',
-        shortUserName: 'DD',
+        shortName: 'DD',
         role: 'editor',
         color: '#7c4a4a',
       },
       {
         name: 'Alex Gour',
-        shortUserName: 'AG',
+        shortName: 'AG',
         role: 'guest',
         color: '#F30C0C',
       },
       {
         name: 'Dmitriy M',
-        shortUserName: 'DM',
+        shortName: 'DM',
         role: 'manager',
         color: '#466a96',
       },

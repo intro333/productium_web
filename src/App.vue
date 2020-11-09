@@ -8,6 +8,7 @@
 * {
   margin: 0;
   padding: 0;
+  scroll-behavior: smooth; /* Поведение прокрутки для любого элемента на странице (smooth - плавно) */
 }
 html,
 body {

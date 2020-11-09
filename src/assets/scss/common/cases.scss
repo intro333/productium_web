@@ -138,6 +138,19 @@
       position: relative;
       display: grid;
       grid-template-columns: 40px repeat(auto-fit, minmax(5px, auto));
+      margin-top: 24px;
+      &-box {
+        display: grid;
+      }
+      &-reply {
+        margin-top: 24px;
+        .p-comments-padding {
+          padding: 0;
+        }
+      }
+      &-main {
+        margin-top: 0;
+      }
       &-user {
         @include w-icon-user();
         margin-right: 16px;
@@ -190,7 +203,6 @@
       &-children {
         display: flex;
         flex-direction: column;
-        margin-top: 24px;
       }
     }
     &-preview {

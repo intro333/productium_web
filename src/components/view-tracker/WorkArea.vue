@@ -37,7 +37,7 @@ export default {
     setTimeout(() => {
       const _ref = this.$refs['droppedZoneRef'];
       _ref.addEventListener('drop', function(e) {
-        console.log(1, e);
+        console.log('droppedZoneRef', e);
       });
     }, 200)
   },

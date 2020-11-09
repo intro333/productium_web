@@ -1,11 +1,15 @@
 <template>
-  <div class="p-comments">
-    <div class="p-comments-list p-comments-padding-2 scroll-y-container">
-      <CommentItem v-for="(_item, i) in cm.body.comments"
+  <div class="p-comments"
+       :style="{height: pCommentsHeight}">
+    <div ref="pCommentsListRef"
+         class="p-comments-list p-comments-padding-2 scroll-y-container">
+      <CommentItem v-for="_item in cm.body.comments"
                    :comment="_item"
-                   :key="i" />
+                   :key="_item.id"
+                   :cKey="_item.id" />
     </div>
-    <CommentInputArea :currentUserInfo="body.currentUserInfo" />
+    <CommentInputArea :cKey="0"
+                      :checkPCommentsBlockHeightFunc="checkPCommentsBlockHeight" />
   </div>
 </template>
 
@@ -20,6 +24,9 @@ export default {
     CommentInputArea,
     CommentItem
   },
+  data: () => ({
+    pCommentsHeight: 'auto'
+  }),
   computed: {
     cm() {
       return this.contextMenu();
@@ -29,7 +36,16 @@ export default {
     },
   },
   methods: {
-
+    checkPCommentsBlockHeight(pcInputAreaRef) {
+      const _ref = this.$refs['pCommentsListRef'];
+      if (_ref && pcInputAreaRef) {
+        if ((_ref.clientHeight + pcInputAreaRef.clientHeight) > 435) {
+          this.pCommentsHeight = '460px'; /* Плюс padding 40px = 500px */
+        } else {
+          this.pCommentsHeight = 'auto';
+        }
+      }
+    },
   },
 }
 </script>

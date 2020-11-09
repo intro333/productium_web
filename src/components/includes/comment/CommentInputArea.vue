@@ -1,18 +1,22 @@
 <template>
-  <div class="pc-input-area p-comments-padding">
+  <div ref="pcInputAreaRef"
+       class="pc-input-area p-comments-padding">
     <div class="pc-input-area-left">
       <div class="pc-input-area-user"
-           :style="{'background-color': currentUserInfo.color}"
-      >{{currentUserInfo.shortUserName}}</div>
+           :style="{'background-color': user.color}"
+      >{{user.shortName}}</div>
       <div class="pc-input-area-text-box"
            :class="{'pc-input-area-text-box-edited': !textIsEmpty()}">
-        <textarea v-model="text"
+        <textarea :ref="'commentInputAreaRef_' + cKey"
                   @keyup.enter="sendMessage()"
+                  @input="enteringMessage"
+                  :value="text"
                   rows="4"
                   class="pc-input-area-text p-textarea-custom scroll-textarea"
                   :class="{'pc-input-area-text-empty': textIsEmpty()}"
                   placeholder="Напишите комментарий..."></textarea>
-        <div class="pc-input-area-add-img-box">
+        <div v-if="imagesIsCanUpload"
+             class="pc-input-area-add-img-box">
           <img @mouseenter="showTooltip($event, 'addImageIcon','Изображение к комментарию')"
                @mouseleave="hideToolTip"
                ref="addImageIcon"
@@ -23,9 +27,7 @@
                  accept="image/png,image/jpeg,image/jpg,image/svg"
                  @change="uploadImageToMessage"
                  type="file"
-                 :disabled="!imagesIsCanUpload"
-                 class="pc-input-area-add-img-input"
-                 :class="{'disabled-pointer': !imagesIsCanUpload}">
+                 class="pc-input-area-add-img-input">
         </div>
       </div>
     </div>
@@ -52,11 +54,14 @@
 
 <script>
 import ModalsMixin from "@/components/mixins/ModalsMixin";
+import {mapGetters} from "vuex";
 
 export default {
   name: "CommentInputArea",
   props: {
-    currentUserInfo: Object
+    cKey: Number,
+    comment: Object,
+    checkPCommentsBlockHeightFunc: Function
   },
   mixins: [ModalsMixin],
   data: () => ({
@@ -65,11 +70,27 @@ export default {
   }),
   computed: {
     imagesIsCanUpload() {
-      console.log(1, this.images.length);
       return this.images.length < 2; // TODO Для MVP можно загрузить не больше 2х изображений
     },
+    user() {
+      return this.getCurrentUser();
+    },
+  },
+  mounted() {
+    if (this.cKey) {
+      setTimeout(() => {
+        const commentInputAreaRef = this.$refs['commentInputAreaRef_' + this.cKey];
+        if (commentInputAreaRef) {
+          commentInputAreaRef.focus();
+          if (this.comment) {
+            commentInputAreaRef.value = `${this.comment.user.fullName}, `
+          }
+        }
+      }, 20);
+    }
   },
   methods: {
+    ...mapGetters(['getCurrentUser']),
     textIsEmpty() {
       return this.text === '';
     },
@@ -90,16 +111,29 @@ export default {
           });
         };
         img.src = objectUrl;
+        this.checkPCommentsBlockHeight();
       }
     },
     removeImage(i) {
       this.images.splice(i, 1);
+      this.checkPCommentsBlockHeight();
     },
     getOrientation(width, height) {
       return (width > height) ? 'landscape' : 'portrait';
     },
     sendMessage() {
       
+    },
+    enteringMessage($event) {
+      this.text = $event.target.value;
+      this.checkPCommentsBlockHeight()
+    },
+    checkPCommentsBlockHeight() {
+      setTimeout(() => {
+        if (this.checkPCommentsBlockHeightFunc) {
+          this.checkPCommentsBlockHeightFunc(this.$refs['pcInputAreaRef']);
+        }
+      }, 10)
     },
   }
 }

@@ -96,68 +96,68 @@ export default {
                   'CommentsModal',
                   400,
                   {
-                    currentUserInfo: {
-                      shortUserName: 'DD',
-                      color: '#7c4a4a',
-                    },
                     comments: [
                       {
+                        id: 100,
                         message: 'Привет. Здесь надо поменять скругление и может вообще убрать stroke.',
                         user: {
-                          userName: 'Dmitry Kolunov',
-                          shortUserName: 'DK',
+                          fullName: 'Dmitry Kolunov',
+                          shortName: 'DK',
                           color: '#FF2727',
                         },
                         updatedAt: '2020-10-27 18:24:45',
                         children: [
                           {
+                            id: 101,
                             message: 'И тебе привет. я думаю можно сделать как здесь тогда https://ru.wikipedia.org/wiki/Google_%D0%9F%D0%B5%D1%80%D0%B5%D0%B2%D0%BE%D0%B4%D1%87%D0%B8%D0%BA',
                             user: {
-                              userName: 'Genom 89',
-                              shortUserName: '',
+                              fullName: 'Genom 89',
+                              shortName: '',
                               color: '#b2b2b2',
                             },
                             updatedAt: '2020-10-28 17:36:49',
-                            children: [
-                              {
-                                message: 'Привет. Здесь надо поменять скругление и может вообще убрать stroke.',
-                                user: {
-                                  userName: 'Dmitry Kolunov',
-                                  shortUserName: 'DK',
-                                  color: '#FF2727',
-                                },
-                                updatedAt: '2020-10-29 00:36:14',
-                                children: [],
-                                images: [
-                                  {
-                                    id: 15,
-                                    src: '',
-                                    orientation: 'portrait'
-                                  }
-                                ]
-                              },
-                              {
-                                message: 'Привет. Здесь надо поменять.',
-                                user: {
-                                  userName: 'Dmitry Kolunov',
-                                  shortUserName: 'DK',
-                                  color: '#FF2727',
-                                },
-                                updatedAt: '2020-10-29 01:36:15',
-                                children: []
-                              },
-                              {
-                                message: 'Привет. Здесь надо .',
-                                user: {
-                                  userName: 'Genom 89',
-                                  shortUserName: 'DK',
-                                  color: '#b2b2b2',
-                                },
-                                updatedAt: '2020-10-29 01:37:15',
-                                children: []
-                              },
-                            ]
                           }
+                        ]
+                      },
+                      {
+                        id: 102,
+                        message: 'Привет. Здесь надо поменять скругление и может вообще убрать stroke.',
+                        user: {
+                          fullName: 'Dmitry Kolunov',
+                          shortName: 'DK',
+                          color: '#FF2727',
+                        },
+                        updatedAt: '2020-10-29 00:36:14',
+                        images: [
+                          {
+                            id: 15,
+                            src: '',
+                            orientation: 'portrait'
+                          }
+                        ],
+                        children: [
+                          {
+                            id: 103,
+                            message: 'Привет. Здесь надо поменять.',
+                            user: {
+                              fullName: 'Dmitry Kolunov',
+                              shortName: 'DK',
+                              color: '#FF2727',
+                            },
+                            updatedAt: '2020-10-29 01:36:15',
+                            children: []
+                          },
+                          {
+                            id: 104,
+                            message: 'Привет. Здесь надо .',
+                            user: {
+                              fullName: 'Genom 89',
+                              shortName: 'DK',
+                              color: '#b2b2b2',
+                            },
+                            updatedAt: '2020-10-29 01:37:15',
+                            children: []
+                          },
                         ]
                       }
                     ]
