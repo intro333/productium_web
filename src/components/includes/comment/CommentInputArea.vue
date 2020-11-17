@@ -33,6 +33,7 @@
     </div>
     <div v-if="images.length"
          class="pc-preview scroll-x-container">
+      <CommentImage :img="_img" />
       <div v-for="(_img, i) in images"
            :key="i"
            class="pc-preview-item"
@@ -55,9 +56,13 @@
 <script>
 import ModalsMixin from "@/components/mixins/ModalsMixin";
 import {mapGetters} from "vuex";
+import CommentImage from "@/components/includes/comment/CommentImage";
 
 export default {
   name: "CommentInputArea",
+  components: {
+    CommentImage
+  },
   props: {
     cKey: Number,
     comment: Object,
