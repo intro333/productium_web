@@ -27,6 +27,7 @@
              class="pc-comment-item-reply">
           <CommentInputArea :cKey="cKey"
                             :comment="commentToInput"
+                            :userLink="commentToInput.user.fullName"
                             ref="commentInputAreaRef" />
         </div>
       </div>
@@ -42,6 +43,7 @@
 <script>
 import {getNearestWeekdayWithTime} from "@/functions/date";
 import CommentInputArea from "@/components/includes/comment/CommentInputArea";
+// import {formUserLink} from "@/functions/conversation";
 
 export default {
   name: "CommentItem",
@@ -76,7 +78,8 @@ export default {
           const commentInputAreaRef = ciaRefs['commentInputAreaRef_' + this.cKey];
           if (commentInputAreaRef) {
             commentInputAreaRef.focus();
-            commentInputAreaRef.value = `${comment.user.fullName}, `
+            // commentInputAreaRef.value = formUserLink(comment.user.fullName, commentInputAreaRef.value);
+            // commentInputAreaRef.value = `${comment.user.fullName}, `
           }
         }
       }, 10);

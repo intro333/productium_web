@@ -15,3 +15,6 @@ export function copyStructureDefaultState(structure) {
   const _string = JSON.stringify(structure);
   return JSON.parse(_string);
 }
+export function formUserLink(link) {
+  return (link && (link !== '')) ? `${link}, ` : '';
+}

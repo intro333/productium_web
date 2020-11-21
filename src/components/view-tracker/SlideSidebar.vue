@@ -39,7 +39,7 @@
 
 <script>
 import {getModalPositionFunc, getRandomInt} from "@/functions/calculations";
-import {copyStructureDefaultState} from "@/functions/convertation";
+import {copyStructureDefaultState} from "@/functions/conversation";
 import {ContextMenuBaseModel} from "@/models/modals/ContextMenuBaseModel";
 import {mapActions} from "vuex";
 

@@ -42,7 +42,7 @@
 import {getModalPositionFunc} from "@/functions/calculations";
 import {ContextMenuBaseModel} from "@/models/modals/ContextMenuBaseModel";
 import {mapActions} from "vuex";
-import {userRoleToTitle} from "@/functions/convertation";
+import {userRoleToTitle} from "@/functions/conversation";
 import {SimpleNotifyInsideModel} from "@/models/modals/SimpleNotifyInsideModel";
 
 export default {

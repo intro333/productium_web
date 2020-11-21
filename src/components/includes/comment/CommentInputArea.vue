@@ -5,16 +5,23 @@
       <div class="pc-input-area-user"
            :style="{'background-color': user.color}"
       >{{user.shortName}}</div>
-      <div class="pc-input-area-text-box"
-           :class="{'pc-input-area-text-box-edited': !textIsEmpty()}">
+      <div class="pc-input-area-block">
+        <div class="pc-input-area-text-box scroll-hidden"
+             :class="{'pc-input-area-text-box-edited': !textIsEmpty()}">
         <textarea :ref="'commentInputAreaRef_' + cKey"
                   @keyup.enter="sendMessage()"
                   @input="enteringMessage"
                   :value="text"
-                  rows="4"
-                  class="pc-input-area-text p-textarea-custom scroll-textarea"
+                  class="pc-input-area-text p-textarea-custom"
                   :class="{'pc-input-area-text-empty': textIsEmpty()}"
-                  placeholder="Напишите комментарий..."></textarea>
+                  :style="{height: `${textAreaHeight}px`}"
+                  :placeholder="!userLink ? 'Напишите комментарий...' : ''"></textarea>
+          <textarea v-if="userLink"
+                    class="pc-input-area-user-link p-textarea-custom"
+                    readonly
+                    :style="{'width': `${(userLink.length+1) * 7}px`}"
+                    :value="userLink + ', '"></textarea>
+        </div>
         <div v-if="imagesIsCanUpload"
              class="pc-input-area-add-img-box">
           <img @mouseenter="showTooltip($event, 'addImageIcon','Изображение к комментарию')"
@@ -33,19 +40,12 @@
     </div>
     <div v-if="images.length"
          class="pc-preview scroll-x-container">
-      <CommentImage :img="_img" />
-      <div v-for="(_img, i) in images"
-           :key="i"
-           class="pc-preview-item"
-           :class="['pc-preview-item-' + _img.orientation]"> <!-- portrait | landscape -->
-        <img :src="_img.src" alt="">
-        <div @click="removeImage(i)"
-             class="p-btn-preview pc-preview-item-close">
-          <img src="@/assets/img/common/buttons/closeWhite.svg"
-               alt=""
-               class="p-btn-preview-icon">
-        </div>
-      </div>
+      <CommentImage v-for="(_img, i) in images"
+                    :cKey="i"
+                    :key="i"
+                    :removeImageFunc="() => removeImage(i)"
+                    :img="_img"
+      />
     </div>
     <div class="pc-input-area-right">
       <span class="pc-input-area-descr">Нажмите ENTER, чтобы отправить комментарий</span>
@@ -54,9 +54,11 @@
 </template>
 
 <script>
-import ModalsMixin from "@/components/mixins/ModalsMixin";
 import {mapGetters} from "vuex";
+import ModalsMixin from "@/components/mixins/ModalsMixin";
 import CommentImage from "@/components/includes/comment/CommentImage";
+import {calcTextareaHeight} from "@/functions/calculations";
+// import {formUserLink} from '@/functions/conversation';
 
 export default {
   name: "CommentInputArea",
@@ -66,11 +68,15 @@ export default {
   props: {
     cKey: Number,
     comment: Object,
+    userLink: String,
     checkPCommentsBlockHeightFunc: Function
   },
   mixins: [ModalsMixin],
   data: () => ({
+    textAreaHeight: 31,
     text: '',
+    textSpaces: '',
+    linkLength: 0,
     images: [] /* { src: '', orientation: '' } */
   }),
   computed: {
@@ -80,24 +86,30 @@ export default {
     user() {
       return this.getCurrentUser();
     },
+    // fullText() {
+    //   return formUserLink(this.userLinkText) + this.text;
+    // },
+    // formUserLinkL() {
+    //   return formUserLink(this.userLinkText);
+    // },
   },
   mounted() {
-    if (this.cKey) {
-      setTimeout(() => {
-        const commentInputAreaRef = this.$refs['commentInputAreaRef_' + this.cKey];
-        if (commentInputAreaRef) {
-          commentInputAreaRef.focus();
-          if (this.comment) {
-            commentInputAreaRef.value = `${this.comment.user.fullName}, `
-          }
-        }
-      }, 20);
+    this.inputFocus(true);
+    if (this.isUserLink()) {
+      this.linkLength = this.userLink.length+2;
+      for (let i = 0; i < this.linkLength; i++) {
+        this.textSpaces += ' ';
+      }
+      this.text = this.textSpaces;
     }
   },
   methods: {
     ...mapGetters(['getCurrentUser']),
     textIsEmpty() {
       return this.text === '';
+    },
+    isUserLink() {
+      return this.userLink && this.userLink !== '';
     },
     uploadImageToMessage($event) {
       const _this = this;
@@ -107,7 +119,6 @@ export default {
         const img = new Image();
         var objectUrl = _URL.createObjectURL(files[0]);
         img.onload = function () {
-          console.log(this.width + " " + this.height);
           _URL.revokeObjectURL(objectUrl);
           img.orientation = _this.getOrientation(this.width, this.height);
           _this.images.push({
@@ -117,6 +128,7 @@ export default {
         };
         img.src = objectUrl;
         this.checkPCommentsBlockHeight();
+        this.inputFocus();
       }
     },
     removeImage(i) {
@@ -130,8 +142,23 @@ export default {
       
     },
     enteringMessage($event) {
-      this.text = $event.target.value;
-      this.checkPCommentsBlockHeight()
+      const textValue = $event.target.value;
+      if (this.isUserLink()) {
+        if (this.textIsEmpty()) {
+          this.text = this.textSpaces + textValue;
+        } else {
+          if ((textValue.length) >= this.linkLength) {
+            this.text = textValue;
+          } else {
+            this.text = '';
+            this.text = this.textSpaces;
+          }
+        }
+      } else {
+        this.text = textValue;
+      }
+      this.checkPCommentsBlockHeight();
+      this.textAreaHeight = calcTextareaHeight(this.text);
     },
     checkPCommentsBlockHeight() {
       setTimeout(() => {
@@ -139,6 +166,33 @@ export default {
           this.checkPCommentsBlockHeightFunc(this.$refs['pcInputAreaRef']);
         }
       }, 10)
+    },
+    inputFocus(isReply=false) {
+      if (this.cKey || (this.cKey === 0)) {
+        setTimeout(() => {
+          const commentInputAreaRef = this.$refs['commentInputAreaRef_' + this.cKey];
+          if (commentInputAreaRef) {
+            commentInputAreaRef.focus();
+            if (isReply && this.comment) {
+              // commentInputAreaRef.value = `${this.comment.user.fullName}, `
+              // this.userLink = `${this.comment.user.fullName}, `
+            }
+          }
+        }, 20);
+      }
+    },
+  },
+  watch: {
+    userLink: function(newVal, oldVal) {
+      this.textSpaces = '';
+      this.linkLength = newVal.length+2;
+      this.text = this.text.substr(oldVal.length+2);
+      setTimeout(() => {
+        for (let i = 0; i < this.linkLength; i++) {
+          this.textSpaces += ' ';
+        }
+        this.text = this.textSpaces + this.text;
+      }, 10);
     },
   }
 }

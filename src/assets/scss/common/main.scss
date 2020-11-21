@@ -544,6 +544,10 @@ p {
 .p-cursor-pointer {
   cursor: pointer;
 }
+.scroll-hidden {
+  overflow-y: auto;
+  @include scrollbarHidden();
+}
 .scroll-y-container {
   overflow-y: auto;
   @include scrollbarSmall();
