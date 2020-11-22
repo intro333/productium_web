@@ -1,0 +1,268 @@
+@import "../mixins/widgets";
+@import "colors";
+
+.case-info {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  height: 100%;
+  &-case {
+    &-status {
+      box-sizing: border-box;
+      width: 14px;
+      height: 14px;
+      margin-right: 8px;
+      border-radius: 50%;
+      &.in-work {
+        background-color: $color-block-2;
+      }
+
+      &.done {
+        background-color: $color-status-success;
+      }
+    }
+    &-title {
+      font-size: 14px;
+      color: #ffffff;
+      max-width: 200px;
+      &-box {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        max-width: 200px;
+        &:hover {
+          cursor: default;
+        }
+      }
+      &-black {
+        color: #000000;
+      }
+    }
+    &-input {
+      outline: none;
+      border: none;
+      background-color: transparent;
+      height: 100%;
+      padding-bottom: 1px;
+    }
+    &-arrow {
+      width: 7px;
+      height: 100%;
+      padding: 0 4px;
+      opacity: .7;
+    }
+  }
+}
+.p-comments {
+  display: grid;
+  max-width: 400px;
+  padding: 16px 0 24px 0;
+  &-list {
+    display: grid;
+    max-height: 375px;
+  }
+  &-padding {
+    padding: 0 16px;
+  }
+  &-padding-2 {
+    padding: 0 24px 1px 16px;
+    margin-bottom: 23px;
+  }
+  .pc {
+    &-input-area {
+      display: grid;
+      &-block {
+        display: grid;
+        grid-template-columns: auto 28px;
+        border-radius: 2px;
+        border: 1px solid rgb(0, 0, 0, .2);
+      }
+      &-left {
+        position: relative;
+        display: grid;
+        grid-template-columns: 32px auto;
+      }
+      &-user {
+        @include w-icon-user();
+        margin-right: 8px;
+        margin-top: 3px;
+      }
+      &-text {
+        box-sizing: border-box;
+        padding: 7px 30px 0 8px;
+        margin-bottom: 7px;
+        font-size: 12px;
+        width: 100%;
+        &-empty {
+          height: 31px;
+          &::placeholder {
+            color: rgb(0, 0, 0, .3);
+          }
+        }
+        &-with-link {
+          padding: 0 30px 0 8px;
+        }
+        &-box {
+          display: grid;
+          height: 31px;
+          &-edited {
+            height: 74px;
+            &-with-link {
+              grid-template-rows: 22px auto;
+            }
+          }
+        }
+      }
+      &-user-link {
+        padding: 7px 8px 0 8px;
+        outline: none;
+        border: none;
+        overflow:hidden;
+        font-size: 12px;
+        height: 15px;
+        cursor: pointer;
+        color: $color-base;
+        background-color: transparent;
+      }
+      &-add-img {
+        width: 18px;
+        height: 18px;
+        margin-bottom: 8px;
+        &-box {
+          position: relative;
+          display: flex;
+          align-items: flex-end;
+          width: 18px;
+          height: 100%;
+          margin-left: 2px;
+        }
+        &-input {
+          position: absolute;
+          width: 18px;
+          height: 18px;
+          bottom: 8px;
+          opacity: 0;
+          overflow: hidden;
+          z-index: 1;
+          left: 0;
+        }
+      }
+      &-right {
+        display: flex;
+        flex-direction: column;
+        margin-top: 2px;
+      }
+      &-descr {
+        font-size: 10px;
+        font-weight: 400;
+        color: rgb(0, 0, 0, .3);
+        margin-left: 40px;
+      }
+    }
+    &-comment-item {
+      position: relative;
+      display: grid;
+      grid-template-columns: 40px repeat(auto-fit, minmax(5px, auto));
+      margin-top: 24px;
+      &-box {
+        display: grid;
+      }
+      &-reply {
+        margin-top: 24px;
+        .p-comments-padding {
+          padding: 0;
+        }
+      }
+      &-main {
+        margin-top: 0;
+      }
+      &-user {
+        @include w-icon-user();
+        margin-right: 16px;
+      }
+      &-body {
+        //display: grid;
+        display: flex;
+        flex-direction: column;
+        //flex-grow: 1;
+        //width: 89%;
+        &-name {
+          font-size: 12px;
+          color: rgb(0, 0, 0, .5);
+        }
+        &-message {
+          font-size: 12px;
+          margin-top: 4px;
+          padding-right: 17px;
+          overflow-wrap: break-word;
+        }
+        &-bottom {
+          margin-top: 4px;
+          font-size: 12px;
+        }
+        &-date {
+          color: rgb(0, 0, 0, .3);
+          margin-right: 16px;
+        }
+        &-reply {
+          color: $color-link;
+          &:hover {
+            cursor: pointer;
+          }
+        }
+        &-img {
+          width: 7px;
+          height: 4px;
+          &-box {
+            position: absolute;
+            right: 0;
+            top: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 13px;
+            height: 13px;
+          }
+        }
+      }
+      &-children {
+        display: flex;
+        flex-direction: column;
+      }
+    }
+    &-preview {
+      display: flex;
+      margin-top: 8px;
+      padding-left: 32px;
+      &-item {
+        position: relative;
+        background-color: $color-block;
+        &:not(:last-child) {
+          margin-right: 8px;
+        }
+        &-landscape { // альбом (в ширину)
+          min-width: 123px;
+          width: 123px;
+          height: 72px;
+        }
+        &-portrait { // портрет (в высоту)
+          min-width: 100px;
+          width: 100px;
+          height: 100px;
+        }
+        &-img {
+          width: 100%;
+        }
+        &-close {
+          position: absolute;
+          z-index: 1;
+          top: 0;
+          right: 0;
+          &:hover {
+            cursor: pointer;
+          }
+        }
+      }
+    }
+  }
+}

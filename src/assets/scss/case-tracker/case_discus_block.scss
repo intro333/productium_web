@@ -9,57 +9,6 @@
       align-items: center;
       padding: 0 24px;
       .cd-h {
-        &-left {
-          display: flex;
-          justify-content: flex-start;
-          align-items: center;
-          height: 100%;
-          //width: 50%;
-          &-case {
-            &-status {
-              box-sizing: border-box;
-              width: 14px;
-              height: 14px;
-              margin-right: 8px;
-              border-radius: 50%;
-              &.in-work {
-                background-color: $color-block-2;
-              }
-
-              &.done {
-                background-color: $color-status-success;
-              }
-            }
-            &-title {
-              font-size: 14px;
-              color: #ffffff;
-              max-width: 200px;
-              &-box {
-                display: flex;
-                align-items: center;
-                height: 100%;
-                max-width: 200px;
-                &:hover {
-                  cursor: default;
-                }
-              }
-            }
-            &-input {
-              outline: none;
-              border: none;
-              background-color: transparent;
-              height: 100%;
-              padding-bottom: 1px;
-            }
-            &-arrow {
-              width: 7px;
-              height: 100%;
-              padding: 0 4px;
-              opacity: .7;
-            }
-          }
-
-        }
         &-right {
           display: flex;
           justify-content: flex-end;
@@ -127,7 +76,7 @@
             &:hover {
               cursor: default;
             }
-            &-clicable {
+            &-clickable {
               cursor: pointer !important;
             }
             &-link {
@@ -137,6 +86,5 @@
         }
       }
     }
-
   }
 }

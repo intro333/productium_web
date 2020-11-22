@@ -51,7 +51,7 @@
     background: $color-scroll;
   }
 }
-  @mixin scrollbarSmall() {
+@mixin scrollbarSmall() {
   &::-webkit-scrollbar {
     width: 2px;
   }
@@ -69,6 +69,21 @@
 @mixin scrollbarSlideBar() {
   &::-webkit-scrollbar {
     width: 3px;
+  }
+  &::-webkit-scrollbar-button { // кнопки края
+    //background: transparent;
+    //height: 30px;
+  }
+  &::-webkit-scrollbar-track-piece { // Фон
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb { // Динамический скролл
+    background: $color-scroll;
+  }
+}
+@mixin scrollbarTextarea() {
+  &::-webkit-scrollbar {
+    width: 4px;
   }
   &::-webkit-scrollbar-button { // кнопки края
     //background: transparent;

@@ -92,7 +92,8 @@ export default {
                   ]
                 })
             .more({
-              isRight
+              isRight,
+              zIndex: 8
             })
         );
       }

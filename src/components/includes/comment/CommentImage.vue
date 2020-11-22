@@ -1,0 +1,30 @@
+<template>
+  <div class="pc-preview-item"
+       :class="['pc-preview-item-' + img.orientation]"> <!-- portrait | landscape -->
+    <img :src="img.src" alt="">
+    <div @click="removeImage()"
+         class="p-btn-preview pc-preview-item-close">
+      <img src="@/assets/img/common/buttons/closeWhite.svg"
+           alt=""
+           class="p-btn-preview-icon">
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "CommentImage",
+  props: {
+    img: Object,
+    removeImageFunc: Function,
+    cKey: Number
+  },
+  methods: {
+    removeImage() {
+      if (this.removeImageFunc) {
+        this.removeImageFunc(this.cKey);
+      }
+    },
+  },
+}
+</script>

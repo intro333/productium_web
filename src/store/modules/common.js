@@ -1,11 +1,12 @@
+import {CurrentUserModel} from "@/models/CurrentUserModel";
+
 const state = {
+    currentUser: new CurrentUserModel('Dmitriy D', 'DD', '#7c4a4a'),
     caseCommentNotifications: [
         {
             id: 1,
             projectId: 1,
-            userName: 'Dmitriy D',
-            shortUserName: 'DD',
-            avatarColor: '#7c4a4a',
+            user: new CurrentUserModel('Dmitriy D', 'DD', '#7c4a4a'),
             status: 'notRead', // notRead | read
             slideOrder: 0,
             comment: 'Давайте сверим часы, чтобы все видели картину по динамике работы над проектом. Пишите кто на каком этапе и что планирует делать в ближайшую неделю.',
@@ -15,9 +16,7 @@ const state = {
         {
             id: 2,
             projectId: 1,
-            userName: 'Dmitriy M',
-            shortUserName: 'DM',
-            avatarColor: '#F30C0C',
+            user: new CurrentUserModel('Dmitriy M', 'DM', '#F30C0C'),
             status: 'notRead',
             slideOrder: 2,
             comment: 'На главной странице сайта перечислены последние добавленные на сайт дизайнерские работы, для каждой работы указывается число просмотров, картинка, содержащая часть дизайна, количество оставленных комментариев и оценка со стороны пользователей.',
@@ -27,9 +26,7 @@ const state = {
         {
             id: 3,
             projectId: 1,
-            userName: 'Alex G',
-            shortUserName: 'AG',
-            avatarColor: '#466a96',
+            user: new CurrentUserModel('Alex G', 'AG', '#466a96'),
             status: 'read',
             slideOrder: 1,
             comment: 'Через час могу. Заодно у Димы был вопрос. И надо ему про идею с привлечением денег рассказать.',
@@ -39,9 +36,7 @@ const state = {
         {
             id: 4,
             projectId: 2,
-            userName: 'Alex G',
-            shortUserName: 'AG',
-            avatarColor: '#466a96',
+            user: new CurrentUserModel('Dmitriy M', 'DM', '#F30C0C'),
             status: 'read',
             slideOrder: 7,
             comment: 'Какой вариант? мне две нравится.',
@@ -51,9 +46,7 @@ const state = {
         {
             id: 5,
             projectId: 1,
-            userName: 'Alex G',
-            shortUserName: 'AG',
-            avatarColor: '#466a96',
+            user: new CurrentUserModel('Alex G', 'AG', '#466a96'),
             status: 'read',
             slideOrder: 1,
             comment: 'Через час могу. Заодно у Димы был вопрос. И надо ему про идею с привлечением денег рассказать.',
@@ -63,9 +56,7 @@ const state = {
         {
             id: 6,
             projectId: 1,
-            userName: 'Alex G',
-            shortUserName: 'AG',
-            avatarColor: '#466a96',
+            user: new CurrentUserModel('Alex G', 'AG', '#466a96'),
             status: 'read',
             slideOrder: 1,
             comment: 'Через час могу. Заодно у Димы был вопрос. И надо ему про идею с привлечением денег рассказать.',
@@ -75,9 +66,7 @@ const state = {
         {
             id: 7,
             projectId: 1,
-            userName: 'Alex G',
-            shortUserName: 'AG',
-            avatarColor: '#466a96',
+            user: new CurrentUserModel('Dmitriy M', 'DM', '#F30C0C'),
             status: 'read',
             slideOrder: 1,
             comment: 'Через час могу. Заодно у Димы был вопрос. И надо ему про идею с привлечением денег рассказать.',
@@ -87,9 +76,7 @@ const state = {
         {
             id: 8,
             projectId: 1,
-            userName: 'Alex G',
-            shortUserName: 'AG',
-            avatarColor: '#466a96',
+            user: new CurrentUserModel('Dmitriy D', 'DD', '#7c4a4a'),
             status: 'read',
             slideOrder: 1,
             comment: 'Через час могу. Заодно у Димы был вопрос. И надо ему про идею с привлечением денег рассказать.',
@@ -100,16 +87,21 @@ const state = {
 };
 
 const getters = {
+    getCurrentUser: state => state.currentUser,
     getCaseCommentNotifications: state => state.caseCommentNotifications,
 };
 
 const actions = {
+    setCurrentUser({commit}, user) {
+        commit('SET_CURRENT_USER', user);
+    },
     setCaseCommentNotifications({commit}, notifications) {
         commit('SET_CASE_COMMENT_NOTIFICATIONS', notifications);
     },
 };
 
 const mutations = {
+    SET_CURRENT_USER(state, user) { state.currentUser = user; },
     SET_CASE_COMMENT_NOTIFICATIONS(state, notifications) { state.caseCommentNotifications = notifications; },
 };
 

@@ -12,7 +12,7 @@
            class="ul-item">
         <div class="ul-item-left">
           <div class="p-flex-center ul-item-left-icon"
-               :style="{'background-color': `#${user.color}`}">{{user.shortUserName}}</div>
+               :style="{'background-color': user.color}">{{user.shortName}}</div>
           <span class="ul-item-left-text">{{user.name}}</span>
         </div>
         <div @click="openRolesSelect(i, user)"
@@ -42,7 +42,7 @@
 import {getModalPositionFunc} from "@/functions/calculations";
 import {ContextMenuBaseModel} from "@/models/modals/ContextMenuBaseModel";
 import {mapActions} from "vuex";
-import {userRoleToTitle} from "@/functions/convertation";
+import {userRoleToTitle} from "@/functions/conversation";
 import {SimpleNotifyInsideModel} from "@/models/modals/SimpleNotifyInsideModel";
 
 export default {
@@ -52,21 +52,21 @@ export default {
     shareUsers: [
       {
         name: 'Dmitriy',
-        shortUserName: 'DD',
+        shortName: 'DD',
         role: 'editor',
-        color: '7c4a4a',
+        color: '#7c4a4a',
       },
       {
         name: 'Alex Gour',
-        shortUserName: 'AG',
+        shortName: 'AG',
         role: 'guest',
-        color: 'F30C0C',
+        color: '#F30C0C',
       },
       {
         name: 'Dmitriy M',
-        shortUserName: 'DM',
+        shortName: 'DM',
         role: 'manager',
-        color: '466a96',
+        color: '#466a96',
       },
     ]
   }),

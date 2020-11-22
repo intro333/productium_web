@@ -18,3 +18,11 @@ export function getRandomInt(min, max) {
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
+export function calcTextareaHeight(value) {
+  let numberOfLineBreaks = (value.match(/\n/g) || []).length;
+  console.log(1, numberOfLineBreaks)
+  // min-height + lines x line-height + padding
+  let newHeight = 31 + numberOfLineBreaks * 14;
+  return newHeight;
+}

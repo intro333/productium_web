@@ -8,8 +8,8 @@
            :class="{'rgb-base-10' : _notify.status === 'notRead'}">
         <div class="nf-header">
           <div class="nf-header-user-icon"
-               :style="{'background-color': _notify.avatarColor}">{{_notify.shortUserName}}</div>
-          <div class="nf-header-user-name">{{_notify.userName}}</div>
+               :style="{'background-color': _notify.user.color}">{{_notify.user.shortName}}</div>
+          <div class="nf-header-user-name">{{_notify.user.fullName}}</div>
         </div>
         <p class="nf-short-info nf-date-time rgb-black-50">{{getNotifyDateTime(_notify.updated_at)}}</p>
         <p class="nf-short-info nf-slide-name rgb-black-50">слайд {{_notify.slideOrder+1}}</p>

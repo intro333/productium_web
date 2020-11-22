@@ -24,8 +24,19 @@ p {
 }
 
 /* КНОПКИ */
-.c-btn {
-
+.p-btn {
+  &-preview {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(0, 0, 0, .4);
+    width: 18px;
+    height: 18px;
+    &-icon {
+      width: 12px;
+      height: 12px;
+    }
+  }
 }
 .btn-link {
 
@@ -191,8 +202,9 @@ p {
     background-color: #fff;
     border-radius: 2px;
     @include central-modal-shadow(.25);
-    display: flex;
-    flex-direction: column;
+    //display: flex;
+    //flex-direction: column;
+    display: grid;
     .mc-header {
       display: flex;
       justify-content: space-between;
@@ -200,6 +212,9 @@ p {
       padding: 0 24px;
       height: 50px;
       border-bottom: 1px solid $color-divider;
+      &.short-left {
+        padding: 0 24px 0 16px !important;
+      }
       .share {
         &-first {
           display: flex;
@@ -344,7 +359,7 @@ p {
   }
 }
 .p-tooltip {
-  z-index: 2;
+  z-index: 15;
   position: absolute;
   border-radius: 2px;
   background-color: $color-head;
@@ -529,6 +544,10 @@ p {
 .p-cursor-pointer {
   cursor: pointer;
 }
+.scroll-hidden {
+  overflow-y: auto;
+  @include scrollbarHidden();
+}
 .scroll-y-container {
   overflow-y: auto;
   @include scrollbarSmall();
@@ -536,12 +555,15 @@ p {
 .scroll-x-container {
   white-space: nowrap;
   overflow-x: auto;
-  //overflow-y: hidden;
   @include scrollDivHoriz();
+}
+.scroll-textarea {
+  overflow-y: auto;
+  @include scrollbarTextarea();
 }
 .select-arrow {
   width: 7px;
-  height: 4px;
+  height: 100%;
   padding-left: 4px;
 }
 .text-ellipsis {
