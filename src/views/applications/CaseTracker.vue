@@ -26,7 +26,7 @@ import WorkArea from "@/components/view-tracker/WorkArea";
 import CaseSidebar from "@/components/view-tracker/CaseSidebar";
 import CaseDiscusBlock from "@/components/view-tracker/CaseDiscusBlock";
 import ContextMenuBase from "@/components/modals/context-menu/ContextMenuBase";
-import {mapGetters} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 import Tooltip from "@/components/modals/Tooltip";
 import CentralModal from "@/components/modals/central/CentralModal";
 
@@ -42,7 +42,11 @@ export default {
     ContextMenuBase,
     CentralModal,
   },
+  created() {
+    this.fetchSlides();
+  },
   methods: {
+    ...mapActions(['fetchSlides']),
     ...mapGetters(['getContextMenuBase', 'getCentralModal', 'getTooltip']),
   },
 }
