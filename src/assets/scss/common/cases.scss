@@ -73,7 +73,7 @@
       display: grid;
       &-block {
         display: grid;
-        grid-template-columns: auto 26px;
+        grid-template-columns: auto 28px;
         border-radius: 2px;
         border: 1px solid rgb(0, 0, 0, .2);
       }
@@ -89,7 +89,8 @@
       }
       &-text {
         box-sizing: border-box;
-        padding: 7px 30px 7px 8px;
+        padding: 7px 30px 0 8px;
+        margin-bottom: 7px;
         font-size: 12px;
         width: 100%;
         &-empty {
@@ -98,25 +99,30 @@
             color: rgb(0, 0, 0, .3);
           }
         }
+        &-with-link {
+          padding: 0 30px 0 8px;
+        }
         &-box {
-          position: relative;
+          display: grid;
           height: 31px;
           &-edited {
             height: 74px;
+            &-with-link {
+              grid-template-rows: 22px auto;
+            }
           }
         }
       }
       &-user-link {
-        position: absolute;
-        top: 7px;
-        left: 8px;
+        padding: 7px 8px 0 8px;
         outline: none;
         border: none;
+        overflow:hidden;
         font-size: 12px;
         height: 15px;
         cursor: pointer;
         color: $color-base;
-        background-color: white;
+        background-color: transparent;
       }
       &-add-img {
         width: 18px;
@@ -128,6 +134,7 @@
           align-items: flex-end;
           width: 18px;
           height: 100%;
+          margin-left: 2px;
         }
         &-input {
           position: absolute;

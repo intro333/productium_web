@@ -6,21 +6,22 @@
            :style="{'background-color': user.color}"
       >{{user.shortName}}</div>
       <div class="pc-input-area-block">
-        <div class="pc-input-area-text-box scroll-hidden"
-             :class="{'pc-input-area-text-box-edited': !textIsEmpty()}">
-        <textarea :ref="'commentInputAreaRef_' + cKey"
-                  @keyup.enter="sendMessage()"
-                  @input="enteringMessage"
-                  :value="text"
-                  class="pc-input-area-text p-textarea-custom"
-                  :class="{'pc-input-area-text-empty': textIsEmpty()}"
-                  :style="{height: `${textAreaHeight}px`}"
-                  :placeholder="!userLink ? 'Напишите комментарий...' : ''"></textarea>
-          <textarea v-if="userLink"
-                    class="pc-input-area-user-link p-textarea-custom"
-                    readonly
-                    :style="{'width': `${(userLink.length+1) * 7}px`}"
-                    :value="userLink + ', '"></textarea>
+        <div class="pc-input-area-text-box"
+             :class="{'pc-input-area-text-box-edited': (!textIsEmpty() || isUserLink()),
+              'pc-input-area-text-box-edited-with-link': isUserLink()}">
+          <input v-if="isUserLink()"
+                 class="pc-input-area-user-link text-ellipsis"
+                 :value="userLink + ', '"
+                 readonly
+          >
+          <textarea :ref="'commentInputAreaRef_' + cKey"
+                    @keyup.enter="sendMessage()"
+                    @input="enteringMessage"
+                    :value="text"
+                    class="pc-input-area-text p-textarea-custom scroll-textarea"
+                    :class="{'pc-input-area-text-empty': textIsEmpty(),
+                      'pc-input-area-text-with-link': isUserLink()}"
+                    :placeholder="!userLink ? 'Напишите комментарий...' : ''"></textarea>
         </div>
         <div v-if="imagesIsCanUpload"
              class="pc-input-area-add-img-box">
@@ -57,8 +58,6 @@
 import {mapGetters} from "vuex";
 import ModalsMixin from "@/components/mixins/ModalsMixin";
 import CommentImage from "@/components/includes/comment/CommentImage";
-import {calcTextareaHeight} from "@/functions/calculations";
-// import {formUserLink} from '@/functions/conversation';
 
 export default {
   name: "CommentInputArea",
@@ -73,7 +72,6 @@ export default {
   },
   mixins: [ModalsMixin],
   data: () => ({
-    textAreaHeight: 31,
     text: '',
     textSpaces: '',
     linkLength: 0,
@@ -86,22 +84,9 @@ export default {
     user() {
       return this.getCurrentUser();
     },
-    // fullText() {
-    //   return formUserLink(this.userLinkText) + this.text;
-    // },
-    // formUserLinkL() {
-    //   return formUserLink(this.userLinkText);
-    // },
   },
   mounted() {
     this.inputFocus(true);
-    if (this.isUserLink()) {
-      this.linkLength = this.userLink.length+2;
-      for (let i = 0; i < this.linkLength; i++) {
-        this.textSpaces += ' ';
-      }
-      this.text = this.textSpaces;
-    }
   },
   methods: {
     ...mapGetters(['getCurrentUser']),
@@ -130,6 +115,17 @@ export default {
         this.checkPCommentsBlockHeight();
         this.inputFocus();
       }
+      setTimeout(() => {
+        const commentItemBoxRef = this.$parent.$refs['commentItemBoxRef_' + this.cKey];
+          if (commentItemBoxRef) {
+            setTimeout(() => {
+              commentItemBoxRef.scrollIntoView({
+                block: 'end',
+                inline: 'nearest'
+              });
+            });
+          }
+      }, 20)
     },
     removeImage(i) {
       this.images.splice(i, 1);
@@ -142,23 +138,8 @@ export default {
       
     },
     enteringMessage($event) {
-      const textValue = $event.target.value;
-      if (this.isUserLink()) {
-        if (this.textIsEmpty()) {
-          this.text = this.textSpaces + textValue;
-        } else {
-          if ((textValue.length) >= this.linkLength) {
-            this.text = textValue;
-          } else {
-            this.text = '';
-            this.text = this.textSpaces;
-          }
-        }
-      } else {
-        this.text = textValue;
-      }
+      this.text = $event.target.value;
       this.checkPCommentsBlockHeight();
-      this.textAreaHeight = calcTextareaHeight(this.text);
     },
     checkPCommentsBlockHeight() {
       setTimeout(() => {
@@ -183,17 +164,7 @@ export default {
     },
   },
   watch: {
-    userLink: function(newVal, oldVal) {
-      this.textSpaces = '';
-      this.linkLength = newVal.length+2;
-      this.text = this.text.substr(oldVal.length+2);
-      setTimeout(() => {
-        for (let i = 0; i < this.linkLength; i++) {
-          this.textSpaces += ' ';
-        }
-        this.text = this.textSpaces + this.text;
-      }, 10);
-    },
+
   }
 }
 </script>
