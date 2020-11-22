@@ -1,6 +1,6 @@
 # productium_web
 
-## Project setup
+## ProjectModel setup
 ```
 npm install
 ```

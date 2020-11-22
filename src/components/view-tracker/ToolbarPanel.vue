@@ -137,24 +137,42 @@ import {ContextMenuBaseModel} from "@/models/modals/ContextMenuBaseModel";
 import ModalsMixin from "@/components/mixins/ModalsMixin";
 import {getModalPositionFunc} from "@/functions/calculations";
 import {CentralModalModel} from "@/models/modals/CentralModalModel";
+import {ProjectModel} from "@/models/modals/case-tracker/ProjectModel";
 
 export default {
   name: "ToolbarPanel",
   mixins: [ModalsMixin],
   data: () => ({
-    project: {
-      name: "Untitled",
-      nameIsEdited: false
-    }
+
   }),
   computed: {
     contextMenu() {
       return this.getContextMenuBase();
     },
+    project() {
+      const projects = this.getProjects();
+      if (projects.length) {
+        const foundProject = projects.find(_p => _p.isSelected);
+        if (foundProject) {
+          return foundProject;
+        }
+        return projects[0];
+      } else {
+        return new ProjectModel({
+          id: 0,
+          name: 'Untitled',
+          activityStatus: 'active',
+        });
+        // TODO Если нет проектов, редиректить на главную
+      }
+    },
+  },
+  created() {
+
   },
   methods: {
     ...mapActions(['setContextMenuBase', 'setCentralModal']),
-    ...mapGetters(['getContextMenuBase']),
+    ...mapGetters(['getContextMenuBase', 'getProjects']),
     openContextMenu(type, width, _refStr, isRight = null) {
       if (this.$refs[_refStr] && this.$refs[_refStr].getBoundingClientRect()) {
         const modalPosition = getModalPositionFunc(this.$refs[_refStr], isRight, width);

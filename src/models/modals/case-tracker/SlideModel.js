@@ -12,8 +12,6 @@ export class SlideModel {
     this.slideState = _slide.slideState;
     this.projectId = _slide.projectId;
     this.order = _slide.order;
-    this.image = _slide.image
-    this.isSelected = false;
-    this.isNotify = false;
+    this.image = _slide.image;
   }
 }

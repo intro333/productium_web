@@ -43,10 +43,13 @@ export default {
     CentralModal,
   },
   created() {
+    this.fetchProjects();
     this.fetchSlides();
+    this.fetchSlideLists();
+    this.fetchCases();
   },
   methods: {
-    ...mapActions(['fetchSlides']),
+    ...mapActions(['fetchProjects', 'fetchSlides', 'fetchSlideLists', 'fetchCases']),
     ...mapGetters(['getContextMenuBase', 'getCentralModal', 'getTooltip']),
   },
 }

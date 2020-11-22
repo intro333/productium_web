@@ -11,12 +11,12 @@
             <span class="rgb-black-30">/12</span>
           </span>
         </div>
-        <span @click="selectTab('notes')"
-              class="csb-header-tabs-item"
-              :class="{'rgb-black-30': !isTabSelected('notes')}">Заметки</span>
-        <span @click="selectTab('wiki')"
-              class="csb-header-tabs-item"
-              :class="{'rgb-black-30': !isTabSelected('wiki')}">Вики</span>
+<!--        <span @click="selectTab('notes')"-->
+<!--              class="csb-header-tabs-item"-->
+<!--              :class="{'rgb-black-30': !isTabSelected('notes')}">Заметки</span>-->
+<!--        <span @click="selectTab('wiki')"-->
+<!--              class="csb-header-tabs-item"-->
+<!--              :class="{'rgb-black-30': !isTabSelected('wiki')}">Вики</span>-->
       </div>
       <div @click="selectTab('notify')"
            class="csb-header-img-box">
@@ -41,7 +41,7 @@
         </div>
       </div>
       <div class="csb-cases-list">
-        <div v-for="(_case, i) in caseListFiltered"
+        <div v-for="(_case, i) in casesFiltered"
              class="csb-cases-item-container"
              :key="i">
           <div class="csb-cases-item"
@@ -60,7 +60,7 @@
               <div @click="selectCase(_case)"
                    class="csb-cases-item-text-box">
                 <div class="case-status-main csb-cases-item-status"
-                     :class="{commented: _case.haveNewComments, [_case.status]: true}">
+                     :class="{commented: _case.haveNewComments, [_case.caseStatus]: true}">
                   <div class="case-status-inside"></div>
                 </div>
                 <span v-if="!_case.isEdited"
@@ -129,8 +129,14 @@ export default {
     caseFilterSelected: 0,
   }),
   computed: {
-    caseList() {
-      return this.getCaseList();
+    cases() {
+      const fountSlideList = this.getSlideLists()
+          .find(_sl => _sl.isSelected);
+      if (fountSlideList) {
+        return this.getCases().filter(_c =>
+            _c.slideListId === fountSlideList.id);
+      }
+      return [];
     },
     caseFilters() {
       return [
@@ -157,14 +163,14 @@ export default {
         },
       ];
     },
-    caseListFiltered() {
+    casesFiltered() {
       const result = [];
       const selectedFilter = this.caseFilters[this.caseFilterSelected];
-      this.caseList.forEach(_case => {
+      this.cases.forEach(_case => {
         if (selectedFilter.status === 'all') {
           result.push(_case);
         } else {
-          if (_case.status === selectedFilter.status) {
+          if (_case.caseStatus === selectedFilter.status) {
             result.push(_case);
           }
         }
@@ -181,7 +187,7 @@ export default {
     }
   },
   methods: {
-    ...mapGetters(['getCaseCommentNotifications', 'getCaseList']),
+    ...mapGetters(['getCaseCommentNotifications', 'getSlideLists', 'getCases']),
     caseRef(_case, i) {
       return 'caseNameInputRef_' + i;
     },
@@ -217,7 +223,7 @@ export default {
       }
     },
     selectCase(_case) {
-      this.caseList.forEach(_c => {
+      this.cases.forEach(_c => {
         _c.isSelected = _c.id === _case.id;
       });
     },
