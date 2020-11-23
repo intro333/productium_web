@@ -8,6 +8,7 @@ export class CaseModel {
   resolut = '';
   children = [];
   order = 0;
+
   /* local */
   haveNewComments = false;
   discusBlockActivityState = 'discus'; // discus | resolut

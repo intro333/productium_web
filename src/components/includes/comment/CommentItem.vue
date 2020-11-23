@@ -28,6 +28,7 @@
           <CommentInputArea :cKey="cKey"
                             :comment="commentToInput"
                             :userLink="commentToInput.user.fullName"
+                            :escTextareaFunc="escTextarea"
                             ref="commentInputAreaRef" />
         </div>
       </div>
@@ -83,6 +84,9 @@ export default {
           }
         }
       }, 10);
+    },
+    escTextarea() {
+      this.isReply = false;
     },
     reply() {
       const commentItemBoxRef = this.$refs['commentItemBoxRef_' + this.cKey];

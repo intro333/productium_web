@@ -16,6 +16,7 @@
           >
           <textarea :ref="'commentInputAreaRef_' + cKey"
                     @keyup.enter="sendMessage()"
+                    @keyup.esc="escTextareaFunc()"
                     @input="enteringMessage"
                     :value="text"
                     class="pc-input-area-text p-textarea-custom scroll-textarea"
@@ -68,7 +69,8 @@ export default {
     cKey: Number,
     comment: Object,
     userLink: String,
-    checkPCommentsBlockHeightFunc: Function
+    checkPCommentsBlockHeightFunc: Function,
+    escTextareaFunc: Function,
   },
   mixins: [ModalsMixin],
   data: () => ({

@@ -7,8 +7,8 @@
              :class="{'rgb-black-30': !isTabSelected('cases')}">
           <span>Кейсы </span>
           <span>
-            <span>32</span>
-            <span class="rgb-black-30">/12</span>
+            <span>{{numOfInWorkCases}}</span>
+            <span class="rgb-black-30">/{{numOfDoneCases}}</span>
           </span>
         </div>
 <!--        <span @click="selectTab('notes')"-->
@@ -127,7 +127,6 @@ export default {
   data: () => ({
     selectedTab: 'cases', // cases | notes | wiki | notify
     caseFilterSelected: 0,
-    cases: [],
   }),
   computed: {
     caseFilters() {
@@ -170,29 +169,31 @@ export default {
       return result;
     },
     notifications() {
-      return this.getCaseCommentNotifications()
-          .filter(_n => _n.projectId === 1); // TODO установить фильтр по активному проекту
+      const query = this.$route.query;
+      if (query && query.projectId) {
+        const filteredComments = Object.assign([],
+            this.getCasesComments()
+                .filter(_c =>
+                    _c.projectId === parseInt(query.projectId) && _c.notifyInfo));
+        return  filteredComments.reverse();
+      } else {
+        return [];
+      }
     },
     isNotReadNotifications() {
       return this.notifications
           .filter(_n => _n.status === 'notRead').length
-    }
-  },
-  created() {
-    this.fetchCasesL();
+    },
+    numOfInWorkCases() {
+      return this.cases.filter(_c => _c.caseStatus === 'in-work').length;
+    },
+    numOfDoneCases() {
+      return this.cases.filter(_c => _c.caseStatus === 'done').length;
+    },
   },
   methods: {
     ...mapActions(['selectCase']),
-    ...mapGetters(['getCaseCommentNotifications', 'getSlideLists', 'getCases']),
-    fetchCasesL() {
-      const query = this.$route.query;
-      if (query && query.slideListId) {
-        this.cases = this.getCases().filter(_c =>
-            _c.slideListId === parseInt(query.slideListId));
-      } else {
-        this.cases = [];
-      }
-    },
+    ...mapGetters(['getCasesComments']),
     caseRef(_case, i) {
       return 'caseNameInputRef_' + i;
     },
@@ -237,10 +238,5 @@ export default {
       return require('@/assets/img/case-tracker/case-sidebar/' + _child.shapeType + '.svg')
     }
   },
-  watch: {
-    $route() {
-      this.fetchCasesL();
-    }
-  }
 }
 </script>

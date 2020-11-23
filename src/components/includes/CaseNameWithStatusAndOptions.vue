@@ -1,7 +1,7 @@
 <template>
   <div class="case-info">
     <div class="case-info-case-status"
-         :class="{[selectedCase.status]: true}"></div>
+         :class="{[selectedCase.caseStatus]: true}"></div>
     <div v-if="!selectedCase.isEdited"
          ref="caseNameInputRef"
          v-on:dblclick="changeCaseNameEditable(selectedCase,  'caseNameInputRef',true)"

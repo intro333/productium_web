@@ -63,18 +63,37 @@ export default {
   }),
   computed: {
     selectedCase() {
-      const foundCase = this.getCaseList()
+      const foundCase = this.cases
           .find(_c => _c.isSelected);
       if (foundCase) {
         return foundCase;
       } else {
         return null;
       }
+    },
+    casesComments() {
+      const result = [];
+      this.getCasesComments().forEach(_c => {
+        if (_c.parent === null) {
+          result.push(_c);
+        } else {
+          const foundParent = result.find(_p => _p.id === _c.parent);
+          if (foundParent) {
+            if (foundParent.children) {
+              foundParent.children.push(_c);
+            } else {
+              foundParent.children = [];
+              foundParent.children.push(_c);
+            }
+          }
+        }
+      });
+      return result;
     }
   },
   methods: {
     ...mapActions(['setCentralModal']),
-    ...mapGetters(['getCaseList']),
+    ...mapGetters(['getCasesComments']),
     isActiveDiscusBlockActivityState(_state) {
       return this.selectedCase.discusBlockActivityState === _state;
     },
@@ -96,7 +115,8 @@ export default {
                   'CommentsModal',
                   400,
                   {
-                    comments: [
+                    comments: this.casesComments,
+                    comments2: [
                       {
                         id: 100,
                         message: 'Привет. Здесь надо поменять скругление и может вообще убрать stroke.',

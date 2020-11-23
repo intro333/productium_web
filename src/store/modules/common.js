@@ -91,6 +91,83 @@ const state = {
             created_at: '2020-10-10 17:11:29',
             updated_at: '2020-10-10 17:11:29'
         },
+        {
+            id: 9,
+            projectId: 2,
+            user: new CurrentUserModel('Dmitriy D', 'DD', '#7c4a4a'),
+            status: 'notRead', // notRead | read
+            slideId: 1,
+            slideOrder: 0,
+            comment: 'Давайте сверим часы, чтобы все видели картину по динамике работы над проектом. Пишите кто на каком этапе и что планирует делать в ближайшую неделю.',
+            created_at: '2020-10-11 12:24:19',
+            updated_at: '2020-10-11 12:24:19'
+        },
+        {
+            id: 10,
+            projectId: 2,
+            user: new CurrentUserModel('Dmitriy D', 'DD', '#7c4a4a'),
+            status: 'read',
+            slideId: 4,
+            slideOrder: 3,
+            comment: 'Через час могу. Заодно у Димы был вопрос. И надо ему про идею с привлечением денег рассказать.',
+            created_at: '2020-10-10 17:11:29',
+            updated_at: '2020-10-10 17:11:29'
+        },
+        {
+            id: 11,
+            projectId: 2,
+            user: new CurrentUserModel('Dmitriy D', 'DD', '#7c4a4a'),
+            status: 'read',
+            slideId: 4,
+            slideOrder: 3,
+            comment: 'Через час могу. Заодно у Димы был вопрос. И надо ему про идею с привлечением денег рассказать.',
+            created_at: '2020-10-10 17:11:29',
+            updated_at: '2020-10-10 17:11:29'
+        },
+        {
+            id: 12,
+            projectId: 3,
+            user: new CurrentUserModel('Dmitriy D', 'DD', '#7c4a4a'),
+            status: 'notRead', // notRead | read
+            slideId: 1,
+            slideOrder: 0,
+            comment: 'Давайте сверим часы, чтобы все видели картину по динамике работы над проектом. Пишите кто на каком этапе и что планирует делать в ближайшую неделю.',
+            created_at: '2020-10-11 12:24:19',
+            updated_at: '2020-10-11 12:24:19'
+        },
+        {
+            id: 13,
+            projectId: 3,
+            user: new CurrentUserModel('Dmitriy D', 'DD', '#7c4a4a'),
+            status: 'read',
+            slideId: 4,
+            slideOrder: 3,
+            comment: 'Через час могу. Заодно у Димы был вопрос. И надо ему про идею с привлечением денег рассказать.',
+            created_at: '2020-10-10 17:11:29',
+            updated_at: '2020-10-10 17:11:29'
+        },
+        {
+            id: 14,
+            projectId: 3,
+            user: new CurrentUserModel('Dmitriy D', 'DD', '#7c4a4a'),
+            status: 'read',
+            slideId: 4,
+            slideOrder: 3,
+            comment: 'Через час могу. Заодно у Димы был вопрос. И надо ему про идею с привлечением денег рассказать.',
+            created_at: '2020-10-10 17:11:29',
+            updated_at: '2020-10-10 17:11:29'
+        },
+        {
+            id: 15,
+            projectId: 3,
+            user: new CurrentUserModel('Dmitriy D', 'DD', '#7c4a4a'),
+            status: 'read',
+            slideId: 4,
+            slideOrder: 3,
+            comment: 'Через час могу. Заодно у Димы был вопрос. И надо ему про идею с привлечением денег рассказать.',
+            created_at: '2020-10-10 17:11:29',
+            updated_at: '2020-10-10 17:11:29'
+        },
     ]
 };
 
