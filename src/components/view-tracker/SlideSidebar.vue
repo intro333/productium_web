@@ -4,6 +4,7 @@
                :slide="_slide"
                :key="i"
                :cKey="i"
+               :slidesLength="slidesLength"
     />
     <div class="sl-b-add">
       <div @click="addSlide"
@@ -30,23 +31,26 @@ export default {
     SlideItem
   },
   data: () => ({
-    projectId: 0,
+    slides: [],
   }),
   created() {
-    const query = this.$route.query;
-    if (query) {
-      if (query.projectId) { this.projectId = query.projectId }
-      // if (query.slideId) {  }
+    this.fetchSlidesL();
+    this.removeSlideUnsubscribe = this.$store.subscribe((mutation) => {
+      if (mutation.type === 'REMOVE_SLIDE') {
+        if (mutation.payload) {
+          this.fetchSlidesL();
+        }
+      }
+    });
+  },
+  beforeDestroy() {
+    if (this.removeSlideUnsubscribe) {
+      this.removeSlideUnsubscribe();
     }
   },
   computed: {
-    slides() {
-      const query = this.$route.query;
-      if (query && query.projectId) {
-        return slidesOfProjectFilter(this.getSlides(),
-            parseInt(query.projectId));
-      }
-      return [];
+    slidesLength() {
+      return this.slides.length;
     }
   },
   methods: {
@@ -55,6 +59,20 @@ export default {
     addSlide() {
       this.pushSlide();
     },
+    fetchSlidesL() {
+      const query = this.$route.query;
+      if (query && query.projectId) {
+        this.slides = slidesOfProjectFilter(this.getSlides(),
+            parseInt(query.projectId));
+      } else {
+        this.slides = [];
+      }
+    }
   },
+  watch: {
+    $route () {
+      this.fetchSlidesL();
+    }
+  }
 }
 </script>

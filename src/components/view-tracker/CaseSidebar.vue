@@ -57,7 +57,7 @@
               </div>
               <div v-if="!_case.children.length"
                    class="csb-cases-item-triangle"></div>
-              <div @click="selectCase(_case)"
+              <div @click="selectCaseL(_case)"
                    class="csb-cases-item-text-box">
                 <div class="case-status-main csb-cases-item-status"
                      :class="{commented: _case.haveNewComments, [_case.caseStatus]: true}">
@@ -87,7 +87,7 @@
             </div>
           </div>
           <div v-if="_case.children.length && _case.isOpen"
-               @click="selectCase(_case)"
+               @click="selectCaseL(_case)"
                class="csb-cases-item-children"
                :class="{'rgb-base-10': _case.isSelected}">
             <div v-for="(_child, k) in _case.children"
@@ -113,7 +113,7 @@
 <script>
 import {getModalPositionFunc} from "@/functions/calculations";
 import {ContextMenuBaseModel} from "@/models/modals/ContextMenuBaseModel";
-import {mapGetters} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 import ModalsMixin from "@/components/mixins/ModalsMixin";
 import Notifications from "@/components/common/Notifications";
 import CaseMixin from "@/components/mixins/CaseMixin";
@@ -127,17 +127,9 @@ export default {
   data: () => ({
     selectedTab: 'cases', // cases | notes | wiki | notify
     caseFilterSelected: 0,
+    cases: [],
   }),
   computed: {
-    cases() {
-      const fountSlideList = this.getSlideLists()
-          .find(_sl => _sl.isSelected);
-      if (fountSlideList) {
-        return this.getCases().filter(_c =>
-            _c.slideListId === fountSlideList.id);
-      }
-      return [];
-    },
     caseFilters() {
       return [
         {
@@ -186,8 +178,21 @@ export default {
           .filter(_n => _n.status === 'notRead').length
     }
   },
+  created() {
+    this.fetchCasesL();
+  },
   methods: {
+    ...mapActions(['selectCase']),
     ...mapGetters(['getCaseCommentNotifications', 'getSlideLists', 'getCases']),
+    fetchCasesL() {
+      const query = this.$route.query;
+      if (query && query.slideListId) {
+        this.cases = this.getCases().filter(_c =>
+            _c.slideListId === parseInt(query.slideListId));
+      } else {
+        this.cases = [];
+      }
+    },
     caseRef(_case, i) {
       return 'caseNameInputRef_' + i;
     },
@@ -222,16 +227,19 @@ export default {
         );
       }
     },
-    selectCase(_case) {
-      this.cases.forEach(_c => {
-        _c.isSelected = _c.id === _case.id;
-      });
+    selectCaseL(_case) {
+      this.selectCase(_case);
     },
     showOrHideCaseChildren(_case) {
       _case.isOpen = !_case.isOpen;
     },
     getCaseShapeChildImg(_child) {
       return require('@/assets/img/case-tracker/case-sidebar/' + _child.shapeType + '.svg')
+    }
+  },
+  watch: {
+    $route() {
+      this.fetchCasesL();
     }
   }
 }

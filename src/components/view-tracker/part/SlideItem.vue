@@ -32,6 +32,7 @@ export default {
   props: {
     slide: Object,
     cKey: Number,
+    slidesLength: Number
   },
   methods: {
     ...mapActions(['setContextMenuBase', 'removeSlide', 'selectSlide']),
@@ -53,7 +54,10 @@ export default {
                       title: 'Удалить',
                       dontShowIsActive: true,
                       action: () => {
-                        this.removeSlide(this.slide);
+                        this.removeSlide({
+                          slide: this.slide,
+                          slidesLength: this.slidesLength
+                        });
                       },
                     },
                     {

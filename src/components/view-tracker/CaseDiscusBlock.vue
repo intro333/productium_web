@@ -24,7 +24,7 @@
                   class="cd-b-edit-area-text p-textarea-custom scroll-textarea"
                   :readonly="!selectedCase.isDiscusEdited"
                   :class="{'ea-readonly': !selectedCase.isDiscusEdited}"
-                  placeholder="Опишите задачу..."></textarea>
+                  :placeholder="`Опишите ${(selectedCase.discusBlockActivityState === 'discus') ? 'задачу' : 'решение'}...`"></textarea>
       </div>
       <div class="cd-b-comments">
         <div class="cd-b-comments-box">

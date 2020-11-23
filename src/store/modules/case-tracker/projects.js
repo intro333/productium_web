@@ -83,7 +83,7 @@ const mockSlideLists = [
   }),
 ];
 const mockCases = [
-  new CaseModel({
+    new CaseModel({
       id: 1,
       slideListId: 1,
       title: 'Задача 1',
@@ -93,8 +93,8 @@ const mockCases = [
       resolut: '',
       children: [],
       order: 0
-  }),
-  new CaseModel({
+    }),
+    new CaseModel({
       id: 2,
       slideListId: 1,
       title: 'Баг с выпадающим списком, когда на него нажимаешь.',
@@ -120,8 +120,8 @@ const mockCases = [
           },
       ],
       order: 1
-  }),
-  new CaseModel({
+    }),
+    new CaseModel({
       id: 3,
       title: 'Задача 3.',
       slideListId: 1,
@@ -142,7 +142,7 @@ const mockCases = [
           },
       ],
       order: 2
-  }),
+    }),
     new CaseModel({
         id: 4,
         slideListId: 2,
@@ -181,6 +181,55 @@ const mockCases = [
         ],
         order: 1
     }),
+    new CaseModel({
+        id: 6,
+        slideListId: 3,
+        title: 'Задача 7',
+        caseStatus: 'in-work',
+        isOpen: false,
+        discus: '',
+        resolut: '',
+        children: [],
+        order: 0
+    }),
+    new CaseModel({
+        id: 7,
+        slideListId: 4,
+        title: 'Задача 8',
+        caseStatus: 'done',
+        isOpen: true,
+        discus: '',
+        resolut: '',
+        children: [
+            {
+                id: 1,
+                title: 'Rectangle 3',
+                shapeType: 'rectangle'
+            },
+            {
+                id: 2,
+                title: 'Rectangle 4',
+                shapeType: 'rectangle'
+            },
+            {
+                id: 3,
+                title: 'Circle 2',
+                shapeType: 'circle'
+            },
+        ],
+        order: 1
+    }),
+    new CaseModel({
+        id: 8,
+        slideListId: 4,
+        title: 'Задача 9',
+        caseStatus: 'in-work',
+        isOpen: true,
+        discus: '',
+        resolut: '',
+        children: [],
+        order: 0
+    }),
 ];
 
 const state = {
@@ -215,26 +264,62 @@ const actions = {
     pushSlide({commit}) {
         /* TODO Mock */
         const selectedProject = state.projects.find(_p => _p.isSelected);
-        const newSlide = {
-            id: 1,
+        const newSlide = new SlideModel({
+            id: getRandomInt(10, 1000),
             slideState: 'in-work',
             projectId: selectedProject.id,
             order: 0,
             image: '',
-            isSelected: false,
-            isNotify: false,
-        };
-        newSlide.id = getRandomInt(10, 1000);
+        });
+        const newSlideList = new SlideList({
+            id: getRandomInt(10, 1000),
+            slideId: newSlide.id,
+            name: 'Лист1'
+        });
+        const caseId = getRandomInt(10, 1000);
+        const newSCase = new CaseModel({
+            id: caseId,
+            slideListId: newSlideList.id,
+            title: 'Задача ' + caseId,
+            caseStatus: 'in-work',
+            isOpen: false,
+            discus: '',
+            resolut: '',
+            children: [],
+            order: 0
+        });
         commit('PUSH_SLIDE', newSlide);
+        commit('PUSH_SLIDE_LIST', newSlideList);
+        commit('PUSH_CASE', newSCase);
         setTimeout(() => {
-            commit('SELECT_SLIDE', newSlide);
+            commit('SELECT_SLIDE', {
+                slide: newSlide,
+                isNew: true
+            });
         }, 20)
     },
-    removeSlide({commit}, _slide) {
-        commit('REMOVE_SLIDE', _slide);
+    removeSlide({commit}, payload) {
+        if (payload.slidesLength > 1) {
+            const slide = payload.slide;
+            commit('REMOVE_SLIDE', slide);
+            if (slide.isSelected) { /* Если удаляемый слайд был выбран, то выбираем последний слайд */
+                setTimeout(() => {
+                    const query = router.currentRoute.query;
+                    if (query && query.projectId) {
+                        const _projectId = parseInt(query.projectId);
+                        const filteredSlides = state.slides.filter(_s => {
+                            if (_s.slideState !== 'archived' && _s.projectId === _projectId) {
+                                return _s;
+                            }
+                        });
+                        commit('SELECT_SLIDE', { slide: filteredSlides[filteredSlides.length-1] });
+                    }
+                }, 20);
+            }
+        }
     },
     selectSlide({commit}, _slide) {
-        commit('SELECT_SLIDE', _slide);
+        commit('SELECT_SLIDE', {slide: _slide});
     },
     /* SLIDE LISTS */
     fetchSlideLists({commit}) {
@@ -249,6 +334,9 @@ const actions = {
     },
     pushCase({commit}) {
         commit('PUSH_CASE', {});
+    },
+    selectCase({commit}, _case) {
+        commit('SELECT_CASE', _case);
     },
 };
 
@@ -284,16 +372,45 @@ const mutations = {
         }
     },
     PUSH_SLIDE(state, _slide) { state.slides.push(_slide); },
-    SELECT_SLIDE(state, _slide) {
-        state.slides.forEach(_sl => {
-            _sl.isSelected = _sl.id === _slide.id;
-        });
+    SELECT_SLIDE(state, payload) {
+        const _slide = payload.slide;
         const query = router.currentRoute.query;
         if (query && query.slideId) {
             const _slideId = parseInt(query.slideId);
-            if (_slideId !== _slide.id) {
-                router.push({ path:'/case-tracker',
-                    query: Object.assign({}, query, {slideId: _slide.id}) });
+            if (payload.isNew || (_slideId !== _slide.id)) {
+                const _projectId = parseInt(query.projectId);
+                state.slides.forEach(_s => {
+                    if (_s.slideState !== 'archived' && _s.projectId === _projectId) {
+                        _s.isSelected = _s.id === _slide.id;
+                    }
+                });
+                setTimeout(() => {
+                    const _slideList = state.slideLists
+                      .find(_sl => _sl.slideId === _slide.id);
+                    if (_slideList) {
+                        // TODO SELECT SLIDE LIST
+                        const slideListId = _slideList.id;
+                        const _case = state.cases.find(_c => _c.slideListId === slideListId);
+                        if (_case) {
+                            const caseId = _case.id;
+                            state.cases.forEach(_c => {
+                                if (_c.caseStatus !== 'archived' && _c.slideListId === slideListId) {
+                                    _c.isSelected = _c.id === caseId;
+                                }
+                            });
+                            setTimeout(() => {
+                                router.push({
+                                    path: '/case-tracker',
+                                    query: Object.assign({}, query, {
+                                        slideId: _slide.id,
+                                        slideListId: _slideList.id,
+                                        caseId: _case.id,
+                                    })
+                                });
+                            }, 20)
+                        }
+                    }
+                }, 20);
             }
         }
     },
@@ -327,7 +444,27 @@ const mutations = {
             state.cases = _cases;
         }
     },
-    PUSH_CASE(state, _case) { state.projects.push(_case); },
+    PUSH_CASE(state, _case) { state.cases.push(_case); },
+    SELECT_CASE(state, _case) {
+        const query = router.currentRoute.query;
+        if (query && query.caseId) {
+            const caseId = parseInt(query.caseId);
+            if (caseId !== _case.id) {
+                const slideListId = parseInt(query.slideListId);
+                state.cases.forEach(_c => {
+                    if (_c.caseStatus !== 'archived' && _c.slideListId === slideListId) {
+                        _c.isSelected = _c.id === _case.id;
+                    }
+                });
+                setTimeout(() => {
+                    router.push({
+                        path: '/case-tracker',
+                        query: Object.assign({}, query, {caseId: _case.id})
+                    });
+                }, 20)
+            }
+        }
+    }
 };
 
 export default {
