@@ -28,8 +28,8 @@
       </div>
       <div class="cd-b-comments">
         <div class="cd-b-comments-box">
-          <span class="cd-b-comments-text">14<span class="cd-b-comments-text-link"
-          >+3</span></span>
+          <span class="cd-b-comments-text">{{readCasesComments.length}}<span class="cd-b-comments-text-link"
+          >+{{notReadCasesComments.length}}</span></span>
           <span @click="openCommentModal()"
                 class="cd-b-comments-text cd-b-comments-text-clickable">comments</span>
         </div>
@@ -63,33 +63,48 @@ export default {
   }),
   computed: {
     selectedCase() {
-      const foundCase = this.cases
-          .find(_c => _c.isSelected);
-      if (foundCase) {
-        return foundCase;
-      } else {
-        return null;
+      const query = this.$route.query;
+      if (query && query.caseId) {
+        const foundCase = this.getCases()
+            .find(_c => _c.id === parseInt(query.caseId));
+        if (foundCase) {
+          return foundCase;
+        }
       }
+      return null;
     },
     casesComments() {
+      return this.getCasesComments().filter(_c =>
+          _c.caseId === this.selectedCase.id);
+    },
+    casesCommentsTree() {
       const result = [];
-      this.getCasesComments().forEach(_c => {
-        if (_c.parent === null) {
-          result.push(_c);
-        } else {
-          const foundParent = result.find(_p => _p.id === _c.parent);
-          if (foundParent) {
-            if (foundParent.children) {
-              foundParent.children.push(_c);
+      this.casesComments
+          .forEach(_c => {
+            if (_c.parent === null) {
+              result.push(Object.assign({}, _c));
             } else {
-              foundParent.children = [];
-              foundParent.children.push(_c);
+              const foundParent = result.find(_p => _p.id === _c.parent);
+              if (foundParent) {
+                if (foundParent.children) {
+                  foundParent.children.push(Object.assign({}, _c));
+                } else {
+                  foundParent.children = [];
+                  foundParent.children.push(Object.assign({}, _c));
+                }
+              }
             }
-          }
-        }
       });
       return result;
-    }
+    },
+    readCasesComments() {
+      return this.casesComments.filter(_c => _c.notifyInfo &&
+          _c.notifyInfo.status === 'read');
+    },
+    notReadCasesComments() {
+      return this.casesComments.filter(_c => _c.notifyInfo &&
+          _c.notifyInfo.status === 'notRead');
+    },
   },
   methods: {
     ...mapActions(['setCentralModal']),
@@ -115,72 +130,7 @@ export default {
                   'CommentsModal',
                   400,
                   {
-                    comments: this.casesComments,
-                    comments2: [
-                      {
-                        id: 100,
-                        message: 'Привет. Здесь надо поменять скругление и может вообще убрать stroke.',
-                        user: {
-                          fullName: 'Dmitry Kolunov',
-                          shortName: 'DK',
-                          color: '#FF2727',
-                        },
-                        updatedAt: '2020-10-27 18:24:45',
-                        children: [
-                          {
-                            id: 101,
-                            message: 'И тебе привет. я думаю можно сделать как здесь тогда https://ru.wikipedia.org/wiki/Google_%D0%9F%D0%B5%D1%80%D0%B5%D0%B2%D0%BE%D0%B4%D1%87%D0%B8%D0%BA',
-                            user: {
-                              fullName: 'Genom 89',
-                              shortName: '',
-                              color: '#b2b2b2',
-                            },
-                            updatedAt: '2020-10-28 17:36:49',
-                          }
-                        ]
-                      },
-                      {
-                        id: 102,
-                        message: 'Привет. Здесь надо поменять скругление и может вообще убрать stroke.',
-                        user: {
-                          fullName: 'Dmitry Kolunov',
-                          shortName: 'DK',
-                          color: '#FF2727',
-                        },
-                        updatedAt: '2020-10-29 00:36:14',
-                        images: [
-                          {
-                            id: 15,
-                            src: '',
-                            orientation: 'portrait'
-                          }
-                        ],
-                        children: [
-                          {
-                            id: 103,
-                            message: 'Привет. Здесь надо поменять.',
-                            user: {
-                              fullName: 'Dmitry Kolunov',
-                              shortName: 'DK',
-                              color: '#FF2727',
-                            },
-                            updatedAt: '2020-10-29 01:36:15',
-                            children: []
-                          },
-                          {
-                            id: 104,
-                            message: 'Привет. Здесь надо .',
-                            user: {
-                              fullName: 'Genom 89',
-                              shortName: 'DK',
-                              color: '#b2b2b2',
-                            },
-                            updatedAt: '2020-10-29 01:37:15',
-                            children: []
-                          },
-                        ]
-                      }
-                    ]
+                    comments: this.casesCommentsTree,
                   })
       );
     }

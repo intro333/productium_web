@@ -10,7 +10,7 @@
              class="sl-b-slide-bg-img"
              alt="">
       </div>
-      <div v-if="slide.isNotify"
+      <div v-if="isNotify"
            class="notify-circle sl-b-slide-notify"
            :class="{'of-selected': slide.isSelected}"></div>
     </div>
@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import {mapActions} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 import {getModalPositionFunc} from "@/functions/calculations";
 import {ContextMenuBaseModel} from "@/models/modals/ContextMenuBaseModel";
 
@@ -34,8 +34,20 @@ export default {
     cKey: Number,
     slidesLength: Number
   },
+  computed: {
+    casesComments() {
+      return this.getCasesComments().filter(_c =>
+          _c.slideId === this.slide.id);
+    },
+    isNotify() {
+      const result = this.casesComments.find(_c =>
+          _c.notifyInfo && _c.notifyInfo.status === 'notRead');
+      return !!result;
+    }
+  },
   methods: {
     ...mapActions(['setContextMenuBase', 'removeSlide', 'selectSlide']),
+    ...mapGetters(['getCasesComments']),
     openOptionsMenu(width, _refStr) {
       const _ref = this.$refs[_refStr];
       if (_ref && _ref.getBoundingClientRect()) {

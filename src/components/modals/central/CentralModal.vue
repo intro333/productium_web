@@ -11,7 +11,7 @@
           <span class="share-first-pre">Поделиться</span>
           <span class="share-first-name">CaseMaker</span>
         </div>
-        <CaseNameWithStatusAndOptions v-if="cm.type === 'CommentsModal'"
+        <CaseNameWithStatusAndOptions v-if="selectedCase && cm.type === 'CommentsModal'"
                                       :selectedCase="selectedCase"
                                       :isBlack="true" />
         <div @click="close"
@@ -53,18 +53,20 @@ export default {
       return this.contextMenu();
     },
     selectedCase() {
-      const foundCase = this.getCaseList()
-          .find(_c => _c.isSelected);
-      if (foundCase) {
-        return foundCase;
-      } else {
-        return null;
+      const query = this.$route.query;
+      if (query && query.caseId) {
+        const foundCase = this.getCases()
+            .find(_c => _c.id === parseInt(query.caseId));
+        if (foundCase) {
+          return foundCase;
+        }
       }
+      return null;
     }
   },
   methods: {
     ...mapActions(['setCentralModal']),
-    ...mapGetters(['getSimpleNotifyInside', 'getCaseList']),
+    ...mapGetters(['getSimpleNotifyInside', 'getCases']),
     close() {
       this.setCentralModal(
           new CentralModalModel()

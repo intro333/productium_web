@@ -371,11 +371,8 @@ const actions = {
         commit('PUSH_PROJECT', {});
     },
     /* SLIDES */
-    fetchSlides({commit, getters}) {
-        commit('SET_SLIDES', {
-            slides: mockSlides,
-            notifications: getters.getCaseCommentNotifications
-        });
+    fetchSlides({commit}) {
+        commit('SET_SLIDES', mockSlides);
     },
     pushSlide({commit}) {
         /* TODO Mock */
@@ -494,19 +491,16 @@ const mutations = {
     },
     PUSH_PROJECT(state, _project) { state.projects.push(_project); },
     /* SLIDES */
-    SET_SLIDES(state, payload) {
+    SET_SLIDES(state, slides) {
         const query = router.currentRoute.query;
         if (query && query.slideId) {
             const _slideId = parseInt(query.slideId);
-            state.slides = payload.slides.map(_s => {
-                const _notif = payload.notifications.filter(_n1 => _n1.slideId === _s.id)
-                  .filter(_n2 => _n2.status === 'notRead');
+            state.slides = slides.map(_s => {
                 _s.isSelected = _s.id === _slideId;
-                _s.isNotify = _notif.length;
                 return _s;
             });
         } else {
-            state.slides = payload.slides;
+            state.slides = slides;
         }
     },
     PUSH_SLIDE(state, _slide) { state.slides.push(_slide); },

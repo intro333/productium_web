@@ -5,7 +5,6 @@ export class SlideModel {
   order = 0;
   image = '';
   isSelected = false;
-  isNotify = false;
 
   constructor(_slide) {
     this.id = _slide.id;
