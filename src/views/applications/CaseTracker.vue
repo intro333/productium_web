@@ -29,6 +29,7 @@ import ContextMenuBase from "@/components/modals/context-menu/ContextMenuBase";
 import {mapActions, mapGetters} from "vuex";
 import Tooltip from "@/components/modals/Tooltip";
 import CentralModal from "@/components/modals/central/CentralModal";
+import router from "@/router";
 
 export default {
   name: "CaseTracker",
@@ -48,9 +49,14 @@ export default {
     this.fetchSlideLists();
     this.fetchCases();
     this.fetchCaseComments();
+    const query = router.currentRoute.query;
+    if (query && query.commentId) {
+      this.openCommentsModalByCommentId(parseInt(query.commentId));
+    }
   },
   methods: {
-    ...mapActions(['fetchProjects', 'fetchSlides', 'fetchSlideLists', 'fetchCases', 'fetchCaseComments']),
+    ...mapActions(['fetchProjects', 'fetchSlides', 'fetchSlideLists', 'fetchCases', 'fetchCaseComments',
+      'openCommentsModalByCommentId']),
     ...mapGetters(['getContextMenuBase', 'getCentralModal', 'getTooltip']),
   },
 }

@@ -529,8 +529,10 @@ p {
       justify-content: center;
       margin-top: 14px;
       padding: 4px 0;
-      &:hover {
-        cursor: pointer;
+      &.box-hover {
+        &:hover {
+          cursor: pointer;
+        }
       }
     }
     font-size: 12px;

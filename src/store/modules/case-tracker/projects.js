@@ -249,7 +249,7 @@ const mockCaseComments = [
         images: [],
         updatedAt: '2020-10-27 18:24:45',
         notifyInfo: { // join tables, если в таблице case_comment_notification есть запись для текущего юзера, то выести её, если нет то null поставить
-            status: 'read', // notRead | read
+            status: 'read', // notRead | read | archived
         }
     },
     {
@@ -487,12 +487,18 @@ const actions = {
                 commentId: notify.id
             }
         });
+        dispatch('openCommentsModalByCommentId', notify.id);
+    },
+    fetchCaseComments({commit}) {
+        commit('SET_CASES_COMMENTS', mockCaseComments);
+    },
+    openCommentsModalByCommentId({dispatch}, commentId) {
         dispatch('setCentralModal',
           new CentralModalModel()
             .set(true,
               'CommentsModal',
               400,
-              notify.id,
+              commentId,
               {
                   close: () => {
                       const query = router.currentRoute.query;
@@ -510,10 +516,7 @@ const actions = {
                       }, 30);
                   }
               })
-        )
-    },
-    fetchCaseComments({commit}) {
-        commit('SET_CASES_COMMENTS', mockCaseComments);
+        );
     }
 };
 
@@ -635,6 +638,13 @@ const mutations = {
     },
     REMOVE_CASE(state, _case) {
         _case.caseStatus = 'archived';
+        // TODO На серваке поместим в архив кейс и что делать с оповещениями?
+        // Можно оставить так и после перезагрузки страницы их не будет, а до этого они будут со статусом archived
+        state.casesComments.forEach(_c => {
+            if (_c.caseId === _case.id) {
+                _c.notifyInfo = 'archived';
+            }
+        })
     },
     SET_CASES_COMMENTS(state, comments) {
         state.casesComments = comments;

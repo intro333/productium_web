@@ -174,7 +174,8 @@ export default {
         const filteredComments = Object.assign([],
             this.getCasesComments()
                 .filter(_c =>
-                    _c.projectId === parseInt(query.projectId) && _c.notifyInfo));
+                    (_c.projectId === parseInt(query.projectId)) &&
+                    (_c.notifyInfo && _c.notifyInfo !== 'archived')));
         return  filteredComments.reverse();
       } else {
         return [];

@@ -28,7 +28,8 @@ export default {
   },
   computed: {
     slideOrder() {
-      const foundSlide = this.getSlides().find(_s => _s.id === this.notify.slideId);
+      const foundSlide = this.getSlides()
+          .find(_s => _s.id === this.notify.slideId);
       if (foundSlide) {
         return foundSlide.order;
       }
