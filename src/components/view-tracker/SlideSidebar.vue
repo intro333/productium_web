@@ -22,7 +22,7 @@
 
 <script>
 import {mapActions, mapGetters} from "vuex";
-import {slidesOfProjectFilter} from "@/functions/case-tracker/projectsF";
+import {slidesOfProjectFilterWithSelect} from "@/functions/case-tracker/projectsF";
 import SlideItem from "@/components/view-tracker/part/SlideItem";
 
 export default {
@@ -62,8 +62,11 @@ export default {
     fetchSlidesL() {
       const query = this.$route.query;
       if (query && query.projectId) {
-        this.slides = slidesOfProjectFilter(this.getSlides(),
-            parseInt(query.projectId));
+        this.slides = slidesOfProjectFilterWithSelect(
+            this.getSlides(),
+            parseInt(query.projectId),
+            parseInt(query.slideId)
+        );
       } else {
         this.slides = [];
       }

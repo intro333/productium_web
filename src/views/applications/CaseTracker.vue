@@ -47,9 +47,10 @@ export default {
     this.fetchSlides();
     this.fetchSlideLists();
     this.fetchCases();
+    this.fetchCaseComments();
   },
   methods: {
-    ...mapActions(['fetchProjects', 'fetchSlides', 'fetchSlideLists', 'fetchCases']),
+    ...mapActions(['fetchProjects', 'fetchSlides', 'fetchSlideLists', 'fetchCases', 'fetchCaseComments']),
     ...mapGetters(['getContextMenuBase', 'getCentralModal', 'getTooltip']),
   },
 }

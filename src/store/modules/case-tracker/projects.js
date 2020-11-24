@@ -4,6 +4,7 @@ import router from "@/router";
 import {ProjectModel} from "@/models/modals/case-tracker/ProjectModel";
 import {SlideList} from "@/models/modals/case-tracker/SlideList";
 import {CaseModel} from "@/models/modals/case-tracker/CaseModel";
+import {CentralModalModel} from "@/models/modals/CentralModalModel";
 
 /* TEST DATA */
 const mockProjects = [
@@ -236,6 +237,7 @@ const mockCaseComments = [
         id: 1,
         projectId: 1,
         slideId: 1,
+        slideListId: 1,
         caseId: 1,
         parent: null,
         message: 'Привет. Здесь надо поменять скругление и может вообще убрать stroke.',
@@ -254,6 +256,7 @@ const mockCaseComments = [
         id: 2,
         projectId: 1,
         slideId: 1,
+        slideListId: 1,
         caseId: 1,
         parent: 1,
         message: 'И тебе привет. Я думаю можно сделать как здесь тогда https://ru.wikipedia.org/wiki/Google_%D0%9F%D0%B5%D1%80%D0%B5%D0%B2%D0%BE%D0%B4%D1%87%D0%B8%D0%BA',
@@ -272,6 +275,7 @@ const mockCaseComments = [
         id: 3,
         projectId: 1,
         slideId: 1,
+        slideListId: 1,
         caseId: 1,
         parent: null,
         message: 'Привет. Здесь надо поменять скругление и может вообще убрать stroke.',
@@ -296,6 +300,7 @@ const mockCaseComments = [
         id: 4,
         projectId: 1,
         slideId: 1,
+        slideListId: 1,
         caseId: 1,
         parent: 3,
         message: 'Привет. Здесь надо поменять.',
@@ -314,6 +319,7 @@ const mockCaseComments = [
         id: 5,
         projectId: 1,
         slideId: 1,
+        slideListId: 1,
         caseId: 1,
         parent: 3,
         message: 'Привет. Здесь надо .',
@@ -332,6 +338,7 @@ const mockCaseComments = [
         id: 6,
         projectId: 1,
         slideId: 1,
+        slideListId: 1,
         caseId: 1,
         parent: null,
         message: 'Моё сообщение',
@@ -351,7 +358,7 @@ const state = {
     slides: [],
     slideLists: [],
     cases: [],
-    casesComments: mockCaseComments,
+    casesComments: [],
 };
 
 const getters = {
@@ -469,9 +476,44 @@ const actions = {
             }, 20);
         }
     },
-    goToSlideAndCase({commit}, notify) {
-        console.log(1, commit)
-        console.log(2, notify)
+    goToSlideAndCase({dispatch}, notify) {
+        router.push({
+            path: '/case-tracker',
+            query: {
+                projectId: notify.projectId,
+                slideId: notify.slideId,
+                slideListId: notify.slideListId,
+                caseId: notify.caseId,
+                commentId: notify.id
+            }
+        });
+        dispatch('setCentralModal',
+          new CentralModalModel()
+            .set(true,
+              'CommentsModal',
+              400,
+              notify.id,
+              {
+                  close: () => {
+                      const query = router.currentRoute.query;
+                      const newQuery = {
+                          projectId: query.projectId,
+                          slideId: query.slideId,
+                          slideListId: query.slideListId,
+                          caseId: query.caseId,
+                      }
+                      setTimeout(() => {
+                          router.push({
+                              path: '/case-tracker',
+                              query: newQuery
+                          });
+                      }, 30);
+                  }
+              })
+        )
+    },
+    fetchCaseComments({commit}) {
+        commit('SET_CASES_COMMENTS', mockCaseComments);
     }
 };
 
@@ -510,12 +552,6 @@ const mutations = {
         if (query && query.slideId) {
             const _slideId = parseInt(query.slideId);
             if (payload.isNew || (_slideId !== _slide.id)) {
-                const _projectId = parseInt(query.projectId);
-                state.slides.forEach(_s => {
-                    if (_s.slideState !== 'archived' && _s.projectId === _projectId) {
-                        _s.isSelected = _s.id === _slide.id;
-                    }
-                });
                 setTimeout(() => {
                     const _slideList = state.slideLists
                       .find(_sl => _sl.slideId === _slide.id);
@@ -600,6 +636,9 @@ const mutations = {
     REMOVE_CASE(state, _case) {
         _case.caseStatus = 'archived';
     },
+    SET_CASES_COMMENTS(state, comments) {
+        state.casesComments = comments;
+    }
 };
 
 export default {

@@ -77,26 +77,6 @@ export default {
       return this.getCasesComments().filter(_c =>
           _c.caseId === this.selectedCase.id);
     },
-    casesCommentsTree() {
-      const result = [];
-      this.casesComments
-          .forEach(_c => {
-            if (_c.parent === null) {
-              result.push(Object.assign({}, _c));
-            } else {
-              const foundParent = result.find(_p => _p.id === _c.parent);
-              if (foundParent) {
-                if (foundParent.children) {
-                  foundParent.children.push(Object.assign({}, _c));
-                } else {
-                  foundParent.children = [];
-                  foundParent.children.push(Object.assign({}, _c));
-                }
-              }
-            }
-      });
-      return result;
-    },
     readCasesComments() {
       return this.casesComments.filter(_c => _c.notifyInfo &&
           _c.notifyInfo.status === 'read');
@@ -128,11 +108,7 @@ export default {
           new CentralModalModel()
               .set(true,
                   'CommentsModal',
-                  400,
-                  {
-                    comments: this.casesCommentsTree,
-                  })
-      );
+                  400));
     }
   }
 }

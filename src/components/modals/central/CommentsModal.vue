@@ -3,9 +3,10 @@
        :style="{height: pCommentsHeight}">
     <div ref="pCommentsListRef"
          class="p-comments-list p-comments-padding-2 scroll-y-container">
-      <CommentItem v-for="_item in cm.body.comments"
+      <CommentItem v-for="_item in comments"
                    :comment="_item"
                    :key="_item.id"
+                   :selectedCommentId="cm.commentId"
                    :cKey="_item.id" />
     </div>
     <CommentInputArea :cKey="0"
@@ -16,6 +17,8 @@
 <script>
 import CommentInputArea from "@/components/includes/comment/CommentInputArea";
 import CommentItem from "@/components/includes/comment/CommentItem";
+import {fillCasesCommentsTree} from "@/functions/case-tracker/projectsF";
+import {mapGetters} from "vuex";
 
 export default {
   name: "CommentsModal",
@@ -25,17 +28,25 @@ export default {
     CommentItem
   },
   data: () => ({
-    pCommentsHeight: 'auto'
+    pCommentsHeight: 'auto',
+    selectedCommentId: 0
   }),
   computed: {
     cm() {
       return this.contextMenu();
     },
-    body() {
-      return this.cm.body;
-    },
+    comments() {
+      const query = this.$route.query;
+      if (query && query.caseId) {
+        const filteredComments = this.getCasesComments()
+            .filter(_c => _c.caseId === parseInt(query.caseId));
+        return fillCasesCommentsTree(filteredComments);
+      }
+      return [];
+    }
   },
   methods: {
+    ...mapGetters(['getCasesComments']),
     checkPCommentsBlockHeight(pcInputAreaRef) {
       const _ref = this.$refs['pCommentsListRef'];
       if (_ref && pcInputAreaRef) {

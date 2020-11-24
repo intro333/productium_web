@@ -182,7 +182,7 @@ export default {
     },
     isNotReadNotifications() {
       return this.notifications
-          .filter(_n => _n.status === 'notRead').length
+          .filter(_n => _n.notifyInfo.status === 'notRead').length
     },
     numOfInWorkCases() {
       return this.cases.filter(_c => _c.caseStatus === 'in-work').length;

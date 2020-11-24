@@ -52,6 +52,9 @@ export default {
     cm() {
       return this.contextMenu();
     },
+    body() {
+      return this.cm.body ? this.cm.body : null;
+    },
     selectedCase() {
       const query = this.$route.query;
       if (query && query.caseId) {
@@ -68,9 +71,14 @@ export default {
     ...mapActions(['setCentralModal']),
     ...mapGetters(['getSimpleNotifyInside', 'getCases']),
     close() {
-      this.setCentralModal(
-          new CentralModalModel()
-      );
+      if (this.body && this.body.close) {
+        this.body.close();
+      }
+      setTimeout(() => {
+        this.setCentralModal(
+            new CentralModalModel()
+        );
+      }, 20);
     },
   },
 }

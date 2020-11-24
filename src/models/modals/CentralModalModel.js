@@ -3,15 +3,17 @@ export class CentralModalModel {
   state = false;
   type = '';
   width = 0;
+  commentId = null;
   body = null;
 
   /* MORE FIELDS (optional) */
   //
 
-  set(state, type, width, body= null) {
+  set(state, type, width, commentId = null, body= null) {
     this.state = state;
     this.type = type;
     this.width = width;
+    this.commentId = commentId;
     this.body = body;
 
     return this;
