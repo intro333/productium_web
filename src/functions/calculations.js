@@ -21,8 +21,7 @@ export function getRandomInt(min, max) {
 
 export function calcTextareaHeight(value) {
   let numberOfLineBreaks = (value.match(/\n/g) || []).length;
-  console.log(1, numberOfLineBreaks)
-  // min-height + lines x line-height + padding
+  /* min-height + lines x line-height */
   let newHeight = 31 + numberOfLineBreaks * 14;
   return newHeight;
 }

@@ -7,16 +7,16 @@
              :class="{'rgb-black-30': !isTabSelected('cases')}">
           <span>Кейсы </span>
           <span>
-            <span>32</span>
-            <span class="rgb-black-30">/12</span>
+            <span>{{numOfInWorkCases}}</span>
+            <span class="rgb-black-30">/{{numOfDoneCases}}</span>
           </span>
         </div>
-        <span @click="selectTab('notes')"
-              class="csb-header-tabs-item"
-              :class="{'rgb-black-30': !isTabSelected('notes')}">Заметки</span>
-        <span @click="selectTab('wiki')"
-              class="csb-header-tabs-item"
-              :class="{'rgb-black-30': !isTabSelected('wiki')}">Вики</span>
+<!--        <span @click="selectTab('notes')"-->
+<!--              class="csb-header-tabs-item"-->
+<!--              :class="{'rgb-black-30': !isTabSelected('notes')}">Заметки</span>-->
+<!--        <span @click="selectTab('wiki')"-->
+<!--              class="csb-header-tabs-item"-->
+<!--              :class="{'rgb-black-30': !isTabSelected('wiki')}">Вики</span>-->
       </div>
       <div @click="selectTab('notify')"
            class="csb-header-img-box">
@@ -41,7 +41,7 @@
         </div>
       </div>
       <div class="csb-cases-list">
-        <div v-for="(_case, i) in caseListFiltered"
+        <div v-for="(_case, i) in casesFiltered"
              class="csb-cases-item-container"
              :key="i">
           <div class="csb-cases-item"
@@ -57,10 +57,10 @@
               </div>
               <div v-if="!_case.children.length"
                    class="csb-cases-item-triangle"></div>
-              <div @click="selectCase(_case)"
+              <div @click="selectCaseL(_case)"
                    class="csb-cases-item-text-box">
                 <div class="case-status-main csb-cases-item-status"
-                     :class="{commented: _case.haveNewComments, [_case.status]: true}">
+                     :class="{commented: _case.haveNewComments, [_case.caseStatus]: true}">
                   <div class="case-status-inside"></div>
                 </div>
                 <span v-if="!_case.isEdited"
@@ -87,7 +87,7 @@
             </div>
           </div>
           <div v-if="_case.children.length && _case.isOpen"
-               @click="selectCase(_case)"
+               @click="selectCaseL(_case)"
                class="csb-cases-item-children"
                :class="{'rgb-base-10': _case.isSelected}">
             <div v-for="(_child, k) in _case.children"
@@ -113,7 +113,7 @@
 <script>
 import {getModalPositionFunc} from "@/functions/calculations";
 import {ContextMenuBaseModel} from "@/models/modals/ContextMenuBaseModel";
-import {mapGetters} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 import ModalsMixin from "@/components/mixins/ModalsMixin";
 import Notifications from "@/components/common/Notifications";
 import CaseMixin from "@/components/mixins/CaseMixin";
@@ -129,9 +129,6 @@ export default {
     caseFilterSelected: 0,
   }),
   computed: {
-    caseList() {
-      return this.getCaseList();
-    },
     caseFilters() {
       return [
         {
@@ -157,14 +154,14 @@ export default {
         },
       ];
     },
-    caseListFiltered() {
+    casesFiltered() {
       const result = [];
       const selectedFilter = this.caseFilters[this.caseFilterSelected];
-      this.caseList.forEach(_case => {
+      this.cases.forEach(_case => {
         if (selectedFilter.status === 'all') {
           result.push(_case);
         } else {
-          if (_case.status === selectedFilter.status) {
+          if (_case.caseStatus === selectedFilter.status) {
             result.push(_case);
           }
         }
@@ -172,16 +169,32 @@ export default {
       return result;
     },
     notifications() {
-      return this.getCaseCommentNotifications()
-          .filter(_n => _n.projectId === 1); // TODO установить фильтр по активному проекту
+      const query = this.$route.query;
+      if (query && query.projectId) {
+        const filteredComments = Object.assign([],
+            this.getCasesComments()
+                .filter(_c =>
+                    (_c.projectId === parseInt(query.projectId)) &&
+                    (_c.notifyInfo && _c.notifyInfo !== 'archived')));
+        return  filteredComments.reverse();
+      } else {
+        return [];
+      }
     },
     isNotReadNotifications() {
       return this.notifications
-          .filter(_n => _n.status === 'notRead').length
-    }
+          .filter(_n => _n.notifyInfo.status === 'notRead').length
+    },
+    numOfInWorkCases() {
+      return this.cases.filter(_c => _c.caseStatus === 'in-work').length;
+    },
+    numOfDoneCases() {
+      return this.cases.filter(_c => _c.caseStatus === 'done').length;
+    },
   },
   methods: {
-    ...mapGetters(['getCaseCommentNotifications', 'getCaseList']),
+    ...mapActions(['selectCase']),
+    ...mapGetters(['getCasesComments']),
     caseRef(_case, i) {
       return 'caseNameInputRef_' + i;
     },
@@ -216,10 +229,8 @@ export default {
         );
       }
     },
-    selectCase(_case) {
-      this.caseList.forEach(_c => {
-        _c.isSelected = _c.id === _case.id;
-      });
+    selectCaseL(_case) {
+      this.selectCase(_case);
     },
     showOrHideCaseChildren(_case) {
       _case.isOpen = !_case.isOpen;
@@ -227,6 +238,6 @@ export default {
     getCaseShapeChildImg(_child) {
       return require('@/assets/img/case-tracker/case-sidebar/' + _child.shapeType + '.svg')
     }
-  }
+  },
 }
 </script>

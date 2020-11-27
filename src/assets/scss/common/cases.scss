@@ -180,6 +180,10 @@
         @include w-icon-user();
         margin-right: 16px;
       }
+      &-message-box {
+        display: flex;
+        flex-direction: column;
+      }
       &-body {
         //display: grid;
         display: flex;

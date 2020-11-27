@@ -7,8 +7,11 @@
            :style="{'background-color': comment.user.color}"
       >{{comment.user.shortName}}</div>
       <div class="pc-comment-item-body">
-        <span class="pc-comment-item-body-name">{{comment.user.fullName}}</span>
-        <span class="pc-comment-item-body-message">{{comment.message}}</span>
+        <div class="pc-comment-item-message-box"
+             :class="{'rgb-base-10': isSelectableComment}">
+          <span class="pc-comment-item-body-name">{{comment.user.fullName}}</span>
+          <span class="pc-comment-item-body-message">{{comment.message}}</span>
+        </div>
         <div class="pc-comment-item-body-bottom">
           <span class="pc-comment-item-body-date">{{getDateTime()}}</span>
           <span @click="reply"
@@ -17,6 +20,7 @@
         <div v-if="comment.children && comment.children.length"
              class="pc-comment-item-children">
           <CommentItem v-for="_child in comment.children"
+                       :selectedCommentId="selectedCommentId"
                        :comment="_child"
                        :parent="comment"
                        :focusInputAreaOfParentFunc="focusInputAreaOfParent"
@@ -28,6 +32,7 @@
           <CommentInputArea :cKey="cKey"
                             :comment="commentToInput"
                             :userLink="commentToInput.user.fullName"
+                            :escTextareaFunc="escTextarea"
                             ref="commentInputAreaRef" />
         </div>
       </div>
@@ -43,24 +48,42 @@
 <script>
 import {getNearestWeekdayWithTime} from "@/functions/date";
 import CommentInputArea from "@/components/includes/comment/CommentInputArea";
-// import {formUserLink} from "@/functions/conversation";
 
 export default {
   name: "CommentItem",
   props: {
     comment: Object,
     cKey: Number,
+    selectedCommentId: Number,
     isChild: Boolean,
     parent: Object,
     focusInputAreaOfParentFunc: Function
   },
-  data: () => ({
-    isReply: false,
-    commentToInput: null
-  }),
   components: {
     CommentItem: this,
     CommentInputArea
+  },
+  data: () => ({
+    isReply: false,
+    commentToInput: null,
+    isSelectableComment: false
+  }),
+  mounted() {
+    if (this.cKey === this.selectedCommentId) {
+      this.isSelectableComment = true;
+      setTimeout(() => {
+        this.isSelectableComment = false;
+      }, 1500)
+      const commentItemBoxRef = this.$refs['commentItemBoxRef_' + this.cKey];
+      if (commentItemBoxRef) {
+        setTimeout(() => {
+          commentItemBoxRef.scrollIntoView({
+            block: 'start',
+            inline: 'nearest'
+          });
+        }, 300);
+      }
+    }
   },
   methods: {
     getDateTime() {
@@ -83,6 +106,9 @@ export default {
           }
         }
       }, 10);
+    },
+    escTextarea() {
+      this.isReply = false;
     },
     reply() {
       const commentItemBoxRef = this.$refs['commentItemBoxRef_' + this.cKey];

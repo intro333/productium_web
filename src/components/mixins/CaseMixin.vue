@@ -1,12 +1,45 @@
 <script>
 import {getModalPositionFunc} from "@/functions/calculations";
 import {ContextMenuBaseModel} from "@/models/modals/ContextMenuBaseModel";
-import {mapActions} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 
 export default {
   name: "CaseMixin",
+  data: () => ({
+    cases: [],
+  }),
+  created() {
+    this.fetchCasesL();
+    this.removeCaseUnsubscribe = this.$store.subscribe((mutation) => {
+      if (mutation.type === 'REMOVE_CASE') {
+        if (mutation.payload) {
+          this.fetchCasesL();
+        }
+      }
+    });
+  },
+  beforeDestroy() {
+    if (this.removeCaseUnsubscribe) {
+      this.removeCaseUnsubscribe();
+    }
+  },
   methods: {
-    ...mapActions(['setContextMenuBase']),
+    ...mapActions(['setContextMenuBase', 'removeCase']),
+    ...mapGetters(['getCases']),
+    fetchCasesL() {
+      const query = this.$route.query;
+      if (query && query.slideListId) {
+        this.cases = this.getCases()
+            .filter(_c => {
+              if (_c.caseStatus !== 'archived' && _c.slideListId === parseInt(query.slideListId)) {
+                _c.isSelected = _c.id === parseInt(query.caseId);
+                return _c;
+              }
+            });
+      } else {
+        this.cases = [];
+      }
+    },
     changeCaseNameEditable(_case, refStr, state, isMultiple=false, i=0) {
       _case.isEdited = state;
       this.caseRefFocusHandler(_case, refStr, state, isMultiple, i);
@@ -59,17 +92,17 @@ export default {
                     {
                       isItemOfMenu: true,
                       title: 'В работе',
-                      isActive: _case.status === 'in-work',
+                      isActive: _case.caseStatus === 'in-work',
                       action: () => {
-                        _case.status = 'in-work'
+                        _case.caseStatus = 'in-work'
                       },
                     },
                     {
                       isItemOfMenu: true,
                       title: 'Готово',
-                      isActive: _case.status === 'done',
+                      isActive: _case.caseStatus === 'done',
                       action: () => {
-                        _case.status = 'done'
+                        _case.caseStatus = 'done'
                       }
                     },
                     {
@@ -86,7 +119,7 @@ export default {
                       isItemOfMenu: true,
                       title: 'Удалить',
                       action: () => {
-
+                        this.removeCase(_case);
                       }
                     },
                   ]
@@ -98,6 +131,11 @@ export default {
         );
       }
     },
+  },
+  watch: {
+    $route() {
+      this.fetchCasesL();
+    }
   }
 }
 </script>

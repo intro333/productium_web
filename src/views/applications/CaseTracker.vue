@@ -26,9 +26,10 @@ import WorkArea from "@/components/view-tracker/WorkArea";
 import CaseSidebar from "@/components/view-tracker/CaseSidebar";
 import CaseDiscusBlock from "@/components/view-tracker/CaseDiscusBlock";
 import ContextMenuBase from "@/components/modals/context-menu/ContextMenuBase";
-import {mapGetters} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 import Tooltip from "@/components/modals/Tooltip";
 import CentralModal from "@/components/modals/central/CentralModal";
+import router from "@/router";
 
 export default {
   name: "CaseTracker",
@@ -42,7 +43,20 @@ export default {
     ContextMenuBase,
     CentralModal,
   },
+  created() {
+    this.fetchProjects();
+    this.fetchSlides();
+    this.fetchSlideLists();
+    this.fetchCases();
+    this.fetchCaseComments();
+    const query = router.currentRoute.query;
+    if (query && query.commentId) {
+      this.openCommentsModalByCommentId(parseInt(query.commentId));
+    }
+  },
   methods: {
+    ...mapActions(['fetchProjects', 'fetchSlides', 'fetchSlideLists', 'fetchCases', 'fetchCaseComments',
+      'openCommentsModalByCommentId']),
     ...mapGetters(['getContextMenuBase', 'getCentralModal', 'getTooltip']),
   },
 }
