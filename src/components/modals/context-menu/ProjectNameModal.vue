@@ -16,41 +16,21 @@ export default {
   components: {
     ContextMenuItem
   },
+  data: () => ({
+    subMenu: null,
+  }),
   computed: {
     cm() {
       return this.contextMenu();
-    }
+    },
+    list() {
+      return (this.cm.body && this.cm.body.list) ? this.cm.body.list : [];
+    },
   },
-  data: () => ({
-    subMenu: null,
-    list: [
-      {
-        isItemOfMenu: true,
-        title: 'Переименовать',
-        action: () => {
-          console.log('ACTION Переименовать')
-        }
-      },
-      {
-        isItemOfMenu: true,
-        title: 'Удалить',
-        action: () => {
-          console.log('ACTION Удалить')
-        }
-      },
-      {
-        isItemOfMenu: true,
-        title: 'Дублировать',
-        action: () => {
-          console.log('ACTION Дублировать')
-        }
-      },
-    ],
-  }),
   methods: {
     setSubMenu(subMenu) {
       this.subMenu = subMenu;
-    }
+    },
   },
 }
 </script>

@@ -120,7 +120,7 @@
         <span class="tp-text tp-text-input-readonly text-ellipsis">{{project.name}}</span>
       </div>
       <img v-if="!project.nameIsEdited"
-           @click="openContextMenu('ProjectNameModal', 134, 'projectNameArrowRef')"
+           @click="openContextMenu('ProjectNameModal', 134, 'projectNameArrowRef', false, projectNameModalBody())"
            ref="projectNameArrowRef"
            src="@/assets/img/common/selectArrow.svg"
            class="tp-icon-item select-arrow"
@@ -137,11 +137,11 @@ import {ContextMenuBaseModel} from "@/models/modals/ContextMenuBaseModel";
 import ModalsMixin from "@/components/mixins/ModalsMixin";
 import {getModalPositionFunc} from "@/functions/calculations";
 import {CentralModalModel} from "@/models/modals/CentralModalModel";
-import {ProjectModel} from "@/models/modals/case-tracker/ProjectModel";
+import ProjectMixin from "@/components/mixins/ProjectMixin";
 
 export default {
   name: "ToolbarPanel",
-  mixins: [ModalsMixin],
+  mixins: [ModalsMixin, ProjectMixin],
   data: () => ({
 
   }),
@@ -149,31 +149,14 @@ export default {
     contextMenu() {
       return this.getContextMenuBase();
     },
-    project() {
-      const projects = this.getProjects();
-      if (projects.length) {
-        const foundProject = projects.find(_p => _p.isSelected);
-        if (foundProject) {
-          return foundProject;
-        }
-        return projects[0];
-      } else {
-        return new ProjectModel({
-          id: 0,
-          name: 'Untitled',
-          activityStatus: 'active',
-        });
-        // TODO Если нет проектов, редиректить на главную
-      }
-    },
   },
   created() {
 
   },
   methods: {
     ...mapActions(['setContextMenuBase', 'setCentralModal']),
-    ...mapGetters(['getContextMenuBase', 'getProjects']),
-    openContextMenu(type, width, _refStr, isRight = null) {
+    ...mapGetters(['getContextMenuBase']),
+    openContextMenu(type, width, _refStr, isRight = null, _body = null) {
       if (this.$refs[_refStr] && this.$refs[_refStr].getBoundingClientRect()) {
         const modalPosition = getModalPositionFunc(this.$refs[_refStr], isRight, width);
         this.setContextMenuBase(new ContextMenuBaseModel()
@@ -182,24 +165,13 @@ export default {
                 width,
                 modalPosition.top,
                 modalPosition.left,
-                'up')
+                'up',
+                _body)
             .more({
               isRight
             })
         );
       }
-    },
-    changeProjectNameEditable(state) {
-      this.project.nameIsEdited = state;
-      setTimeout(() => {
-        if (state && this.$refs['projectNameInputRef']) {
-          const inputRef = this.$refs['projectNameInputRef'];
-          inputRef.focus();
-        }
-        if (!state && this.project.name === '') {
-          this.project.name = 'Untitled'
-        }
-      }, 20)
     },
     changeProjectNameText($event) {
       const name = $event.target.value;

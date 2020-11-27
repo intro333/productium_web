@@ -454,7 +454,26 @@ const actions = {
         commit('SET_CASES', mockCases);
     },
     pushCase({commit}) {
-        commit('PUSH_CASE', {});
+        const query = router.currentRoute.query;
+        if (query && query.slideListId) {
+            // TODO MOCK
+            const caseId = getRandomInt(10, 1000);
+            const newSCase = new CaseModel({
+                id: caseId,
+                slideListId: parseInt(query.slideListId),
+                title: 'Задача ' + caseId,
+                caseStatus: 'in-work',
+                isOpen: false,
+                discus: '',
+                resolut: '',
+                children: [],
+                order: 0
+            });
+            commit('PUSH_CASE', newSCase);
+            setTimeout(() => {
+                commit('SELECT_CASE', newSCase);
+            }, 20);
+        }
     },
     selectCase({commit}, _case) {
         commit('SELECT_CASE', _case);
@@ -563,12 +582,6 @@ const mutations = {
                         const slideListId = _slideList.id;
                         const _case = state.cases.find(_c => _c.slideListId === slideListId);
                         if (_case) {
-                            const caseId = _case.id;
-                            state.cases.forEach(_c => {
-                                if (_c.caseStatus !== 'archived' && _c.slideListId === slideListId) {
-                                    _c.isSelected = _c.id === caseId;
-                                }
-                            });
                             setTimeout(() => {
                                 router.push({
                                     path: '/case-tracker',
@@ -621,12 +634,6 @@ const mutations = {
         if (query && query.caseId) {
             const caseId = parseInt(query.caseId);
             if (caseId !== _case.id) {
-                const slideListId = parseInt(query.slideListId);
-                state.cases.forEach(_c => {
-                    if (_c.caseStatus !== 'archived' && _c.slideListId === slideListId) {
-                        _c.isSelected = _c.id === _case.id;
-                    }
-                });
                 setTimeout(() => {
                     router.push({
                         path: '/case-tracker',

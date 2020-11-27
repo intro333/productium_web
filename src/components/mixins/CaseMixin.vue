@@ -29,8 +29,13 @@ export default {
     fetchCasesL() {
       const query = this.$route.query;
       if (query && query.slideListId) {
-        this.cases = this.getCases().filter(_c => _c.caseStatus !== 'archived' &&
-            _c.slideListId === parseInt(query.slideListId));
+        this.cases = this.getCases()
+            .filter(_c => {
+              if (_c.caseStatus !== 'archived' && _c.slideListId === parseInt(query.slideListId)) {
+                _c.isSelected = _c.id === parseInt(query.caseId);
+                return _c;
+              }
+            });
       } else {
         this.cases = [];
       }
