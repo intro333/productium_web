@@ -1,5 +1,5 @@
 <script>
-import {ProjectModel} from "@/models/modals/case-tracker/ProjectModel";
+import {ProjectModel} from "@/models/case-tracker/ProjectModel";
 import {mapGetters} from "vuex";
 
 export default {

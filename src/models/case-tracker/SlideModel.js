@@ -3,7 +3,8 @@ export class SlideModel {
   slideState = 'in-work';
   projectId = 0;
   order = 0;
-  image = '';
+  img = '';
+  imgBase64 = '';
   isSelected = false;
 
   constructor(_slide) {
