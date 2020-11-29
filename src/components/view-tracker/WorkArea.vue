@@ -26,14 +26,20 @@
 </template>
 
 <script>
+import {mapActions} from "vuex";
+
 export default {
   name: "WorkArea",
   data: () => ({
     isSlideImage: false,
     fileIsDragOver: false,
-    filename: ''
+    filename: '',
+    canvas: null,
   }),
   mounted() {
+    // const self = this;
+    this.canvas = new fabric.Canvas('canvas');
+    this.canvas.selection = false;
     setTimeout(() => {
       const _ref = this.$refs['droppedZoneRef'];
       _ref.addEventListener('drop', function(e) {
@@ -42,6 +48,7 @@ export default {
     }, 200)
   },
   methods: {
+    ...mapActions(['setSlideImg']),
     uploadImageToCanvasBg($event) {
       const files = $event.target.files;
       this.setFile(files);
@@ -66,6 +73,7 @@ export default {
         const file = files[0];
         this.isSlideImage = true;
         this.filename = file.name;
+        this.setSlideImg(file);
       }
     }
   }

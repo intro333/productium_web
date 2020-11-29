@@ -79,9 +79,10 @@ const actions = {
   fetchSlides({commit}) {
     commit('SET_SLIDES', mockSlides);
   },
-  pushSlide({commit}) {
+  pushSlide({commit, getters}) {
     /* TODO Mock */
-    const selectedProject = state.projects.find(_p => _p.isSelected);
+    const projects = getters.getProjects;
+    const selectedProject = projects.find(_p => _p.isSelected);
     const newSlide = new SlideModel({
       id: getRandomInt(10, 1000),
       slideState: 'in-work',
@@ -112,11 +113,12 @@ const actions = {
     setTimeout(() => {
       commit('SELECT_SLIDE', {
         slide: newSlide,
-        isNew: true
+        isNew: true,
+        cases: getters.getCases
       });
     }, 20)
   },
-  removeSlide({commit}, payload) {
+  removeSlide({commit, getters}, payload) {
     if (payload.slidesLength > 1) {
       const slide = payload.slide;
       commit('REMOVE_SLIDE', slide);
@@ -131,14 +133,20 @@ const actions = {
                 return _s;
               }
             });
-            commit('SELECT_SLIDE', { slide: filteredSlides[filteredSlides.length-1] });
+            commit('SELECT_SLIDE', {
+              slide: filteredSlides[filteredSlides.length-1],
+              cases: getters.getCases
+            });
           }
         }, 20);
       }
     }
   },
-  selectSlide({commit}, _slide) {
-    commit('SELECT_SLIDE', {slide: _slide});
+  selectSlide({commit, getters}, _slide) {
+    commit('SELECT_SLIDE', {
+      slide: _slide,
+      cases: getters.getCases
+    });
   },
   /* SLIDE LISTS */
   fetchSlideLists({commit}) {
@@ -170,6 +178,7 @@ const mutations = {
   PUSH_SLIDE(state, _slide) { state.slides.push(_slide); },
   SELECT_SLIDE(state, payload) {
     const _slide = payload.slide;
+    const cases = payload.cases;
     const query = router.currentRoute.query;
     if (query && query.slideId) {
       const _slideId = parseInt(query.slideId);
@@ -180,7 +189,7 @@ const mutations = {
           if (_slideList) {
             // TODO SELECT SLIDE LIST
             const slideListId = _slideList.id;
-            const _case = state.cases.find(_c => _c.slideListId === slideListId);
+            const _case = cases.find(_c => _c.slideListId === slideListId);
             if (_case) {
               setTimeout(() => {
                 router.push({
@@ -215,7 +224,7 @@ const mutations = {
     }
   },
   PUSH_SLIDE_LIST(state, _slideList) { state.slideLists.push(_slideList); },
-  /* SLIDE IMAGE */
+  /* SLIDE CANVAS */
   SET_SLIDE_IMG(state, img) {
     const query = router.currentRoute.query;
     if (query && query.slideId) {

@@ -3,9 +3,12 @@ import App from './App.vue';
 import router from './router';
 import store from './store';
 import device from "vue-device-detector";
+import { fabric } from 'fabric';
 
 Vue.config.productionTip = false;
 Vue.use(device);
+Vue.use(fabric);
+
 import "./assets/scss/app.scss";
 import middlewarePipeline from "./router/middleware/middlewarePipeline";
 
