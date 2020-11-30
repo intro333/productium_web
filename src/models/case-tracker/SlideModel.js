@@ -3,8 +3,8 @@ export class SlideModel {
   slideState = 'in-work';
   projectId = 0;
   order = 0;
-  img = '';
-  imgBase64 = '';
+  img = null;
+  imgBase64 = null;
   isSelected = false;
 
   constructor(_slide) {
@@ -12,6 +12,6 @@ export class SlideModel {
     this.slideState = _slide.slideState;
     this.projectId = _slide.projectId;
     this.order = _slide.order;
-    this.image = _slide.image;
+    this.img = _slide.img;
   }
 }

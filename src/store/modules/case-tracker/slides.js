@@ -10,35 +10,35 @@ const mockSlides = [
     slideState: 'in-work',
     projectId: 1,
     order: 0,
-    image: '',
+    img: null
   }),
   new SlideModel({
     id: 2,
     slideState: 'done',
     projectId: 1,
     order: 1,
-    image: '',
+    img: null
   }),
   new SlideModel({
     id: 3,
     slideState: 'in-work',
     projectId: 1,
     order: 2,
-    image: '',
+    img: null
   }),
   new SlideModel({
     id: 4,
     slideState: 'in-work',
     projectId: 1,
     order: 3,
-    image: '',
+    img: null
   }),
   new SlideModel({
     id: 5,
     slideState: 'archived',
     projectId: 2,
     order: 0,
-    image: '',
+    img: null
   }),
 ];
 const mockSlideLists = [
@@ -67,17 +67,33 @@ const mockSlideLists = [
 const state = {
   slides: [],
   slideLists: [],
+  activeSlide: null
 };
 
 const getters = {
   getSlides: state => state.slides,
   getSlideLists: state => state.slideLists,
+  getActiveSlide: state => state.activeSlide,
 };
 
 const actions = {
   /* SLIDES */
-  fetchSlides({commit}) {
-    commit('SET_SLIDES', mockSlides);
+  fetchSlides({commit, getters}) {
+    setTimeout(() => { // TODO Имитация задержки с сервера
+      return new Promise((resolve) => {
+        commit('SET_SLIDES', mockSlides);
+        const query = router.currentRoute.query;
+        if (query && query.slideId) {
+          const _slideId = parseInt(query.slideId);
+          const foundSlide = mockSlides.find(_s => _s.id === _slideId);
+          commit('SELECT_SLIDE', {
+            slide: foundSlide,
+            cases: getters.getCases
+          });
+        }
+        resolve(mockSlides);
+      });
+    }, 500);
   },
   pushSlide({commit, getters}) {
     /* TODO Mock */
@@ -88,7 +104,7 @@ const actions = {
       slideState: 'in-work',
       projectId: selectedProject.id,
       order: 0,
-      image: '',
+      img: null
     });
     const newSlideList = new SlideList({
       id: getRandomInt(10, 1000),
@@ -164,21 +180,13 @@ const actions = {
 const mutations = {
   /* SLIDES */
   SET_SLIDES(state, slides) {
-    const query = router.currentRoute.query;
-    if (query && query.slideId) {
-      const _slideId = parseInt(query.slideId);
-      state.slides = slides.map(_s => {
-        _s.isSelected = _s.id === _slideId;
-        return _s;
-      });
-    } else {
-      state.slides = slides;
-    }
+    state.slides = slides;
   },
   PUSH_SLIDE(state, _slide) { state.slides.push(_slide); },
   SELECT_SLIDE(state, payload) {
     const _slide = payload.slide;
     const cases = payload.cases;
+    state.activeSlide = _slide;
     const query = router.currentRoute.query;
     if (query && query.slideId) {
       const _slideId = parseInt(query.slideId);
@@ -209,6 +217,9 @@ const mutations = {
   },
   REMOVE_SLIDE(state, _slide) {
     _slide.slideState = 'archived';
+  },
+  SET_ACTIVE_SLIDE(state, _slide) {
+    state.activeSlide = _slide;
   },
   /* SLIDE LISTS */
   SET_SLIDE_LISTS(state, _slideLists) {

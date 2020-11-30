@@ -21,32 +21,21 @@
 </template>
 
 <script>
-import {mapActions, mapGetters} from "vuex";
-import {slidesOfProjectFilterWithSelect} from "@/functions/case-tracker/projectsF";
+import {mapActions} from "vuex";
 import SlideItem from "@/components/view-tracker/part/SlideItem";
+import SlideMixin from "@/components/mixins/SlideMixin";
 
 export default {
   name: "SlideSidebar",
+  mixins: [SlideMixin],
   components: {
     SlideItem
   },
   data: () => ({
-    slides: [],
+    
   }),
   created() {
-    this.fetchSlidesL();
-    this.removeSlideUnsubscribe = this.$store.subscribe((mutation) => {
-      if (mutation.type === 'REMOVE_SLIDE') {
-        if (mutation.payload) {
-          this.fetchSlidesL();
-        }
-      }
-    });
-  },
-  beforeDestroy() {
-    if (this.removeSlideUnsubscribe) {
-      this.removeSlideUnsubscribe();
-    }
+
   },
   computed: {
     slidesLength() {
@@ -55,27 +44,9 @@ export default {
   },
   methods: {
     ...mapActions(['setContextMenuBase', 'pushSlide']),
-    ...mapGetters(['getSlides']),
     addSlide() {
       this.pushSlide();
     },
-    fetchSlidesL() {
-      const query = this.$route.query;
-      if (query && query.projectId) {
-        this.slides = slidesOfProjectFilterWithSelect(
-            this.getSlides(),
-            parseInt(query.projectId),
-            parseInt(query.slideId)
-        );
-      } else {
-        this.slides = [];
-      }
-    }
   },
-  watch: {
-    $route () {
-      this.fetchSlidesL();
-    }
-  }
 }
 </script>
