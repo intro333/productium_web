@@ -22,7 +22,6 @@ export default {
             this.setCanvas(_slide);
           } else {
             const canvasContainer = document.getElementsByClassName('canvas-container');
-            console.log(1, canvasContainer)
             if (canvasContainer && canvasContainer.length) {
               this.canvas = null;
               canvasContainer.forEach(_c => {
@@ -72,24 +71,42 @@ export default {
         const workAreaRef = this.$refs.workAreaRef;
         this.canvasWidth = workAreaRef.clientWidth;
         this.canvasHeight = workAreaRef.clientHeight;
+        console.log(1, this.canvasWidth);
         setTimeout(() => {
           this.canvas = new fabric.Canvas('canvas');
           if (slide && slide.img) {
             this.isSlideImage = true;
-            const pugImg = new Image();
-            pugImg.onload = function () {
-              console.log(11, pugImg.width);
-              const pug = new fabric.Image(pugImg, {
-                width: 300,
-                height: 300,
-                left: 50,
-                top: 70,
-                scaleX: 1,
-                scaleY: 1
+            const slideImg = new Image();
+            slideImg.onload = function () {
+              let imgLeft = 0;
+              let imgTop = 0;
+              if (this.canvasWidth) {
+                if (slideImg.width) {
+                  imgLeft = (this.canvasWidth / 2) - (slideImg.width / 2);
+                  console.log(1, this.canvasWidth / 2)
+                  console.log(2, slideImg.width / 2)
+                  console.log(3, imgLeft)
+                }
+              }
+              if (this.canvasHeight) {
+                if (slideImg.height) {
+                  imgTop = (this.canvasHeight / 2) - (slideImg.height / 2);
+                }
+              }
+              let _img = new fabric.Image(slideImg, {
+                width: slideImg.width,
+                height: slideImg.height,
+                left: imgLeft,
+                top: imgTop,
+                uniScaleTransform: true,
+                hasControls: false,
+                hasRotatingPoint: false,
               });
-              _this.canvas.add(pug);
+              // _img.hasControls = false;
+              // _img.hasBorders = false;
+              _this.canvas.add(_img);
             };
-            pugImg.src = slide.imgBase64; // TODO Здесь должна быть ссылка на файл
+            slideImg.src = slide.imgBase64; // TODO Здесь должна быть ссылка на файл
           }
         }, 20);
       }
