@@ -67,13 +67,15 @@ const mockSlideLists = [
 const state = {
   slides: [],
   slideLists: [],
-  activeSlide: null
+  activeSlide: null,
+  activeTool: 'moveTool' /* moveTool | textTool | rectangleTool | circleTool | superTool | handTool */
 };
 
 const getters = {
   getSlides: state => state.slides,
   getSlideLists: state => state.slideLists,
   getActiveSlide: state => state.activeSlide,
+  getActiveTool: state => state.activeTool,
 };
 
 const actions = {
@@ -175,6 +177,10 @@ const actions = {
   setSlideImg({commit}, file) {
     commit('SET_SLIDE_IMG', file);
   },
+  /* OTHER */
+  setActiveTool({commit}, tool) {
+    commit('SET_ACTIVE_TOOL', tool);
+  },
 };
 
 const mutations = {
@@ -254,6 +260,7 @@ const mutations = {
       }
     }
   },
+  SET_ACTIVE_TOOL(state, _activeTool) { state.activeTool = _activeTool; },
 };
 
 export default {

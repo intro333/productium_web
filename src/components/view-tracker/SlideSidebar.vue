@@ -31,12 +31,6 @@ export default {
   components: {
     SlideItem
   },
-  data: () => ({
-    
-  }),
-  created() {
-
-  },
   computed: {
     slidesLength() {
       return this.slides.length;

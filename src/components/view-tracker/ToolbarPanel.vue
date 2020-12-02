@@ -24,8 +24,10 @@
       <div class="tp-right-first">
         <div @mouseenter="showTooltip($event, 'controlRef','Перемещать')"
              @mouseleave="hideToolTip"
+             @click="selectActiveTool('moveTool')"
              ref="controlRef"
-             class="tp-icon-box tp-icon-box-2">
+             class="tp-icon-box tp-icon-box-2"
+             :class="{active: activeTool === 'moveTool'}">
           <img src="@/assets/img/case-tracker/toolbar_panel/control.svg"
                class="tp-icon-item tp-icon-img"
                alt="">
@@ -33,14 +35,16 @@
         <div @mouseenter="showTooltip($event, 'textRef','Текст')"
              @mouseleave="hideToolTip"
              ref="textRef"
-             class="tp-icon-box tp-icon-box-2">
+             class="tp-icon-box tp-icon-box-2"
+             :class="{active: activeTool === 'textTool'}">
           <img src="@/assets/img/case-tracker/toolbar_panel/text.svg"
                class="tp-icon-item tp-icon-img"
                alt="">
         </div>
         <div ref="shapeRef"
              class="tp-icon-box tp-icon-box-5"
-             :class="{hovered: (contextMenu.state && contextMenu.type === 'ShapesModal')}">
+             :class="{hovered: (contextMenu.state && contextMenu.type === 'ShapesModal'),
+                active: activeTool === 'rectangleTool' || activeTool === 'circleTool'}">
           <div @mouseenter="showTooltip($event, 'shapeRef','Прямоугольник')"
                @mouseleave="hideToolTip"
                class="tp-icon-item-box">
@@ -69,8 +73,19 @@
         <div @mouseenter="showTooltip($event, 'superToolRef','СуперТул')"
              @mouseleave="hideToolTip"
              ref="superToolRef"
-             class="tp-icon-box tp-icon-box-4 active">
+             class="tp-icon-box tp-icon-box-4"
+             :class="{active: activeTool === 'superTool'}">
           <img src="@/assets/img/case-tracker/toolbar_panel/superTool.svg"
+               class="tp-icon-item tp-icon-img"
+               alt="">
+        </div>
+        <div @mouseenter="showTooltip($event, 'handToolRef','Hand Tool')"
+             @mouseleave="hideToolTip"
+             @click="selectActiveTool('handTool')"
+             ref="handToolRef"
+             class="tp-icon-box tp-icon-box-4"
+             :class="{active: activeTool === 'handTool'}">
+          <img src="@/assets/img/case-tracker/toolbar_panel/handTool.svg"
                class="tp-icon-item tp-icon-img"
                alt="">
         </div>
@@ -138,23 +153,18 @@ import ModalsMixin from "@/components/mixins/ModalsMixin";
 import {getModalPositionFunc} from "@/functions/calculations";
 import {CentralModalModel} from "@/models/modals/CentralModalModel";
 import ProjectMixin from "@/components/mixins/ProjectMixin";
+import SlideMixin from "@/components/mixins/SlideMixin";
 
 export default {
   name: "ToolbarPanel",
-  mixins: [ModalsMixin, ProjectMixin],
-  data: () => ({
-
-  }),
+  mixins: [ModalsMixin, ProjectMixin, SlideMixin],
   computed: {
     contextMenu() {
       return this.getContextMenuBase();
     },
   },
-  created() {
-
-  },
   methods: {
-    ...mapActions(['setContextMenuBase', 'setCentralModal']),
+    ...mapActions(['setContextMenuBase', 'setCentralModal', 'setActiveTool']),
     ...mapGetters(['getContextMenuBase']),
     openContextMenu(type, width, _refStr, isRight = null, _body = null) {
       if (this.$refs[_refStr] && this.$refs[_refStr].getBoundingClientRect()) {
@@ -186,6 +196,12 @@ export default {
               'ShareModal',
               500,)
       );
+    },
+    selectActiveTool(tool) {
+      this.setActiveTool(tool);
+      setTimeout(() => {
+        // this.setCanvas(this.activeSlide); // TODO В любом случае перерисовывать canvas?
+      }, 200);
     },
   }
 }

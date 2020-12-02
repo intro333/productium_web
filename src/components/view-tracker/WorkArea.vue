@@ -24,10 +24,10 @@
         </div>
       </div>
       <div v-if="activeSlide.img"
+           id="canvasBox"
            class="wa-canvas-box">
         <p></p> <!-- Почему-то без этого глючит -->
         <canvas id="canvas"
-                ref="canvasRef"
                 class="vw-canvas"
                 :width="canvasWidth"
                 :height="canvasHeight"
@@ -52,6 +52,28 @@ export default {
 
   },
   mounted() {
+    this.selectSlideUnsubscribe = this.$store.subscribe((mutation) => {
+      if (mutation.type === 'SELECT_SLIDE') {
+        if (mutation.payload) {
+          const _slide = mutation.payload.slide;
+          if (_slide && _slide.img) {
+            this.clearCanvas(_slide);
+            setTimeout(() => {
+              this.createCanvas();
+              this.setCanvas(_slide);
+            }, 100);
+          } else {
+            this.clearCanvas(_slide);
+          }
+        }
+      } else if (mutation.type === 'SET_SLIDE_IMG') {
+        if (mutation.payload) {
+          setTimeout(() => {
+            this.setCanvas(this.activeSlide);
+          }, 100);
+        }
+      }
+    });
     setTimeout(() => {
       const _ref = this.$refs['droppedZoneRef'];
       if (_ref) {
@@ -60,6 +82,11 @@ export default {
         });
       }
     }, 1000);
+  },
+  beforeDestroy() {
+    if (this.selectSlideUnsubscribe) {
+      this.selectSlideUnsubscribe();
+    }
   },
   computed: {
 
