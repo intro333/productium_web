@@ -1,6 +1,6 @@
 <script>
 import {slidesOfProjectFilterWithSelect} from "@/functions/case-tracker/projectsF";
-import {mapGetters} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 import {fabric} from "fabric";
 // import router from "@/router";
 
@@ -47,6 +47,9 @@ export default {
     activeTool() {
       return this.getActiveTool();
     },
+    activeShapeTool() {
+      return this.getActiveShapeTool();
+    },
     dragMode() {
       return this.activeTool === 'handTool';
     },
@@ -55,7 +58,8 @@ export default {
     }
   },
   methods: {
-    ...mapGetters(['getSlides', 'getActiveSlide', 'getActiveTool', 'getCanvasArea']),
+    ...mapActions(['setActiveTool', 'setActiveShapeTool']),
+    ...mapGetters(['getSlides', 'getActiveSlide', 'getActiveTool', 'getActiveShapeTool', 'getCanvasArea']),
     fetchSlidesL() {
       const query = this.$route.query;
       if (query && query.projectId) {
@@ -181,22 +185,22 @@ export default {
           }
           setTimeout(() => {
             // TODO rect Mock
-            const rect1 = new fabric.Rect({
-              width: 100,
-              height: 100,
-              top: 300,
-              left: 200,
-              fill: 'transparent',
-              stroke: 'red',
-              strokeWidth: 3,
-              opacity: 1,
-              uniScaleTransform: true,
-              hasRotatingPoint: false,
-              hoverCursor: 'default'
-              // hasControls: false,
-            });
+            // const rect1 = new fabric.Rect({
+            //   width: 100,
+            //   height: 100,
+            //   top: 300,
+            //   left: 200,
+            //   fill: 'transparent',
+            //   stroke: 'red',
+            //   strokeWidth: 3,
+            //   opacity: 1,
+            //   uniScaleTransform: true,
+            //   hasRotatingPoint: false,
+            //   hoverCursor: 'default'
+            //   // hasControls: false,
+            // });
             if (slide.canvas) {
-              slide.canvas.add(rect1);
+              // slide.canvas.add(rect1);
               slide.canvas.renderAll();
               this.panningHandler(slide);
             }
@@ -208,7 +212,6 @@ export default {
       if (this.dragMode) {
         slide.canvas.selection = false;
         slide.canvas.discardActiveObject();
-        slide.canvas.defaultCursor = 'pointer';
         slide.canvas.forEachObject(function(object) {
           object.hoverCursor = 'pointer';
           if (object.type !== 'image') {
@@ -226,10 +229,63 @@ export default {
             object.selectable = (object.prevSelectable !== undefined) ? object.prevSelectable : object.selectable;
           }
         });
-        slide.canvas.defaultCursor = 'default';
         slide.canvas.selection = true;
       }
+      slide.canvas.defaultCursor = this.canvasDefaultCursor();
     },
+    canvasDefaultCursor() {
+      switch (this.activeTool) {
+        case 'moveTool':
+          return 'default';
+        case 'handTool':
+          return 'pointer';
+        case 'shapeTool':
+          return 'crosshair';
+        case 'textTool':
+          return 'crosshair'; // TODO Какой курсор у текста?
+        default:
+          return 'default';
+      }
+    },
+    shapesModalBody() {
+      return {
+        list: [
+          {
+            title: 'Прямоугольник',
+            type: 'rectangle',
+            action: () => {
+              this.setActiveTool('shapeTool');
+              this.setActiveShapeTool('rectangleTool');
+              console.log('ACTION Прямоугольник');
+            }
+          },
+          {
+            title: 'Эллипс',
+            type: 'circle',
+            action: () => {
+              this.setActiveTool('shapeTool');
+              this.setActiveShapeTool('circleTool');
+              console.log('ACTION Эллипс');
+            }
+          },
+          {
+            title: 'Стрелка',
+            type: 'arrow',
+            action: () => {
+              console.log('ACTION Стрелка')
+            }
+          },
+          {
+            title: 'Линия',
+            type: 'line',
+            action: () => {
+              console.log('ACTION Линия')
+            }
+          },
+        ],
+        activeTool: this.activeShapeTool
+      };
+    }
   },
   watch: {
     $route () {

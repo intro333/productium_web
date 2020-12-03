@@ -13,7 +13,8 @@ const mockCases = [
     discus: '',
     resolut: '',
     children: [],
-    order: 0
+    order: 0,
+    figures: [],
   }),
   new CaseModel({
     id: 2,
@@ -40,7 +41,8 @@ const mockCases = [
         shapeType: 'circle'
       },
     ],
-    order: 1
+    order: 1,
+    figures: [],
   }),
   new CaseModel({
     id: 3,
@@ -62,7 +64,8 @@ const mockCases = [
         shapeType: 'circle'
       },
     ],
-    order: 2
+    order: 2,
+    figures: [],
   }),
   new CaseModel({
     id: 4,
@@ -73,7 +76,8 @@ const mockCases = [
     discus: '',
     resolut: '',
     children: [],
-    order: 0
+    order: 0,
+    figures: [],
   }),
   new CaseModel({
     id: 5,
@@ -100,7 +104,8 @@ const mockCases = [
         shapeType: 'circle'
       },
     ],
-    order: 1
+    order: 1,
+    figures: [],
   }),
   new CaseModel({
     id: 6,
@@ -111,7 +116,8 @@ const mockCases = [
     discus: '',
     resolut: '',
     children: [],
-    order: 0
+    order: 0,
+    figures: [],
   }),
   new CaseModel({
     id: 7,
@@ -138,7 +144,8 @@ const mockCases = [
         shapeType: 'circle'
       },
     ],
-    order: 1
+    order: 1,
+    figures: [],
   }),
   new CaseModel({
     id: 8,
@@ -149,7 +156,8 @@ const mockCases = [
     discus: '',
     resolut: '',
     children: [],
-    order: 0
+    order: 0,
+    figures: [],
   }),
 ];
 const mockCaseComments = [
@@ -302,7 +310,8 @@ const actions = {
         discus: '',
         resolut: '',
         children: [],
-        order: 0
+        order: 0,
+        figures: [],
       });
       commit('PUSH_CASE', newSCase);
       setTimeout(() => {

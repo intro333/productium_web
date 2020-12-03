@@ -69,7 +69,8 @@ const state = {
   slides: [],
   slideLists: [],
   activeSlide: null,
-  activeTool: 'moveTool', /* moveTool | textTool | rectangleTool | circleTool | superTool | handTool */
+  activeTool: 'moveTool', /* moveTool | textTool | shapeTool | superTool | handTool */
+  activeShapeTool: 'rectangleTool', /* rectangleTool | circleTool */
   canvasArea: new CanvasAreaModel(null, 0, 0)
 };
 
@@ -78,6 +79,7 @@ const getters = {
   getSlideLists: state => state.slideLists,
   getActiveSlide: state => state.activeSlide,
   getActiveTool: state => state.activeTool,
+  getActiveShapeTool: state => state.activeShapeTool,
   getCanvasArea: state => state.canvasArea,
 };
 
@@ -190,6 +192,9 @@ const actions = {
   setActiveTool({commit}, tool) {
     commit('SET_ACTIVE_TOOL', tool);
   },
+  setActiveShapeTool({commit}, shapeTool) {
+    commit('SET_ACTIVE_SHAPE_TOOL', shapeTool);
+  },
 };
 
 const mutations = {
@@ -283,6 +288,7 @@ const mutations = {
     }
   },
   SET_ACTIVE_TOOL(state, _activeTool) { state.activeTool = _activeTool; },
+  SET_ACTIVE_SHAPE_TOOL(state, _activeShapeTool) { state.activeShapeTool = _activeShapeTool; },
   SET_CANVAS_AREA(state, area) {
     state.canvasArea = area;
   },

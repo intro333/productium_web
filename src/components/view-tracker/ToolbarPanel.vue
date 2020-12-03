@@ -44,15 +44,16 @@
         <div ref="shapeRef"
              class="tp-icon-box tp-icon-box-5"
              :class="{hovered: (contextMenu.state && contextMenu.type === 'ShapesModal'),
-                active: activeTool === 'rectangleTool' || activeTool === 'circleTool'}">
-          <div @mouseenter="showTooltip($event, 'shapeRef','Прямоугольник')"
+                active: activeTool === 'shapeTool'}">
+          <div @mouseenter="showTooltip($event, 'shapeRef', shapeActiveToolTitle())"
                @mouseleave="hideToolTip"
+               @click="selectActiveTool('shapeTool')"
                class="tp-icon-item-box">
-            <img src="@/assets/img/case-tracker/toolbar_panel/rectangle.svg"
+            <img :src="shapeSvg()"
                  class="tp-icon-item tp-icon-img tp-icon-img-rect"
                  alt="">
           </div>
-          <img @click="openContextMenu('ShapesModal', 165, 'shapeRef')"
+          <img @click="openContextMenu('ShapesModal', 165, 'shapeRef', false, shapesModalBody())"
                @mouseenter="showTooltip($event, 'shapeRef','Инструменты')"
                @mouseleave="hideToolTip"
                src="@/assets/img/common/selectArrow.svg"
@@ -164,7 +165,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setContextMenuBase', 'setCentralModal', 'setActiveTool']),
+    ...mapActions(['setContextMenuBase', 'setCentralModal']),
     ...mapGetters(['getContextMenuBase']),
     openContextMenu(type, width, _refStr, isRight = null, _body = null) {
       if (this.$refs[_refStr] && this.$refs[_refStr].getBoundingClientRect()) {
@@ -201,14 +202,24 @@ export default {
       this.setActiveTool(tool);
       // TODO В любом случае перерисовывать canvas?
       setTimeout(() => {
-        this.panningHandler(this.activeSlide);
-        // this.clearCanvas(this.activeSlide);
-        // setTimeout(() => {
-        //   this.createCanvas(this.activeSlide);
-        //   this.setCanvas(this.activeSlide);
-        // }, 50);
+        if (this.activeSlide && this.activeSlide.canvas) {
+          this.panningHandler(this.activeSlide);
+        }
       }, 50);
     },
+    shapeActiveToolTitle() {
+      switch (this.activeShapeTool) {
+        case 'rectangleTool':
+          return 'Прямоугольник';
+        case 'circleTool':
+          return 'Эллипс';
+        default:
+          return 'Прямоугольник';
+      }
+    },
+    shapeSvg() {
+      return require('@/assets/img/case-tracker/toolbar_panel/shapes/' + this.activeShapeTool.replace(/Tool/g, '') + '.svg');
+    }
   }
 }
 </script>

@@ -8,6 +8,7 @@ export class CaseModel {
   resolut = '';
   children = [];
   order = 0;
+  figures = [];
 
   /* local */
   haveNewComments = false;
@@ -26,5 +27,6 @@ export class CaseModel {
     this.resolut = _case.resolut;
     this.children = _case.children;
     this.order = _case.order;
+    this.figures = _case.figures;
   }
 }
