@@ -200,7 +200,6 @@ export default {
     },
     selectActiveTool(tool) {
       this.setActiveTool(tool);
-      // TODO В любом случае перерисовывать canvas?
       setTimeout(() => {
         if (this.activeSlide && this.activeSlide.canvas) {
           this.panningHandler(this.activeSlide);
@@ -218,7 +217,8 @@ export default {
       }
     },
     shapeSvg() {
-      return require('@/assets/img/case-tracker/toolbar_panel/shapes/' + this.activeShapeTool.replace(/Tool/g, '') + '.svg');
+      return require('@/assets/img/case-tracker/toolbar_panel/shapes/' + this.activeShapeTool
+          .replace(/Tool/g, '') + '.svg');
     }
   }
 }

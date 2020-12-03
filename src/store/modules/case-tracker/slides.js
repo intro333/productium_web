@@ -3,7 +3,6 @@ import {SlideList} from "@/models/case-tracker/SlideList";
 import {getRandomInt} from "@/functions/calculations";
 import {CaseModel} from "@/models/case-tracker/CaseModel";
 import router from "@/router";
-import {CanvasAreaModel} from "@/models/case-tracker/CanvasAreaModel";
 
 const mockSlides = [
   new SlideModel({
@@ -11,28 +10,32 @@ const mockSlides = [
     slideState: 'in-work',
     projectId: 1,
     order: 0,
-    img: null
+    img: true,
+    imgUrl: '/test-img/android-sdk.png'
   }),
   new SlideModel({
     id: 2,
     slideState: 'done',
     projectId: 1,
     order: 1,
-    img: null
+    img: true,
+    imgUrl: '/test-img/import-error.png'
   }),
   new SlideModel({
     id: 3,
     slideState: 'in-work',
     projectId: 1,
     order: 2,
-    img: null
+    img: true,
+    imgUrl: '/test-img/no-env.png'
   }),
   new SlideModel({
     id: 4,
     slideState: 'in-work',
     projectId: 1,
     order: 3,
-    img: null
+    img: true,
+    imgUrl: '/test-img/spot-error.png'
   }),
   new SlideModel({
     id: 5,
@@ -71,7 +74,10 @@ const state = {
   activeSlide: null,
   activeTool: 'moveTool', /* moveTool | textTool | shapeTool | superTool | handTool */
   activeShapeTool: 'rectangleTool', /* rectangleTool | circleTool */
-  canvasArea: new CanvasAreaModel(null, 0, 0)
+  canvasInfo: {
+    canvasWidth: 0,
+    canvasHeight: 0,
+  }
 };
 
 const getters = {
@@ -80,7 +86,7 @@ const getters = {
   getActiveSlide: state => state.activeSlide,
   getActiveTool: state => state.activeTool,
   getActiveShapeTool: state => state.activeShapeTool,
-  getCanvasArea: state => state.canvasArea,
+  getCanvasInfo: state => state.canvasInfo,
 };
 
 const actions = {
@@ -174,9 +180,6 @@ const actions = {
   changeSlidesCanvasSize({commit}, activeSlide) {
     commit('CHANGE_SLIDES_CANVAS_SIZE', activeSlide);
   },
-  setCanvasArea({commit}, canvas) {
-    commit('SET_CANVAS_AREA', canvas);
-  },
   /* SLIDE LISTS */
   fetchSlideLists({commit}) {
     commit('SET_SLIDE_LISTS', mockSlideLists);
@@ -194,6 +197,9 @@ const actions = {
   },
   setActiveShapeTool({commit}, shapeTool) {
     commit('SET_ACTIVE_SHAPE_TOOL', shapeTool);
+  },
+  setCanvasInfo({commit}, info) {
+    commit('SET_CANVAS_INFO', info);
   },
 };
 
@@ -289,9 +295,7 @@ const mutations = {
   },
   SET_ACTIVE_TOOL(state, _activeTool) { state.activeTool = _activeTool; },
   SET_ACTIVE_SHAPE_TOOL(state, _activeShapeTool) { state.activeShapeTool = _activeShapeTool; },
-  SET_CANVAS_AREA(state, area) {
-    state.canvasArea = area;
-  },
+  SET_CANVAS_INFO(state, info) { state.canvasInfo = info; },
 };
 
 export default {

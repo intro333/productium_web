@@ -30,8 +30,8 @@
         <p></p> <!-- Почему-то без этого глючит -->
         <canvas id="canvas"
                 class="vw-canvas"
-                :width="activeSlide.canvasWidth"
-                :height="activeSlide.canvasHeight"
+                :width="canvasInfo.canvasWidth"
+                :height="canvasInfo.canvasHeight"
         ></canvas>
       </div>
     </template>
@@ -64,7 +64,7 @@ export default {
           if (_slide && _slide.img) {
             this.clearCanvas(_slide);
             setTimeout(() => {
-              this.createCanvas(_slide);
+              this.createCanvas();
               this.setCanvas(_slide);
             }, 100);
           } else {

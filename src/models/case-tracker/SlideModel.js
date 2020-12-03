@@ -5,6 +5,7 @@ export class SlideModel {
   order = 0;
   img = null;
   imgBase64 = null;
+  imgUrl = null;
   isSelected = false;
   canvasWidth = 0;
   canvasHeight = 0;
@@ -15,5 +16,6 @@ export class SlideModel {
     this.projectId = _slide.projectId;
     this.order = _slide.order;
     this.img = _slide.img;
+    this.imgUrl = _slide.imgUrl;
   }
 }

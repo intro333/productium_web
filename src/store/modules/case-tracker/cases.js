@@ -14,7 +14,6 @@ const mockCases = [
     resolut: '',
     children: [],
     order: 0,
-    figures: [],
   }),
   new CaseModel({
     id: 2,
@@ -42,7 +41,6 @@ const mockCases = [
       },
     ],
     order: 1,
-    figures: [],
   }),
   new CaseModel({
     id: 3,
@@ -65,7 +63,6 @@ const mockCases = [
       },
     ],
     order: 2,
-    figures: [],
   }),
   new CaseModel({
     id: 4,
@@ -77,7 +74,6 @@ const mockCases = [
     resolut: '',
     children: [],
     order: 0,
-    figures: [],
   }),
   new CaseModel({
     id: 5,
@@ -105,7 +101,6 @@ const mockCases = [
       },
     ],
     order: 1,
-    figures: [],
   }),
   new CaseModel({
     id: 6,
@@ -117,7 +112,6 @@ const mockCases = [
     resolut: '',
     children: [],
     order: 0,
-    figures: [],
   }),
   new CaseModel({
     id: 7,
@@ -145,7 +139,6 @@ const mockCases = [
       },
     ],
     order: 1,
-    figures: [],
   }),
   new CaseModel({
     id: 8,
@@ -157,7 +150,6 @@ const mockCases = [
     resolut: '',
     children: [],
     order: 0,
-    figures: [],
   }),
 ];
 const mockCaseComments = [
@@ -311,7 +303,6 @@ const actions = {
         resolut: '',
         children: [],
         order: 0,
-        figures: [],
       });
       commit('PUSH_CASE', newSCase);
       setTimeout(() => {

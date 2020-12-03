@@ -28,7 +28,7 @@ export default {
           const _slide = mutation.payload;
           this.clearCanvas(_slide);
           setTimeout(() => {
-            this.createCanvas(_slide);
+            this.createCanvas();
             this.setCanvas(_slide);
           }, 50);
         }
@@ -53,13 +53,13 @@ export default {
     dragMode() {
       return this.activeTool === 'handTool';
     },
-    canvas() {
-      return this.getCanvasArea();
+    canvasInfo() {
+      return this.getCanvasInfo();
     }
   },
   methods: {
-    ...mapActions(['setActiveTool', 'setActiveShapeTool']),
-    ...mapGetters(['getSlides', 'getActiveSlide', 'getActiveTool', 'getActiveShapeTool', 'getCanvasArea']),
+    ...mapActions(['setActiveTool', 'setActiveShapeTool', 'setCanvasInfo']),
+    ...mapGetters(['getSlides', 'getActiveSlide', 'getActiveTool', 'getActiveShapeTool', 'getCanvasInfo']),
     fetchSlidesL() {
       const query = this.$route.query;
       if (query && query.projectId) {
@@ -85,15 +85,15 @@ export default {
         canvasDiv.remove();
       }
     },
-    createCanvas(_slide) {
+    createCanvas() {
       const canvasBox = document.getElementById('canvasBox');
       const canvasDiv = document.getElementById('canvas');
       if (canvasBox && !canvasDiv) {
         const newCanvas = document.createElement("canvas");
         newCanvas.className = 'vw-canvas';
         newCanvas.id = 'canvas';
-        newCanvas.width = _slide.canvasWidth;
-        newCanvas.height = _slide.canvasHeight;
+        newCanvas.width = this.canvasInfo.canvasWidth;
+        newCanvas.height = this.canvasInfo.canvasHeight;
         canvasBox.appendChild(newCanvas);
       }
     },
@@ -103,6 +103,10 @@ export default {
         const workAreaRef = this.$refs.workAreaRef;
         slide.canvasWidth = workAreaRef.clientWidth;
         slide.canvasHeight = workAreaRef.clientHeight;
+        this.setCanvasInfo({
+          canvasWidth: workAreaRef.clientWidth,
+          canvasHeight: workAreaRef.clientHeight,
+        });
         let lastClientX;
         let lastClientY;
         let panState = STATE_IDLE;
@@ -181,7 +185,7 @@ export default {
                 slide.canvas.add(_img);
               }
             };
-            slideImg.src = slide.imgBase64; // TODO Здесь должна быть ссылка на файл
+            slideImg.src = (typeof slide.img === 'string') ? slide.imgBase64 : slide.imgUrl; // TODO Здесь должна быть ссылка на файл
           }
           setTimeout(() => {
             // TODO rect Mock
@@ -254,18 +258,14 @@ export default {
             title: 'Прямоугольник',
             type: 'rectangle',
             action: () => {
-              this.setActiveTool('shapeTool');
-              this.setActiveShapeTool('rectangleTool');
-              console.log('ACTION Прямоугольник');
+              this.selectActiveToolWithShape('rectangleTool');
             }
           },
           {
             title: 'Эллипс',
             type: 'circle',
             action: () => {
-              this.setActiveTool('shapeTool');
-              this.setActiveShapeTool('circleTool');
-              console.log('ACTION Эллипс');
+              this.selectActiveToolWithShape('circleTool');
             }
           },
           {
@@ -285,7 +285,16 @@ export default {
         ],
         activeTool: this.activeShapeTool
       };
-    }
+    },
+    selectActiveToolWithShape(shapeTool) {
+      this.setActiveTool('shapeTool');
+      this.setActiveShapeTool(shapeTool);
+      setTimeout(() => {
+        if (this.activeSlide && this.activeSlide.canvas) {
+          this.panningHandler(this.activeSlide);
+        }
+      }, 50);
+    },
   },
   watch: {
     $route () {
