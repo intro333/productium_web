@@ -97,7 +97,7 @@ export default {
         canvasBox.appendChild(newCanvas);
       }
     },
-    setCanvas(slide) {
+    setCanvas(slide, _case=null) {
       const _this = this;
       if (this.$refs.workAreaRef) {
         const workAreaRef = this.$refs.workAreaRef;
@@ -188,23 +188,15 @@ export default {
             slideImg.src = (typeof slide.img === 'string') ? slide.imgBase64 : slide.imgUrl; // TODO Здесь должна быть ссылка на файл
           }
           setTimeout(() => {
-            // TODO rect Mock
-            // const rect1 = new fabric.Rect({
-            //   width: 100,
-            //   height: 100,
-            //   top: 300,
-            //   left: 200,
-            //   fill: 'transparent',
-            //   stroke: 'red',
-            //   strokeWidth: 3,
-            //   opacity: 1,
-            //   uniScaleTransform: true,
-            //   hasRotatingPoint: false,
-            //   hoverCursor: 'default'
-            //   // hasControls: false,
-            // });
+            if (_case) {
+              _case.children.forEach(_child => {
+                const shape = this.createShapeObjByCaseChild(_child);
+                if (shape) {
+                  slide.canvas.add(shape);
+                }
+              });
+            }
             if (slide.canvas) {
-              // slide.canvas.add(rect1);
               slide.canvas.renderAll();
               this.panningHandler(slide);
             }
@@ -295,6 +287,24 @@ export default {
         }
       }, 50);
     },
+    createShapeObjByCaseChild(_child) {
+      if (_child.shapeType === 'rectangle') {
+        return new fabric.Rect(Object.assign({}, {
+          opacity: 1,
+          uniScaleTransform: true,
+          hasRotatingPoint: false,
+          hoverCursor: 'default'
+        }, _child.params));
+      } else if (_child.shapeType === 'circle') {
+        console.log(2, _child.params)
+        return new fabric.Circle(Object.assign({}, {
+          opacity: 1,
+          uniScaleTransform: true,
+          hasRotatingPoint: false,
+          hoverCursor: 'default'
+        }, _child.params));
+      }
+    }
   },
   watch: {
     $route () {

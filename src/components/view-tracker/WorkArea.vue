@@ -77,6 +77,15 @@ export default {
             this.setCanvas(this.activeSlide);
           }, 100);
         }
+      } else if (mutation.type === 'SELECT_CASE') {
+        const _case = mutation.payload;
+        if (_case && _case.children && _case.children.length) {
+          this.clearCanvas(this.activeSlide);
+          setTimeout(() => {
+            this.createCanvas();
+            this.setCanvas(this.activeSlide, _case);
+          }, 100);
+        }
       }
     });
     setTimeout(() => {

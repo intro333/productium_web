@@ -27,17 +27,43 @@ const mockCases = [
       {
         id: 1,
         title: 'Rectangle 1',
-        shapeType: 'rectangle'
+        shapeType: 'rectangle',
+        params: {
+          width: 100,
+          height: 100,
+          top: 300,
+          left: 200,
+          fill: 'transparent',
+          stroke: 'red',
+          strokeWidth: 3,
+        }
       },
       {
         id: 2,
         title: 'Rectangle 2',
-        shapeType: 'rectangle'
+        shapeType: 'rectangle',
+        params: {
+          width: 150,
+          height: 150,
+          top: 300,
+          left: 400,
+          fill: 'transparent',
+          stroke: 'green',
+          strokeWidth: 3,
+        }
       },
       {
         id: 3,
         title: 'Circle 1',
-        shapeType: 'circle'
+        shapeType: 'circle',
+        params: {
+          left: 650,
+          top: 320,
+          fill: 'transparent',
+          stroke: 'black',
+          strokeWidth: 2,
+          radius: 50,
+        }
       },
     ],
     order: 1,
@@ -54,12 +80,29 @@ const mockCases = [
       {
         id: 4,
         title: 'Rectangle 1',
-        shapeType: 'rectangle'
+        shapeType: 'rectangle',
+        params: {
+          width: 250,
+          height: 100,
+          top: 400,
+          left: 300,
+          fill: 'transparent',
+          stroke: 'red',
+          strokeWidth: 5,
+        }
       },
       {
         id: 5,
         title: 'Circle 1',
-        shapeType: 'circle'
+        shapeType: 'circle',
+        params: {
+          left: 650,
+          top: 320,
+          fill: 'transparent',
+          stroke: 'green',
+          strokeWidth: 5,
+          radius: 100,
+        }
       },
     ],
     order: 2,
@@ -85,19 +128,45 @@ const mockCases = [
     resolut: '',
     children: [
       {
-        id: 1,
+        id: 6,
         title: 'Rectangle 3',
-        shapeType: 'rectangle'
+        shapeType: 'rectangle',
+        params: {
+          width: 250,
+          height: 100,
+          top: 400,
+          left: 300,
+          fill: 'transparent',
+          stroke: 'red',
+          strokeWidth: 2,
+        }
       },
       {
-        id: 2,
+        id: 7,
         title: 'Rectangle 4',
-        shapeType: 'rectangle'
+        shapeType: 'rectangle',
+        params: {
+          width: 250,
+          height: 100,
+          top: 100,
+          left: 100,
+          fill: 'transparent',
+          stroke: 'green',
+          strokeWidth: 3,
+        }
       },
       {
-        id: 3,
+        id: 8,
         title: 'Circle 2',
-        shapeType: 'circle'
+        shapeType: 'circle',
+        params: {
+          left: 650,
+          top: 320,
+          fill: 'transparent',
+          stroke: 'green',
+          strokeWidth: 2,
+          radius: 100,
+        }
       },
     ],
     order: 1,
@@ -123,19 +192,18 @@ const mockCases = [
     resolut: '',
     children: [
       {
-        id: 1,
+        id: 9,
         title: 'Rectangle 3',
-        shapeType: 'rectangle'
-      },
-      {
-        id: 2,
-        title: 'Rectangle 4',
-        shapeType: 'rectangle'
-      },
-      {
-        id: 3,
-        title: 'Circle 2',
-        shapeType: 'circle'
+        shapeType: 'rectangle',
+        params: {
+          width: 250,
+          height: 100,
+          top: 100,
+          left: 100,
+          fill: 'transparent',
+          stroke: 'red',
+          strokeWidth: 3,
+        }
       },
     ],
     order: 1,
