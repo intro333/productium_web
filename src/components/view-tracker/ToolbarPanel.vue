@@ -199,9 +199,15 @@ export default {
     },
     selectActiveTool(tool) {
       this.setActiveTool(tool);
+      // TODO В любом случае перерисовывать canvas?
       setTimeout(() => {
-        // this.setCanvas(this.activeSlide); // TODO В любом случае перерисовывать canvas?
-      }, 200);
+        this.panningHandler(this.activeSlide);
+        // this.clearCanvas(this.activeSlide);
+        // setTimeout(() => {
+        //   this.createCanvas(this.activeSlide);
+        //   this.setCanvas(this.activeSlide);
+        // }, 50);
+      }, 50);
     },
   }
 }

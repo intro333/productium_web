@@ -6,6 +6,8 @@ export class SlideModel {
   img = null;
   imgBase64 = null;
   isSelected = false;
+  canvasWidth = 0;
+  canvasHeight = 0;
 
   constructor(_slide) {
     this.id = _slide.id;

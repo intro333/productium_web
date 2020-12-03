@@ -25,12 +25,13 @@
       </div>
       <div v-if="activeSlide.img"
            id="canvasBox"
+           ref="canvasBoxRef"
            class="wa-canvas-box">
         <p></p> <!-- Почему-то без этого глючит -->
         <canvas id="canvas"
                 class="vw-canvas"
-                :width="canvasWidth"
-                :height="canvasHeight"
+                :width="activeSlide.canvasWidth"
+                :height="activeSlide.canvasHeight"
         ></canvas>
       </div>
     </template>
@@ -47,6 +48,10 @@ export default {
   data: () => ({
     fileIsDragOver: false,
     filename: '',
+    // For resize
+    rTime: 0,
+    timeout: false,
+    delta: 50,
   }),
   created() {
 
@@ -59,7 +64,7 @@ export default {
           if (_slide && _slide.img) {
             this.clearCanvas(_slide);
             setTimeout(() => {
-              this.createCanvas();
+              this.createCanvas(_slide);
               this.setCanvas(_slide);
             }, 100);
           } else {
@@ -75,24 +80,27 @@ export default {
       }
     });
     setTimeout(() => {
-      const _ref = this.$refs['droppedZoneRef'];
-      if (_ref) {
-        _ref.addEventListener('drop', function(e) {
+      const droppedZoneRef = this.$refs['droppedZoneRef'];
+      if (droppedZoneRef) {
+        droppedZoneRef.addEventListener('drop', function(e) {
           console.log('droppedZoneRef', e);
         });
       }
     }, 1000);
+    window.addEventListener('resize', this.browserResize)
   },
   beforeDestroy() {
     if (this.selectSlideUnsubscribe) {
       this.selectSlideUnsubscribe();
     }
+    window.removeEventListener('drop', () => {}); // TODO this.uploadImageToCanvasBg
+    window.removeEventListener('resize', () => {});
   },
   computed: {
 
   },
   methods: {
-    ...mapActions(['setSlideImg']),
+    ...mapActions(['setSlideImg', 'changeSlidesCanvasSize']),
     ...mapGetters([]),
     uploadImageToCanvasBg($event) {
       const files = $event.target.files;
@@ -121,6 +129,33 @@ export default {
         this.setSlideImg(file);
       }
     },
+    browserResize() {
+      this.rTime = new Date();
+      if (!this.timeout) {
+        this.timeout = true;
+        setTimeout(() => {
+          this.resizeEnd();
+        }, this.delta);
+      }
+    },
+    resizeEnd() {
+      if (new Date() - this.rTime < this.delta) {
+        setTimeout(() => {
+          this.resizeEnd();
+        }, this.delta);
+      } else {
+        this.timeout = false;
+        const canvasBoxRef = this.$refs.canvasBoxRef;
+        if (canvasBoxRef) {
+          const activeSlide = this.activeSlide;
+          if (activeSlide && activeSlide.canvas) {
+            activeSlide.canvasWidth = canvasBoxRef.clientWidth;
+            activeSlide.canvasHeight = canvasBoxRef.clientHeight;
+            this.changeSlidesCanvasSize(activeSlide);
+          }
+        }
+      }
+    }
   }
 }
 </script>

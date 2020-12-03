@@ -3,6 +3,7 @@ import {SlideList} from "@/models/case-tracker/SlideList";
 import {getRandomInt} from "@/functions/calculations";
 import {CaseModel} from "@/models/case-tracker/CaseModel";
 import router from "@/router";
+import {CanvasAreaModel} from "@/models/case-tracker/CanvasAreaModel";
 
 const mockSlides = [
   new SlideModel({
@@ -68,7 +69,8 @@ const state = {
   slides: [],
   slideLists: [],
   activeSlide: null,
-  activeTool: 'moveTool' /* moveTool | textTool | rectangleTool | circleTool | superTool | handTool */
+  activeTool: 'moveTool', /* moveTool | textTool | rectangleTool | circleTool | superTool | handTool */
+  canvasArea: new CanvasAreaModel(null, 0, 0)
 };
 
 const getters = {
@@ -76,6 +78,7 @@ const getters = {
   getSlideLists: state => state.slideLists,
   getActiveSlide: state => state.activeSlide,
   getActiveTool: state => state.activeTool,
+  getCanvasArea: state => state.canvasArea,
 };
 
 const actions = {
@@ -166,6 +169,12 @@ const actions = {
       cases: getters.getCases
     });
   },
+  changeSlidesCanvasSize({commit}, activeSlide) {
+    commit('CHANGE_SLIDES_CANVAS_SIZE', activeSlide);
+  },
+  setCanvasArea({commit}, canvas) {
+    commit('SET_CANVAS_AREA', canvas);
+  },
   /* SLIDE LISTS */
   fetchSlideLists({commit}) {
     commit('SET_SLIDE_LISTS', mockSlideLists);
@@ -227,6 +236,19 @@ const mutations = {
   SET_ACTIVE_SLIDE(state, _slide) {
     state.activeSlide = _slide;
   },
+  CHANGE_SLIDES_CANVAS_SIZE(state, activeSlide) {
+    const query = router.currentRoute.query;
+    if (activeSlide && query && query.projectId) {
+      state.slides = state.slides.map(_s => {
+        if (_s.canvasWidth && _s.slideState !== 'archived' &&
+          _s.projectId === parseInt(query.projectId)) {
+          _s.canvasWidth = activeSlide.canvasWidth;
+          _s.canvasHeight = activeSlide.canvasHeight;
+        }
+        return _s;
+      });
+    }
+  },
   /* SLIDE LISTS */
   SET_SLIDE_LISTS(state, _slideLists) {
     const query = router.currentRoute.query;
@@ -261,6 +283,9 @@ const mutations = {
     }
   },
   SET_ACTIVE_TOOL(state, _activeTool) { state.activeTool = _activeTool; },
+  SET_CANVAS_AREA(state, area) {
+    state.canvasArea = area;
+  },
 };
 
 export default {

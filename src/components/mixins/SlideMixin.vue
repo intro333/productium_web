@@ -11,10 +11,9 @@ export default {
   name: "SlideMixin",
   data: () => ({
     slides: [],
-    canvas: null,
+    isSlideImage: false,
     canvasWidth: 0,
     canvasHeight: 0,
-    isSlideImage: false,
   }),
   created() {
     this.slideUnsubscribe = this.$store.subscribe((mutation) => {
@@ -24,6 +23,15 @@ export default {
         }
       } else if (mutation.type === 'SET_SLIDES') {
         this.fetchSlidesL();
+      } else if (mutation.type === 'CHANGE_SLIDES_CANVAS_SIZE') {
+        if (mutation.payload) {
+          const _slide = mutation.payload;
+          this.clearCanvas(_slide);
+          setTimeout(() => {
+            this.createCanvas(_slide);
+            this.setCanvas(_slide);
+          }, 50);
+        }
       }
     });
   },
@@ -42,9 +50,12 @@ export default {
     dragMode() {
       return this.activeTool === 'handTool';
     },
+    canvas() {
+      return this.getCanvasArea();
+    }
   },
   methods: {
-    ...mapGetters(['getSlides', 'getActiveSlide', 'getActiveTool']),
+    ...mapGetters(['getSlides', 'getActiveSlide', 'getActiveTool', 'getCanvasArea']),
     fetchSlidesL() {
       const query = this.$route.query;
       if (query && query.projectId) {
@@ -63,18 +74,22 @@ export default {
         canvasContainer.forEach(_c => {
           _c.remove();
         });
-        _slide.canvas = null;
+      }
+      _slide.canvas = null;
+      const canvasDiv = document.getElementById('canvas');
+      if (canvasDiv) {
+        canvasDiv.remove();
       }
     },
-    createCanvas() {
+    createCanvas(_slide) {
       const canvasBox = document.getElementById('canvasBox');
       const canvasDiv = document.getElementById('canvas');
       if (canvasBox && !canvasDiv) {
         const newCanvas = document.createElement("canvas");
         newCanvas.className = 'vw-canvas';
         newCanvas.id = 'canvas';
-        newCanvas.width = this.canvasWidth;
-        newCanvas.height = this.canvasHeight;
+        newCanvas.width = _slide.canvasWidth;
+        newCanvas.height = _slide.canvasHeight;
         canvasBox.appendChild(newCanvas);
       }
     },
@@ -82,8 +97,8 @@ export default {
       const _this = this;
       if (this.$refs.workAreaRef) {
         const workAreaRef = this.$refs.workAreaRef;
-        this.canvasWidth = workAreaRef.clientWidth;
-        this.canvasHeight = workAreaRef.clientHeight;
+        slide.canvasWidth = workAreaRef.clientWidth;
+        slide.canvasHeight = workAreaRef.clientHeight;
         let lastClientX;
         let lastClientY;
         let panState = STATE_IDLE;
@@ -135,14 +150,14 @@ export default {
             slideImg.onload = function () {
               let imgLeft = 0;
               let imgTop = 0;
-              if (_this.canvasWidth) {
+              if (slide.canvasWidth) {
                 if (slideImg.width) {
-                  imgLeft = (_this.canvasWidth / 2) - (slideImg.width / 2);
+                  imgLeft = (slide.canvasWidth / 2) - (slideImg.width / 2);
                 }
               }
-              if (_this.canvasHeight) {
+              if (slide.canvasHeight) {
                 if (slideImg.height) {
-                  imgTop = (_this.canvasHeight / 2) - (slideImg.height / 2);
+                  imgTop = (slide.canvasHeight / 2) - (slideImg.height / 2);
                 }
               }
               let _img = new fabric.Image(slideImg, {
@@ -158,7 +173,9 @@ export default {
                 hoverCursor: 'default',
                 selectable: false
               });
-              slide.canvas.add(_img);
+              if (slide.canvas) {
+                slide.canvas.add(_img);
+              }
             };
             slideImg.src = slide.imgBase64; // TODO Здесь должна быть ссылка на файл
           }
@@ -178,10 +195,12 @@ export default {
               hoverCursor: 'default'
               // hasControls: false,
             });
-            slide.canvas.add(rect1);
-            slide.canvas.renderAll();
-            this.panningHandler(slide);
-          }, 100);
+            if (slide.canvas) {
+              slide.canvas.add(rect1);
+              slide.canvas.renderAll();
+              this.panningHandler(slide);
+            }
+          }, 20);
         }, 20);
       }
     },
