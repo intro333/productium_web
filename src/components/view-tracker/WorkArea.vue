@@ -62,6 +62,7 @@ export default {
         if (mutation.payload) {
           const _slide = mutation.payload;
           if (_slide && _slide.img) {
+            console.log(1, _slide)
             this.setCanvasWithClear(_slide);
           } else {
             this.clearCanvas(_slide);
@@ -164,7 +165,9 @@ export default {
             });
             setTimeout(() => {
               this.setCanvasWithClear(activeSlide);
-              // this.setCaseChildrenOnCanvas(this.selectedCase);
+              setTimeout(() => {
+                this.setCaseChildrenOnCanvas(activeSlide, this.selectedCase);
+              }, 200);
             }, 20);
           }
         }

@@ -16,6 +16,7 @@ export default {
     isSlideImage: false,
     canvasWidth: 0,
     canvasHeight: 0,
+    panLeftDownPoint: 0,
   }),
   created() {
     this.slideUnsubscribe = this.$store.subscribe((mutation) => {
@@ -111,6 +112,7 @@ export default {
           });
           /* CANVAS HANDLERS */
           slide.canvas.on('mouse:down', function(e) {
+            _this.panLeftDownPoint = 0;
             if (e.target) {
               const obj = e.target;
               const objType = obj.type;
@@ -122,11 +124,26 @@ export default {
               panState = STATE_PANNING;
               lastClientX = e.e.clientX;
               lastClientY = e.e.clientY;
+              _this.panLeftDownPoint = lastClientX;
+              console.log(1, lastClientX);
+              // console.log(2, lastClientY);
             }
           });
-          slide.canvas.on('mouse:up', function() {
+          slide.canvas.on('mouse:up', function(e) {
             if (_this.dragMode) {
               panState = STATE_IDLE;
+
+              const clX = e.e.clientX;
+              const isLeftDirection = _this.panLeftDownPoint > clX; /* Мышку потянули влево или вправо */
+              if (isLeftDirection) {
+                slide.imgLeft = slide.imgLeft - (_this.panLeftDownPoint - clX);
+                console.log(2, slide.imgLeft);
+              } else {
+                slide.imgLeft = slide.imgLeft + (clX - _this.panLeftDownPoint);
+                console.log(3, slide.imgLeft);
+              }
+
+              // console.log(2, e.e.clientY);
             }
           });
           slide.canvas.on('mouse:move', function(e) {
@@ -155,7 +172,7 @@ export default {
               let imgTop = 0;
               if (slide.canvasWidth) {
                 if (slideImg.width) {
-                  imgLeft = (slide.canvasWidth / 2) - (slideImg.width / 2);
+                  imgLeft = slide.imgLeft ? slide.imgLeft : ((slide.canvasWidth / 2) - (slideImg.width / 2));
                 }
               }
               if (slide.canvasHeight) {
@@ -163,6 +180,8 @@ export default {
                   imgTop = (slide.canvasHeight / 2) - (slideImg.height / 2);
                 }
               }
+              slide.imgLeft = imgLeft;
+              slide.imgTop = imgTop;
               let _img = new fabric.Image(slideImg, {
                 width: slideImg.width,
                 height: slideImg.height,
@@ -176,6 +195,7 @@ export default {
                 hoverCursor: 'default',
                 selectable: false
               });
+              slide.imgObj = _img;
               if (slide.canvas) {
                 slide.canvas.add(_img);
               }

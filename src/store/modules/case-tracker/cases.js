@@ -89,6 +89,7 @@ const actions = {
     });
     dispatch('openCommentsModalByCommentId', notify.id);
   },
+  /* CASE COMMENTS */
   fetchCaseComments({commit}) {
     commit('SET_CASES_COMMENTS', mockCaseComments);
   },
