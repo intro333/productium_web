@@ -64,6 +64,13 @@ const actions = {
             _s.caseStatus !== 'archived' && _s.slideListId === _slideListId);
           if (filteredCases.length) {
             dispatch('goToSelectedCase', filteredCases[filteredCases.length-1]);
+          } else {
+            setTimeout(() => {
+              router.push({
+                path: '/case-tracker',
+                query: Object.assign({}, query, {caseId: 0})
+              });
+            }, 20)
           }
         }
       }, 20);

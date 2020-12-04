@@ -1,7 +1,7 @@
 import {SlideModel} from "@/models/case-tracker/SlideModel";
 import {SlideList} from "@/models/case-tracker/SlideList";
 import {getRandomInt} from "@/functions/calculations";
-import {CaseModel} from "@/models/case-tracker/CaseModel";
+// import {CaseModel} from "@/models/case-tracker/CaseModel";
 import router from "@/router";
 import {mockSlideLists, mockSlides} from "@/data/testData";
 
@@ -54,21 +54,21 @@ const actions = {
       slideId: newSlide.id,
       name: 'Лист1'
     });
-    const caseId = getRandomInt(10, 1000);
-    const newSCase = new CaseModel({
-      id: caseId,
-      slideListId: newSlideList.id,
-      title: 'Задача ' + caseId,
-      caseStatus: 'in-work',
-      isOpen: false,
-      discus: '',
-      resolut: '',
-      children: [],
-      order: 0
-    });
+    // const caseId = getRandomInt(10, 1000);
+    // const newSCase = new CaseModel({
+    //   id: caseId,
+    //   slideListId: newSlideList.id,
+    //   title: 'Задача ' + caseId,
+    //   caseStatus: 'in-work',
+    //   isOpen: false,
+    //   discus: '',
+    //   resolut: '',
+    //   children: [],
+    //   order: 0
+    // });
     commit('PUSH_SLIDE', newSlide);
     commit('PUSH_SLIDE_LIST', newSlideList);
-    commit('PUSH_CASE', newSCase);
+    // commit('PUSH_CASE', newSCase);
     setTimeout(() => {
       dispatch('selectCaseListAndCaseOfActiveSlide', {
         slide: newSlide,
@@ -157,7 +157,8 @@ const actions = {
           if (_slideList) {
             commit('SELECT_SLIDE_LIST', _slideList);
             const slideListId = _slideList.id;
-            const _case = _cases.find(_c => _c.slideListId === slideListId);
+            const _case = _cases.find(_c => (_c.slideListId === slideListId) &&
+              _c.caseStatus !== 'archived');
             if (_case) {
               setTimeout(() => {
                 router.push({
@@ -170,6 +171,20 @@ const actions = {
                 });
                 setTimeout(() => {
                   commit('SELECT_CASE', _case);
+                }, 200);
+              }, 20)
+            } else {
+              setTimeout(() => {
+                router.push({
+                  path: '/case-tracker',
+                  query: Object.assign({}, query, {
+                    slideId: _slide.id,
+                    slideListId: _slideList.id,
+                    caseId: 0,
+                  })
+                });
+                setTimeout(() => {
+                  commit('SELECT_CASE', null);
                 }, 200);
               }, 20)
             }

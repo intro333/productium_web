@@ -59,7 +59,6 @@ export default {
   mounted() {
     this.selectSlideUnsubscribe = this.$store.subscribe((mutation) => {
       if (mutation.type === 'SELECT_SLIDE') {
-        console.log(11)
         if (mutation.payload) {
           const _slide = mutation.payload;
           if (_slide && _slide.img) {
@@ -75,14 +74,15 @@ export default {
           }, 100);
         }
       } else if (mutation.type === 'SELECT_CASE') {
-        console.log(22)
         const _case = mutation.payload;
         const activeSlide = this.activeSlide;
-        if (activeSlide && _case && _case.children && _case.children.length) {
+        if (activeSlide && activeSlide.canvas && _case) {
           this.clearCaseChildrenFromCanvas(activeSlide);
-          setTimeout(() => {
-            this.setCaseChildrenOnCanvas(activeSlide, _case);
-          }, 50);
+          if (_case.children && _case.children.length) {
+            setTimeout(() => {
+              this.setCaseChildrenOnCanvas(activeSlide, _case);
+            }, 50);
+          }
         }
       }
     });

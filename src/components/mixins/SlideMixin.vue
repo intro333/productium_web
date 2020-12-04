@@ -180,7 +180,9 @@ export default {
                 slide.canvas.add(_img);
               }
             };
-            slideImg.src = (typeof slide.img === 'string') ? slide.imgBase64 : slide.imgUrl; // TODO Здесь должна быть ссылка на файл
+            /* TODO Такой формат только для прототипа. Для MVP скорее всего будет только imgUrl. Т.е. дропаем файл и он сразу добавляется на сервак
+            *  Правда тогда обработка будет в промисе (в store -> action) */
+            slideImg.src = slide.imgUrl ? slide.imgUrl : slide.imgBase64;
           }
           setTimeout(() => {
             if (slide.canvas) {

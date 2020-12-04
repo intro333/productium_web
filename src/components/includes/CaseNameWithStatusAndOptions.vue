@@ -28,7 +28,9 @@
          :style="{opacity: isBlack ? 1 : .7}"
          alt="">
   </div>
-  <div v-else>Case not selected</div>
+  <div v-else>
+    <span style="color: white; font-size: 14px;">Case not selected</span>
+  </div>
 </template>
 
 <script>
