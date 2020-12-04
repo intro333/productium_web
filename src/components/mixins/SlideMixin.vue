@@ -2,6 +2,7 @@
 import {slidesOfProjectFilterWithSelect} from "@/functions/case-tracker/projectsF";
 import {mapActions, mapGetters} from "vuex";
 import {fabric} from "fabric";
+import CanvasMixin from "@/components/mixins/CanvasMixin";
 // import router from "@/router";
 
 const STATE_IDLE = 'idle';
@@ -9,6 +10,7 @@ const STATE_PANNING = 'panning';
 
 export default {
   name: "SlideMixin",
+  mixins: [CanvasMixin],
   data: () => ({
     slides: [],
     isSlideImage: false,
@@ -23,15 +25,6 @@ export default {
         }
       } else if (mutation.type === 'SET_SLIDES') {
         this.fetchSlidesL();
-      } else if (mutation.type === 'CHANGE_SLIDES_CANVAS_SIZE') {
-        if (mutation.payload) {
-          const _slide = mutation.payload;
-          this.clearCanvas(_slide);
-          setTimeout(() => {
-            this.createCanvas();
-            this.setCanvas(_slide);
-          }, 50);
-        }
       }
     });
   },
@@ -79,7 +72,9 @@ export default {
           _c.remove();
         });
       }
-      _slide.canvas = null;
+      if (_slide.canvas) {
+        _slide.canvas = null;
+      }
       const canvasDiv = document.getElementById('canvas');
       if (canvasDiv) {
         canvasDiv.remove();
@@ -97,7 +92,7 @@ export default {
         canvasBox.appendChild(newCanvas);
       }
     },
-    setCanvas(slide, _case=null) {
+    setCanvas(slide) {
       const _this = this;
       if (this.$refs.workAreaRef) {
         const workAreaRef = this.$refs.workAreaRef;
@@ -188,14 +183,6 @@ export default {
             slideImg.src = (typeof slide.img === 'string') ? slide.imgBase64 : slide.imgUrl; // TODO Здесь должна быть ссылка на файл
           }
           setTimeout(() => {
-            if (_case) {
-              _case.children.forEach(_child => {
-                const shape = this.createShapeObjByCaseChild(_child);
-                if (shape) {
-                  slide.canvas.add(shape);
-                }
-              });
-            }
             if (slide.canvas) {
               slide.canvas.renderAll();
               this.panningHandler(slide);
@@ -203,6 +190,37 @@ export default {
           }, 20);
         }, 20);
       }
+    },
+    setCanvasWithClear(_slide, timeout=100) {
+      this.clearCanvas(_slide);
+      setTimeout(() => {
+        this.createCanvas();
+        this.setCanvas(_slide);
+      }, timeout);
+    },
+    clearCaseChildrenFromCanvas(slide) {
+      const objects = slide.canvas.getObjects();
+      for (let i in objects) {
+        if (objects[i].type !== 'image') {
+          slide.canvas.remove(objects[i]);
+        }
+      }
+    },
+    setCaseChildrenOnCanvas(slide, _case) {
+      setTimeout(() => {
+        if (slide.canvas) {
+          if (_case) {
+            _case.children.forEach(_child => {
+              const shape = this.createShapeObjByCaseChild(_child);
+              if (slide.canvas && shape) {
+                slide.canvas.add(shape);
+              }
+            });
+          }
+          slide.canvas.renderAll();
+          this.panningHandler(slide);
+        }
+      }, 20);
     },
     panningHandler(slide) {
       if (this.dragMode) {
@@ -287,24 +305,7 @@ export default {
         }
       }, 50);
     },
-    createShapeObjByCaseChild(_child) {
-      if (_child.shapeType === 'rectangle') {
-        return new fabric.Rect(Object.assign({}, {
-          opacity: 1,
-          uniScaleTransform: true,
-          hasRotatingPoint: false,
-          hoverCursor: 'default'
-        }, _child.params));
-      } else if (_child.shapeType === 'circle') {
-        console.log(2, _child.params)
-        return new fabric.Circle(Object.assign({}, {
-          opacity: 1,
-          uniScaleTransform: true,
-          hasRotatingPoint: false,
-          hoverCursor: 'default'
-        }, _child.params));
-      }
-    }
+
   },
   watch: {
     $route () {

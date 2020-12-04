@@ -9,12 +9,13 @@ export default {
     cases: [],
   }),
   created() {
-    this.fetchCasesL();
     this.removeCaseUnsubscribe = this.$store.subscribe((mutation) => {
       if (mutation.type === 'REMOVE_CASE') {
         if (mutation.payload) {
           this.fetchCasesL();
         }
+      } else if (mutation.type === 'SET_CASES') {
+        this.fetchCasesL();
       }
     });
   },
@@ -23,9 +24,14 @@ export default {
       this.removeCaseUnsubscribe();
     }
   },
+  computed: {
+    selectedCase() {
+      return this.getSelectedCase();
+    },
+  },
   methods: {
     ...mapActions(['setContextMenuBase', 'removeCase']),
-    ...mapGetters(['getCases']),
+    ...mapGetters(['getCases', 'getSelectedCase']),
     fetchCasesL() {
       const query = this.$route.query;
       if (query && query.slideListId) {

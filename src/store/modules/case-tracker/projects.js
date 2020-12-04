@@ -1,24 +1,5 @@
 import router from "@/router";
-import {ProjectModel} from "@/models/case-tracker/ProjectModel";
-
-/* TEST DATA */
-const mockProjects = [
-    new ProjectModel({
-        id: 1,
-        name: 'Untitled1',
-        activityStatus: 'active',
-    }),
-    new ProjectModel({
-        id: 2,
-        name: 'Untitled2',
-        activityStatus: 'active',
-    }),
-    new ProjectModel({
-        id: 3,
-        name: 'Untitled3',
-        activityStatus: 'archived',
-    }),
-];
+import {mockCaseComments, mockCases, mockProjects, mockSlideLists, mockSlides} from "@/data/testData";
 
 const state = {
     projects: [],
@@ -29,6 +10,35 @@ const getters = {
 };
 
 const actions = {
+    /* INIT */
+    fetchInitData({commit, dispatch, getters}) {
+        setTimeout(() => { // TODO Имитация задержки с сервера
+            return new Promise((resolve) => {
+                const data = {
+                    projects: mockProjects,
+                    slides: mockSlides,
+                    slidesList: mockSlideLists,
+                    cases: mockCases,
+                    caseComments: mockCaseComments,
+                };
+                /* Наполнить основные компоненты */
+                commit('SET_PROJECTS', data.projects);
+                commit('SET_SLIDES', data.slides);
+                commit('SET_SLIDE_LISTS', data.slidesList);
+                commit('SET_CASES', data.cases);
+                commit('SET_CASES_COMMENTS', data.caseComments);
+                /* Доп. настройки компонентов */
+                setTimeout(() => {
+                    dispatch('selectFoundSlideFromSlides', getters.getSlides).then(() => {
+                        setTimeout(() => {
+                            dispatch('selectFoundCaseFromCases', getters.getCases);
+                        }, 200);
+                    });
+                }, 100);
+                resolve(data);
+            });
+        }, 500);
+    },
     /* PROJECTS */
     fetchProjects({commit}) {
         commit('SET_PROJECTS', mockProjects);

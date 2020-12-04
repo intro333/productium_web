@@ -3,75 +3,13 @@ import {SlideList} from "@/models/case-tracker/SlideList";
 import {getRandomInt} from "@/functions/calculations";
 import {CaseModel} from "@/models/case-tracker/CaseModel";
 import router from "@/router";
-
-const mockSlides = [
-  new SlideModel({
-    id: 1,
-    slideState: 'in-work',
-    projectId: 1,
-    order: 0,
-    img: true,
-    imgUrl: '/test-img/android-sdk.png'
-  }),
-  new SlideModel({
-    id: 2,
-    slideState: 'done',
-    projectId: 1,
-    order: 1,
-    img: true,
-    imgUrl: '/test-img/import-error.png'
-  }),
-  new SlideModel({
-    id: 3,
-    slideState: 'in-work',
-    projectId: 1,
-    order: 2,
-    img: true,
-    imgUrl: '/test-img/no-env.png'
-  }),
-  new SlideModel({
-    id: 4,
-    slideState: 'in-work',
-    projectId: 1,
-    order: 3,
-    img: true,
-    imgUrl: '/test-img/spot-error.png'
-  }),
-  new SlideModel({
-    id: 5,
-    slideState: 'archived',
-    projectId: 2,
-    order: 0,
-    img: null
-  }),
-];
-const mockSlideLists = [
-  new SlideList({
-    id: 1,
-    slideId: 1,
-    name: 'Лист1'
-  }),
-  new SlideList({
-    id: 2,
-    slideId: 2,
-    name: 'Лист1'
-  }),
-  new SlideList({
-    id: 3,
-    slideId: 3,
-    name: 'Лист1'
-  }),
-  new SlideList({
-    id: 4,
-    slideId: 4,
-    name: 'Лист1'
-  }),
-];
+import {mockSlideLists, mockSlides} from "@/data/testData";
 
 const state = {
   slides: [],
   slideLists: [],
   activeSlide: null,
+  activeSlideList: null,
   activeTool: 'moveTool', /* moveTool | textTool | shapeTool | superTool | handTool */
   activeShapeTool: 'rectangleTool', /* rectangleTool | circleTool */
   canvasInfo: {
@@ -91,24 +29,16 @@ const getters = {
 
 const actions = {
   /* SLIDES */
-  fetchSlides({commit, getters}) {
+  fetchSlides({commit}) {
     setTimeout(() => { // TODO Имитация задержки с сервера
       return new Promise((resolve) => {
-        commit('SET_SLIDES', mockSlides);
-        const query = router.currentRoute.query;
-        if (query && query.slideId) {
-          const _slideId = parseInt(query.slideId);
-          const foundSlide = mockSlides.find(_s => _s.id === _slideId);
-          commit('SELECT_SLIDE', {
-            slide: foundSlide,
-            cases: getters.getCases
-          });
-        }
-        resolve(mockSlides);
+        const data = mockSlides;
+        commit('SET_SLIDES', data);
+        resolve(data);
       });
     }, 500);
   },
-  pushSlide({commit, getters}) {
+  pushSlide({commit, getters, dispatch}) {
     /* TODO Mock */
     const projects = getters.getProjects;
     const selectedProject = projects.find(_p => _p.isSelected);
@@ -140,14 +70,13 @@ const actions = {
     commit('PUSH_SLIDE_LIST', newSlideList);
     commit('PUSH_CASE', newSCase);
     setTimeout(() => {
-      commit('SELECT_SLIDE', {
+      dispatch('selectCaseListAndCaseOfActiveSlide', {
         slide: newSlide,
         isNew: true,
-        cases: getters.getCases
       });
     }, 20)
   },
-  removeSlide({commit, getters}, payload) {
+  removeSlide({commit, dispatch}, payload) {
     if (payload.slidesLength > 1) {
       const slide = payload.slide;
       commit('REMOVE_SLIDE', slide);
@@ -162,23 +91,18 @@ const actions = {
                 return _s;
               }
             });
-            commit('SELECT_SLIDE', {
+            dispatch('selectCaseListAndCaseOfActiveSlide', {
               slide: filteredSlides[filteredSlides.length-1],
-              cases: getters.getCases
             });
           }
         }, 20);
       }
     }
   },
-  selectSlide({commit, getters}, _slide) {
-    commit('SELECT_SLIDE', {
+  selectSlide({dispatch}, _slide) {
+    dispatch('selectCaseListAndCaseOfActiveSlide', {
       slide: _slide,
-      cases: getters.getCases
     });
-  },
-  changeSlidesCanvasSize({commit}, activeSlide) {
-    commit('CHANGE_SLIDES_CANVAS_SIZE', activeSlide);
   },
   /* SLIDE LISTS */
   fetchSlideLists({commit}) {
@@ -201,18 +125,28 @@ const actions = {
   setCanvasInfo({commit}, info) {
     commit('SET_CANVAS_INFO', info);
   },
-};
-
-const mutations = {
-  /* SLIDES */
-  SET_SLIDES(state, slides) {
-    state.slides = slides;
+  /* LOCAL ACTIONS */
+  selectFoundSlideFromSlides({dispatch}, slides) {
+    return new Promise((resolve, reject) => {
+      const query = router.currentRoute.query;
+      if (query && query.slideId) {
+        const _slideId = parseInt(query.slideId);
+        const foundSlide = slides.find(_s => _s.id === _slideId);
+        if (foundSlide) {
+          dispatch('selectCaseListAndCaseOfActiveSlide', {
+            slide: foundSlide,
+          });
+          resolve(foundSlide);
+        } else {
+          reject(false);
+        }
+      }
+    });
   },
-  PUSH_SLIDE(state, _slide) { state.slides.push(_slide); },
-  SELECT_SLIDE(state, payload) {
+  selectCaseListAndCaseOfActiveSlide({commit, getters}, payload) {
     const _slide = payload.slide;
-    const cases = payload.cases;
-    state.activeSlide = _slide;
+    commit('SELECT_SLIDE', _slide);
+    const _cases = getters.getCases;
     const query = router.currentRoute.query;
     if (query && query.slideId) {
       const _slideId = parseInt(query.slideId);
@@ -221,9 +155,9 @@ const mutations = {
           const _slideList = state.slideLists
             .find(_sl => _sl.slideId === _slide.id);
           if (_slideList) {
-            // TODO SELECT SLIDE LIST
+            commit('SELECT_SLIDE_LIST', _slideList);
             const slideListId = _slideList.id;
-            const _case = cases.find(_c => _c.slideListId === slideListId);
+            const _case = _cases.find(_c => _c.slideListId === slideListId);
             if (_case) {
               setTimeout(() => {
                 router.push({
@@ -234,6 +168,9 @@ const mutations = {
                     caseId: _case.id,
                   })
                 });
+                setTimeout(() => {
+                  commit('SELECT_CASE', _case);
+                }, 200);
               }, 20)
             }
           }
@@ -241,24 +178,22 @@ const mutations = {
       }
     }
   },
+};
+
+const mutations = {
+  /* SLIDES */
+  SET_SLIDES(state, slides) {
+    state.slides = slides;
+  },
+  PUSH_SLIDE(state, _slide) { state.slides.push(_slide); },
+  SELECT_SLIDE(state, _slide) {
+    state.activeSlide = _slide;
+  },
   REMOVE_SLIDE(state, _slide) {
     _slide.slideState = 'archived';
   },
   SET_ACTIVE_SLIDE(state, _slide) {
     state.activeSlide = _slide;
-  },
-  CHANGE_SLIDES_CANVAS_SIZE(state, activeSlide) {
-    const query = router.currentRoute.query;
-    if (activeSlide && query && query.projectId) {
-      state.slides = state.slides.map(_s => {
-        if (_s.canvasWidth && _s.slideState !== 'archived' &&
-          _s.projectId === parseInt(query.projectId)) {
-          _s.canvasWidth = activeSlide.canvasWidth;
-          _s.canvasHeight = activeSlide.canvasHeight;
-        }
-        return _s;
-      });
-    }
   },
   /* SLIDE LISTS */
   SET_SLIDE_LISTS(state, _slideLists) {
@@ -274,6 +209,9 @@ const mutations = {
     }
   },
   PUSH_SLIDE_LIST(state, _slideList) { state.slideLists.push(_slideList); },
+  SELECT_SLIDE_LIST(state, _slideList) {
+    state.activeSlideList = _slideList;
+  },
   /* SLIDE CANVAS */
   SET_SLIDE_IMG(state, img) {
     const query = router.currentRoute.query;

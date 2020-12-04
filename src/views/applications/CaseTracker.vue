@@ -44,11 +44,12 @@ export default {
     CentralModal,
   },
   created() {
-    this.fetchProjects();
-    this.fetchSlides();
-    this.fetchSlideLists();
-    this.fetchCases();
-    this.fetchCaseComments();
+    this.fetchInitData();
+    // this.fetchProjects();
+    // this.fetchSlides();
+    // this.fetchSlideLists();
+    // this.fetchCases();
+    // this.fetchCaseComments();
     const query = router.currentRoute.query;
     if (query && query.commentId) {
       this.openCommentsModalByCommentId(parseInt(query.commentId));
@@ -56,7 +57,7 @@ export default {
   },
   methods: {
     ...mapActions(['fetchProjects', 'fetchSlides', 'fetchSlideLists', 'fetchCases', 'fetchCaseComments',
-      'openCommentsModalByCommentId']),
+      'openCommentsModalByCommentId', 'fetchInitData']),
     ...mapGetters(['getContextMenuBase', 'getCentralModal', 'getTooltip']),
   },
 }

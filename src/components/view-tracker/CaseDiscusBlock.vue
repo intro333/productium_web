@@ -1,13 +1,14 @@
 <template>
   <div class="case-discus">
     <div class="case-discus-header">
-      <CaseNameWithStatusAndOptions :selectedCase="selectedCase" />
+      <CaseNameWithStatusAndOptions />
       <div class="cd-h-right">
         <div v-for="(_item, i) in discusBlockButtons"
              :key="i"
              @click="selectDiscusBlockActivity(_item.discusBlockActivityState)"
              class="p-text-box">
-          <span class="cd-h-right-item"
+          <span v-if="selectedCase"
+                class="cd-h-right-item"
                 :class="{active: isActiveDiscusBlockActivityState(_item.discusBlockActivityState)}"
           >{{_item.title}}</span>
         </div>
@@ -15,7 +16,8 @@
     </div>
     <div class="case-discus-body">
       <div class="cd-b-edit-area">
-        <textarea ref="caseDiscusTextareaRef"
+        <textarea v-if="selectedCase"
+                  ref="caseDiscusTextareaRef"
                   @click="changeCaseDiscusTextareaEdited(true)"
                   @keyup.esc="changeCaseDiscusTextareaEdited(false)"
                   @blur="changeCaseDiscusTextareaEdited(false)"
@@ -27,7 +29,8 @@
                   :placeholder="`Опишите ${(selectedCase.discusBlockActivityState === 'discus') ? 'задачу' : 'решение'}...`"></textarea>
       </div>
       <div class="cd-b-comments">
-        <div class="cd-b-comments-box">
+        <div v-if="selectedCase"
+             class="cd-b-comments-box">
           <span class="cd-b-comments-text">{{readCasesComments.length}}<span class="cd-b-comments-text-link"
           >+{{notReadCasesComments.length}}</span></span>
           <span @click="openCommentModal()"
@@ -62,17 +65,6 @@ export default {
     ]
   }),
   computed: {
-    selectedCase() {
-      const query = this.$route.query;
-      if (query && query.caseId) {
-        const foundCase = this.getCases()
-            .find(_c => _c.id === parseInt(query.caseId));
-        if (foundCase) {
-          return foundCase;
-        }
-      }
-      return null;
-    },
     casesComments() {
       return this.getCasesComments().filter(_c =>
           _c.caseId === this.selectedCase.id);

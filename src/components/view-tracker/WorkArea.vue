@@ -59,14 +59,11 @@ export default {
   mounted() {
     this.selectSlideUnsubscribe = this.$store.subscribe((mutation) => {
       if (mutation.type === 'SELECT_SLIDE') {
+        console.log(11)
         if (mutation.payload) {
-          const _slide = mutation.payload.slide;
+          const _slide = mutation.payload;
           if (_slide && _slide.img) {
-            this.clearCanvas(_slide);
-            setTimeout(() => {
-              this.createCanvas();
-              this.setCanvas(_slide);
-            }, 100);
+            this.setCanvasWithClear(_slide);
           } else {
             this.clearCanvas(_slide);
           }
@@ -78,13 +75,14 @@ export default {
           }, 100);
         }
       } else if (mutation.type === 'SELECT_CASE') {
+        console.log(22)
         const _case = mutation.payload;
-        if (_case && _case.children && _case.children.length) {
-          this.clearCanvas(this.activeSlide);
+        const activeSlide = this.activeSlide;
+        if (activeSlide && _case && _case.children && _case.children.length) {
+          this.clearCaseChildrenFromCanvas(activeSlide);
           setTimeout(() => {
-            this.createCanvas();
-            this.setCanvas(this.activeSlide, _case);
-          }, 100);
+            this.setCaseChildrenOnCanvas(activeSlide, _case);
+          }, 50);
         }
       }
     });
@@ -102,15 +100,17 @@ export default {
     if (this.selectSlideUnsubscribe) {
       this.selectSlideUnsubscribe();
     }
-    window.removeEventListener('drop', () => {}); // TODO this.uploadImageToCanvasBg
-    window.removeEventListener('resize', () => {});
+    window.removeEventListener('drop', this.uploadImageToCanvasBg);
+    window.removeEventListener('resize', this.browserResize);
   },
   computed: {
-
+    selectedCase() {
+      return this.getSelectedCase();
+    },
   },
   methods: {
-    ...mapActions(['setSlideImg', 'changeSlidesCanvasSize']),
-    ...mapGetters([]),
+    ...mapActions(['setSlideImg']),
+    ...mapGetters(['getSelectedCase']),
     uploadImageToCanvasBg($event) {
       const files = $event.target.files;
       this.setFile(files);
@@ -158,13 +158,18 @@ export default {
         if (canvasBoxRef) {
           const activeSlide = this.activeSlide;
           if (activeSlide && activeSlide.canvas) {
-            activeSlide.canvasWidth = canvasBoxRef.clientWidth;
-            activeSlide.canvasHeight = canvasBoxRef.clientHeight;
-            this.changeSlidesCanvasSize(activeSlide);
+            this.setCanvasInfo({
+              canvasWidth: canvasBoxRef.clientWidth,
+              canvasHeight: canvasBoxRef.clientHeight,
+            });
+            setTimeout(() => {
+              this.setCanvasWithClear(activeSlide);
+              // this.setCaseChildrenOnCanvas(this.selectedCase);
+            }, 20);
           }
         }
       }
-    }
+    },
   }
 }
 </script>
