@@ -104,6 +104,9 @@ const actions = {
       slide: _slide,
     });
   },
+  setActiveSlide({commit}, _slide) {
+    commit('SET_ACTIVE_SLIDE', _slide);
+  },
   /* SLIDE LISTS */
   fetchSlideLists({commit}) {
     commit('SET_SLIDE_LISTS', mockSlideLists);

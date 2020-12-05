@@ -16,7 +16,15 @@ export default {
     isSlideImage: false,
     canvasWidth: 0,
     canvasHeight: 0,
-    panLeftDownPoint: 0,
+    lastClientX: 0,
+    lastClientY: 0,
+    panState: STATE_IDLE,
+    // panLeftMouseDownPoint: 0,
+    // panTopMouseDownPoint: 0,
+    // panLeftMouseUpPoint: 0,
+    // panTopMouseUpPoint: 0,
+    // isLeftDirection: null,
+    // isTopDirection: null,
   }),
   created() {
     this.slideUnsubscribe = this.$store.subscribe((mutation) => {
@@ -52,7 +60,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['setActiveTool', 'setActiveShapeTool', 'setCanvasInfo']),
+    ...mapActions(['setActiveTool', 'setActiveShapeTool', 'setCanvasInfo', 'setActiveSlide']),
     ...mapGetters(['getSlides', 'getActiveSlide', 'getActiveTool', 'getActiveShapeTool', 'getCanvasInfo']),
     fetchSlidesL() {
       const query = this.$route.query;
@@ -103,16 +111,16 @@ export default {
           canvasWidth: workAreaRef.clientWidth,
           canvasHeight: workAreaRef.clientHeight,
         });
-        let lastClientX;
-        let lastClientY;
-        let panState = STATE_IDLE;
         setTimeout(() => {
           slide.canvas = new fabric.Canvas('canvas', {
             preserveObjectStacking: true // Не менять позицию объектов при нажатии на них (чтобы картинка не уходила на первый план)
           });
           /* CANVAS HANDLERS */
           slide.canvas.on('mouse:down', function(e) {
-            _this.panLeftDownPoint = 0;
+            // slide.panLeftMouseDownPoint = 0;
+            // slide.panTopMouseDownPoint = 0;
+            // slide.panLeftMouseUpPoint = 0;
+            // slide.panTopMouseUpPoint = 0;
             if (e.target) {
               const obj = e.target;
               const objType = obj.type;
@@ -121,43 +129,39 @@ export default {
               }
             }
             if (_this.dragMode) {
-              panState = STATE_PANNING;
-              lastClientX = e.e.clientX;
-              lastClientY = e.e.clientY;
-              _this.panLeftDownPoint = lastClientX;
-              console.log(1, lastClientX);
-              // console.log(2, lastClientY);
+              _this.panState = STATE_PANNING;
+              slide.panLeftMouseDownPoint = e.e.clientX;
+              slide.panTopMouseDownPoint = e.e.clientY;
             }
           });
           slide.canvas.on('mouse:up', function(e) {
             if (_this.dragMode) {
-              panState = STATE_IDLE;
-
-              const clX = e.e.clientX;
-              const isLeftDirection = _this.panLeftDownPoint > clX; /* Мышку потянули влево или вправо */
-              if (isLeftDirection) {
-                slide.imgLeft = slide.imgLeft - (_this.panLeftDownPoint - clX);
-                console.log(2, slide.imgLeft);
-              } else {
-                slide.imgLeft = slide.imgLeft + (clX - _this.panLeftDownPoint);
-                console.log(3, slide.imgLeft);
-              }
-
-              // console.log(2, e.e.clientY);
+              _this.panState = STATE_IDLE;
+              const clX = slide.panLeftMouseUpPoint = e.e.clientX;
+              const clY = slide.panTopMouseUpPoint = e.e.clientY;
+              slide.isLeftDirection = slide.panLeftMouseDownPoint > clX; /* Мышку потянули влево или вправо */
+              slide.isTopDirection = slide.panTopMouseDownPoint > clY; /* Мышку потянули вверх или вниз */
+              slide.imgLeft = slide.isLeftDirection ? (slide.imgLeft - (slide.panLeftMouseDownPoint - clX)) :
+                  (slide.imgLeft + (clX - slide.panLeftMouseDownPoint));
+              slide.imgTop = slide.isTopDirection ? (slide.imgTop - (slide.panTopMouseDownPoint - clY)) :
+                  (slide.imgTop + (clY - slide.panTopMouseDownPoint));
+              console.log("------------------------");
+              _this.lastClientX = 0;
+              _this.lastClientY = 0;
             }
           });
           slide.canvas.on('mouse:move', function(e) {
-            if (_this.dragMode && (panState === STATE_PANNING) && e && e.e) {
+            if (_this.dragMode && (_this.panState === STATE_PANNING) && e && e.e) {
               let deltaX = 0;
               let deltaY = 0;
-              if (lastClientX) {
-                deltaX = e.e.clientX - lastClientX;
+              if (_this.lastClientX) {
+                deltaX = e.e.clientX - _this.lastClientX;
               }
-              if (lastClientY) {
-                deltaY = e.e.clientY - lastClientY;
+              if (_this.lastClientY) {
+                deltaY = e.e.clientY - _this.lastClientY;
               }
-              lastClientX = e.e.clientX;
-              lastClientY = e.e.clientY;
+              _this.lastClientX = e.e.clientX;
+              _this.lastClientY = e.e.clientY;
 
               let delta = new fabric.Point(deltaX, deltaY);
               slide.canvas.relativePan(delta);
@@ -177,7 +181,7 @@ export default {
               }
               if (slide.canvasHeight) {
                 if (slideImg.height) {
-                  imgTop = (slide.canvasHeight / 2) - (slideImg.height / 2);
+                  imgTop = slide.imgTop ? slide.imgTop : (slide.canvasHeight / 2) - (slideImg.height / 2);
                 }
               }
               slide.imgLeft = imgLeft;
@@ -235,6 +239,13 @@ export default {
             _case.children.forEach(_child => {
               const shape = this.createShapeObjByCaseChild(_child);
               if (slide.canvas && shape) {
+                // console.log(1, slide.isLeftDirection);
+                // console.log(2, shape.left);
+                // console.log(3, slide.panLeftMouseDownPoint);
+                // console.log(4, slide.panLeftMouseUpPoint);
+                // shape.left = slide.isLeftDirection ? (shape.left - (slide.panLeftMouseDownPoint - slide.panLeftMouseUpPoint)) :
+                //     (shape.left + (slide.panLeftMouseUpPoint - slide.panLeftMouseDownPoint));
+                // console.log(1, shape);
                 slide.canvas.add(shape);
               }
             });

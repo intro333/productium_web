@@ -12,6 +12,10 @@ export class SlideModel {
   canvasHeight = 0;
   imgLeft = 0;
   imgTop = 0;
+  isLeftDirection = false;
+  isTopDirection = false;
+  panLeftMouseDownPoint = 0;
+  panLeftMouseUpPoint = 0;
 
   constructor(_slide) {
     this.id = _slide.id;
