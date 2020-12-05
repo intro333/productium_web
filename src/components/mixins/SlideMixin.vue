@@ -239,13 +239,20 @@ export default {
             _case.children.forEach(_child => {
               const shape = this.createShapeObjByCaseChild(_child);
               if (slide.canvas && shape) {
-                // console.log(1, slide.isLeftDirection);
-                // console.log(2, shape.left);
-                // console.log(3, slide.panLeftMouseDownPoint);
-                // console.log(4, slide.panLeftMouseUpPoint);
-                // shape.left = slide.isLeftDirection ? (shape.left - (slide.panLeftMouseDownPoint - slide.panLeftMouseUpPoint)) :
-                //     (shape.left + (slide.panLeftMouseUpPoint - slide.panLeftMouseDownPoint));
-                // console.log(1, shape);
+                console.log('isTopDirection', slide.isTopDirection);
+                console.log('left', shape.left);
+                console.log('top', shape.top);
+                console.log('panLeftMouseDownPoint', slide.panLeftMouseDownPoint);
+                console.log('panLeftMouseUpPoint', slide.panLeftMouseUpPoint);
+                if (slide.isLeftDirection !== null) {
+                  shape.left = slide.isLeftDirection ? (shape.left - (slide.panLeftMouseDownPoint - slide.panLeftMouseUpPoint)) :
+                      (shape.left + (slide.panLeftMouseUpPoint - slide.panLeftMouseDownPoint));
+                }
+                // if (slide.isTopDirection !== null) {
+                //   shape.top = slide.isTopDirection ? (shape.top - (slide.panTopMouseDownPoint - slide.panTopMouseUpPoint)) :
+                //       (shape.top + (slide.panTopMouseUpPoint - slide.panTopMouseDownPoint));
+                // }
+                console.log(9, shape);
                 slide.canvas.add(shape);
               }
             });

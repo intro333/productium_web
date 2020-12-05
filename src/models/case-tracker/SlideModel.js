@@ -12,8 +12,8 @@ export class SlideModel {
   canvasHeight = 0;
   imgLeft = 0;
   imgTop = 0;
-  isLeftDirection = false;
-  isTopDirection = false;
+  isLeftDirection = null;
+  isTopDirection = null;
   panLeftMouseDownPoint = 0;
   panLeftMouseUpPoint = 0;
 
