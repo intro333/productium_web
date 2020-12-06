@@ -145,6 +145,9 @@ const actions = {
       }
     }
   },
+  changeCasesParamsByOffset({commit}, payload) {
+    commit('CHANGE_CASES_PARAMS_BY_OFFSET', payload);
+  },
 };
 
 const mutations = {
@@ -168,7 +171,23 @@ const mutations = {
   },
   SET_CASES_COMMENTS(state, comments) {
     state.casesComments = comments;
-  }
+  },
+  CHANGE_CASES_PARAMS_BY_OFFSET(state, payload) {
+    state.cases = state.cases.map(_c => {
+      if (_c.caseStatus !== 'archived' &&
+        _c.slideListId === payload.activeSlideList.id) {
+        if (_c.children && _c.children.length) {
+          _c.children.forEach(_ch => {
+            const childOldLeft = _ch.params.left;
+            const childOldTop = _ch.params.top;
+            _ch.params.left = payload.isLeftDirection ? (childOldLeft - payload.offsetLeft) : (childOldLeft + payload.offsetLeft);
+            _ch.params.top = payload.isTopDirection ? (childOldTop - payload.offsetTop) : (childOldTop + payload.offsetTop);
+          });
+        }
+      }
+      return _c;
+    });
+  },
 };
 
 export default {

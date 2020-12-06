@@ -19,12 +19,6 @@ export default {
     lastClientX: 0,
     lastClientY: 0,
     panState: STATE_IDLE,
-    // panLeftMouseDownPoint: 0,
-    // panTopMouseDownPoint: 0,
-    // panLeftMouseUpPoint: 0,
-    // panTopMouseUpPoint: 0,
-    // isLeftDirection: null,
-    // isTopDirection: null,
   }),
   created() {
     this.slideUnsubscribe = this.$store.subscribe((mutation) => {
@@ -46,6 +40,9 @@ export default {
     activeSlide() {
       return this.getActiveSlide();
     },
+    activeSlideList() {
+      return this.getActiveSlideList();
+    },
     activeTool() {
       return this.getActiveTool();
     },
@@ -57,11 +54,15 @@ export default {
     },
     canvasInfo() {
       return this.getCanvasInfo();
-    }
+    },
+    selectedCase() {
+      return this.getSelectedCase();
+    },
   },
   methods: {
-    ...mapActions(['setActiveTool', 'setActiveShapeTool', 'setCanvasInfo', 'setActiveSlide']),
-    ...mapGetters(['getSlides', 'getActiveSlide', 'getActiveTool', 'getActiveShapeTool', 'getCanvasInfo']),
+    ...mapActions(['setActiveTool', 'setActiveShapeTool', 'setCanvasInfo', 'setActiveSlide', 'changeCasesParamsByOffset']),
+    ...mapGetters(['getSlides', 'getActiveSlide',  'getActiveSlideList', 'getActiveTool', 'getActiveShapeTool', 'getCanvasInfo',
+      'getSelectedCase', 'getCases']),
     fetchSlidesL() {
       const query = this.$route.query;
       if (query && query.projectId) {
@@ -117,10 +118,10 @@ export default {
           });
           /* CANVAS HANDLERS */
           slide.canvas.on('mouse:down', function(e) {
-            // slide.panLeftMouseDownPoint = 0;
-            // slide.panTopMouseDownPoint = 0;
-            // slide.panLeftMouseUpPoint = 0;
-            // slide.panTopMouseUpPoint = 0;
+            slide.panLeftMouseDownPoint = 0;
+            slide.panTopMouseDownPoint = 0;
+            slide.panLeftMouseUpPoint = 0;
+            slide.panTopMouseUpPoint = 0;
             if (e.target) {
               const obj = e.target;
               const objType = obj.type;
@@ -141,11 +142,19 @@ export default {
               const clY = slide.panTopMouseUpPoint = e.e.clientY;
               slide.isLeftDirection = slide.panLeftMouseDownPoint > clX; /* Мышку потянули влево или вправо */
               slide.isTopDirection = slide.panTopMouseDownPoint > clY; /* Мышку потянули вверх или вниз */
-              slide.imgLeft = slide.isLeftDirection ? (slide.imgLeft - (slide.panLeftMouseDownPoint - clX)) :
-                  (slide.imgLeft + (clX - slide.panLeftMouseDownPoint));
-              slide.imgTop = slide.isTopDirection ? (slide.imgTop - (slide.panTopMouseDownPoint - clY)) :
-                  (slide.imgTop + (clY - slide.panTopMouseDownPoint));
-              console.log("------------------------");
+              const offsetLeft = slide.isLeftDirection ? slide.panLeftMouseDownPoint - clX : clX - slide.panLeftMouseDownPoint;
+              const offsetTop = slide.isTopDirection ? slide.panTopMouseDownPoint - clY : clY - slide.panTopMouseDownPoint;
+              slide.imgLeft = slide.isLeftDirection ? (slide.imgLeft - offsetLeft) : (slide.imgLeft + offsetLeft);
+              slide.imgTop = slide.isTopDirection ? (slide.imgTop - offsetTop) : (slide.imgTop + offsetTop);
+              if (_this.activeSlideList) {
+                _this.changeCasesParamsByOffset({
+                  offsetLeft,
+                  offsetTop,
+                  isLeftDirection: slide.isLeftDirection,
+                  isTopDirection: slide.isTopDirection,
+                  activeSlideList: _this.activeSlideList
+                });
+              }
               _this.lastClientX = 0;
               _this.lastClientY = 0;
             }
@@ -228,6 +237,7 @@ export default {
       const objects = slide.canvas.getObjects();
       for (let i in objects) {
         if (objects[i].type !== 'image') {
+          console.log(1, objects[i]);
           slide.canvas.remove(objects[i]);
         }
       }
@@ -239,20 +249,24 @@ export default {
             _case.children.forEach(_child => {
               const shape = this.createShapeObjByCaseChild(_child);
               if (slide.canvas && shape) {
-                console.log('isTopDirection', slide.isTopDirection);
-                console.log('left', shape.left);
-                console.log('top', shape.top);
-                console.log('panLeftMouseDownPoint', slide.panLeftMouseDownPoint);
-                console.log('panLeftMouseUpPoint', slide.panLeftMouseUpPoint);
-                if (slide.isLeftDirection !== null) {
-                  shape.left = slide.isLeftDirection ? (shape.left - (slide.panLeftMouseDownPoint - slide.panLeftMouseUpPoint)) :
-                      (shape.left + (slide.panLeftMouseUpPoint - slide.panLeftMouseDownPoint));
-                }
+                // console.log(5, _child);
+                console.log(2, shape);
+                // console.log('isTopDirection', slide.isTopDirection);
+                // console.log('top', shape.top);
+                // console.log('panLeftMouseDownPoint', slide.panLeftMouseDownPoint);
+                // console.log('panLeftMouseUpPoint', slide.panLeftMouseUpPoint);
+                // if (slide.isLeftDirection !== null) {
+                //   const newShapeLeft = slide.isLeftDirection ? (childLeft.left - (slide.panLeftMouseDownPoint - slide.panLeftMouseUpPoint)) :
+                //       (childLeft.left + (slide.panLeftMouseUpPoint - slide.panLeftMouseDownPoint));
+                //   shape.left = newShapeLeft;
+                //   _child.params.left = newShapeLeft;
+                //   console.log(2, _child.params.left);
+                // }
                 // if (slide.isTopDirection !== null) {
                 //   shape.top = slide.isTopDirection ? (shape.top - (slide.panTopMouseDownPoint - slide.panTopMouseUpPoint)) :
                 //       (shape.top + (slide.panTopMouseUpPoint - slide.panTopMouseDownPoint));
                 // }
-                console.log(9, shape);
+                // console.log(9, shape);
                 slide.canvas.add(shape);
               }
             });

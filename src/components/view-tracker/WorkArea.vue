@@ -104,13 +104,11 @@ export default {
     window.removeEventListener('resize', this.browserResize);
   },
   computed: {
-    selectedCase() {
-      return this.getSelectedCase();
-    },
+
   },
   methods: {
     ...mapActions(['setSlideImg']),
-    ...mapGetters(['getSelectedCase']),
+    ...mapGetters([]),
     uploadImageToCanvasBg($event) {
       const files = $event.target.files;
       this.setFile(files);

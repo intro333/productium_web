@@ -7,6 +7,9 @@ export default {
     createShapeObjByCaseChild(_child) {
       if (_child.shapeType === 'rectangle') {
         return new fabric.Rect(Object.assign({}, {
+          id: _child.id,
+          shapeType: _child.shapeType,
+          title: _child.title,
           opacity: 1,
           uniScaleTransform: true,
           hasRotatingPoint: false,
@@ -14,6 +17,9 @@ export default {
         }, _child.params));
       } else if (_child.shapeType === 'circle') {
         return new fabric.Circle(Object.assign({}, {
+          id: _child.id,
+          shapeType: _child.shapeType,
+          title: _child.title,
           opacity: 1,
           uniScaleTransform: true,
           hasRotatingPoint: false,

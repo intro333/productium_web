@@ -22,6 +22,7 @@ const getters = {
   getSlides: state => state.slides,
   getSlideLists: state => state.slideLists,
   getActiveSlide: state => state.activeSlide,
+  getActiveSlideList: state => state.activeSlideList,
   getActiveTool: state => state.activeTool,
   getActiveShapeTool: state => state.activeShapeTool,
   getCanvasInfo: state => state.canvasInfo,
@@ -138,6 +139,7 @@ const actions = {
         if (foundSlide) {
           dispatch('selectCaseListAndCaseOfActiveSlide', {
             slide: foundSlide,
+            isFirstLoad: true
           });
           resolve(foundSlide);
         } else {
@@ -148,12 +150,13 @@ const actions = {
   },
   selectCaseListAndCaseOfActiveSlide({commit, getters}, payload) {
     const _slide = payload.slide;
-    commit('SELECT_SLIDE', _slide);
-    const _cases = getters.getCases;
     const query = router.currentRoute.query;
+    const _cases = getters.getCases;
+    const _slideId = parseInt(query.slideId);
+    const slideIdNotEqual = _slideId !== _slide.id;
     if (query && query.slideId) {
-      const _slideId = parseInt(query.slideId);
-      if (payload.isNew || (_slideId !== _slide.id)) {
+      if (payload.isNew || payload.isFirstLoad || slideIdNotEqual) {
+        commit('SELECT_SLIDE', _slide);
         setTimeout(() => {
           const _slideList = state.slideLists
             .find(_sl => _sl.slideId === _slide.id);
@@ -164,28 +167,32 @@ const actions = {
               _c.caseStatus !== 'archived');
             if (_case) {
               setTimeout(() => {
-                router.push({
-                  path: '/case-tracker',
-                  query: Object.assign({}, query, {
-                    slideId: _slide.id,
-                    slideListId: _slideList.id,
-                    caseId: _case.id,
-                  })
-                });
+                if (slideIdNotEqual) {
+                  router.push({
+                    path: '/case-tracker',
+                    query: Object.assign({}, query, {
+                      slideId: _slide.id,
+                      slideListId: _slideList.id,
+                      caseId: _case.id,
+                    })
+                  });
+                }
                 setTimeout(() => {
                   commit('SELECT_CASE', _case);
                 }, 200);
               }, 20)
             } else {
               setTimeout(() => {
-                router.push({
-                  path: '/case-tracker',
-                  query: Object.assign({}, query, {
-                    slideId: _slide.id,
-                    slideListId: _slideList.id,
-                    caseId: 0,
-                  })
-                });
+                if (slideIdNotEqual) {
+                  router.push({
+                    path: '/case-tracker',
+                    query: Object.assign({}, query, {
+                      slideId: _slide.id,
+                      slideListId: _slideList.id,
+                      caseId: 0,
+                    })
+                  });
+                }
                 setTimeout(() => {
                   commit('SELECT_CASE', null);
                 }, 200);

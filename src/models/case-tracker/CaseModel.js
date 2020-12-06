@@ -6,7 +6,7 @@ export class CaseModel {
   isOpen = false;
   discus = '';
   resolut = '';
-  children = [];
+  children = []; /* ShapeModel[] */
   order = 0;
 
   /* local */

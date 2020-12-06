@@ -2,6 +2,7 @@ import {ProjectModel} from "@/models/case-tracker/ProjectModel";
 import {SlideModel} from "@/models/case-tracker/SlideModel";
 import {SlideList} from "@/models/case-tracker/SlideList";
 import {CaseModel} from "@/models/case-tracker/CaseModel";
+import {ShapeModel} from "@/models/case-tracker/ShapeModel";
 
 export const mockProjects = [
   new ProjectModel({
@@ -104,47 +105,32 @@ export const mockCases = [
     discus: '',
     resolut: '',
     children: [
-      {
-        id: 1,
-        title: 'Rectangle 1',
-        shapeType: 'rectangle',
-        params: {
-          width: 100,
-          height: 100,
-          top: 300,
-          left: 200,
-          fill: 'transparent',
-          stroke: 'red',
-          strokeWidth: 3,
-        }
-      },
-      {
-        id: 2,
-        title: 'Rectangle 2',
-        shapeType: 'rectangle',
-        params: {
-          width: 150,
-          height: 150,
-          top: 300,
-          left: 400,
-          fill: 'transparent',
-          stroke: 'green',
-          strokeWidth: 3,
-        }
-      },
-      {
-        id: 3,
-        title: 'Circle 1',
-        shapeType: 'circle',
-        params: {
-          left: 650,
-          top: 320,
-          fill: 'transparent',
-          stroke: 'black',
-          strokeWidth: 2,
-          radius: 50,
-        }
-      },
+      // new ShapeModel( 1, 'Rectangle 1', 'rectangle', {
+      //   width: 100,
+      //   height: 100,
+      //   top: 300,
+      //   left: 200,
+      //   fill: 'transparent',
+      //   stroke: 'red',
+      //   strokeWidth: 3
+      // }),
+      // new ShapeModel( 2, 'Rectangle 2', 'rectangle', {
+      //   width: 150,
+      //   height: 150,
+      //   top: 300,
+      //   left: 400,
+      //   fill: 'transparent',
+      //   stroke: 'green',
+      //   strokeWidth: 3,
+      // }),
+      // new ShapeModel( 3, 'Circle 1', 'circle', {
+      //   left: 650,
+      //   top: 320,
+      //   fill: 'transparent',
+      //   stroke: 'black',
+      //   strokeWidth: 2,
+      //   radius: 50,
+      // }),
     ],
     order: 1,
   }),
@@ -157,33 +143,23 @@ export const mockCases = [
     discus: '',
     resolut: '',
     children: [
-      {
-        id: 4,
-        title: 'Rectangle 1',
-        shapeType: 'rectangle',
-        params: {
-          width: 250,
-          height: 100,
-          top: 400,
-          left: 300,
-          fill: 'transparent',
-          stroke: 'red',
-          strokeWidth: 5,
-        }
-      },
-      {
-        id: 5,
-        title: 'Circle 1',
-        shapeType: 'circle',
-        params: {
-          left: 650,
-          top: 320,
-          fill: 'transparent',
-          stroke: 'green',
-          strokeWidth: 5,
-          radius: 100,
-        }
-      },
+      new ShapeModel( 4, 'Rectangle 4', 'rectangle', {
+        width: 250,
+        height: 100,
+        top: 500,
+        left: 300,
+        fill: 'transparent',
+        stroke: 'red',
+        strokeWidth: 5,
+      }),
+      // new ShapeModel( 5, 'Circle 2', 'circle', {
+      //   left: 650,
+      //   top: 320,
+      //   fill: 'transparent',
+      //   stroke: 'green',
+      //   strokeWidth: 5,
+      //   radius: 100,
+      // }),
     ],
     order: 2,
   }),
@@ -207,47 +183,23 @@ export const mockCases = [
     discus: '',
     resolut: '',
     children: [
-      {
-        id: 6,
-        title: 'Rectangle 3',
-        shapeType: 'rectangle',
-        params: {
-          width: 250,
-          height: 100,
-          top: 400,
-          left: 300,
-          fill: 'transparent',
-          stroke: 'red',
-          strokeWidth: 2,
-        }
-      },
-      {
-        id: 7,
-        title: 'Rectangle 4',
-        shapeType: 'rectangle',
-        params: {
-          width: 250,
-          height: 100,
-          top: 100,
-          left: 100,
-          fill: 'transparent',
-          stroke: 'green',
-          strokeWidth: 3,
-        }
-      },
-      {
-        id: 8,
-        title: 'Circle 2',
-        shapeType: 'circle',
-        params: {
-          left: 650,
-          top: 320,
-          fill: 'transparent',
-          stroke: 'green',
-          strokeWidth: 2,
-          radius: 100,
-        }
-      },
+      new ShapeModel( 6, 'Rectangle 6', 'rectangle', {
+        width: 250,
+        height: 100,
+        top: 400,
+        left: 300,
+        fill: 'transparent',
+        stroke: 'red',
+        strokeWidth: 2,
+      }),
+      new ShapeModel( 7, 'Circle 7', 'circle', {
+        left: 650,
+        top: 320,
+        fill: 'transparent',
+        stroke: 'green',
+        strokeWidth: 2,
+        radius: 100,
+      }),
     ],
     order: 1,
   }),
@@ -271,20 +223,15 @@ export const mockCases = [
     discus: '',
     resolut: '',
     children: [
-      {
-        id: 9,
-        title: 'Rectangle 3',
-        shapeType: 'rectangle',
-        params: {
-          width: 250,
-          height: 100,
-          top: 100,
-          left: 100,
-          fill: 'transparent',
-          stroke: 'red',
-          strokeWidth: 3,
-        }
-      },
+      new ShapeModel( 9, 'Rectangle 9', 'rectangle', {
+        width: 250,
+        height: 100,
+        top: 100,
+        left: 100,
+        fill: 'transparent',
+        stroke: 'red',
+        strokeWidth: 3,
+      }),
     ],
     order: 1,
   }),
