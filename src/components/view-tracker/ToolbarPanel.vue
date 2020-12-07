@@ -73,6 +73,7 @@
         </div>
         <div @mouseenter="showTooltip($event, 'superToolRef','СуперТул')"
              @mouseleave="hideToolTip"
+             @click="selectActiveTool('superTool')"
              ref="superToolRef"
              class="tp-icon-box tp-icon-box-4"
              :class="{active: activeTool === 'superTool'}">

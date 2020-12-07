@@ -90,18 +90,6 @@ export default {
           }, 150);
         }
       }
-      // else if (mutation.type === 'CHANGE_CASES_PARAMS_BY_OFFSET') {
-      //   const _case = this.selectedCase;
-      //   const activeSlide = this.activeSlide;
-      //   if (activeSlide && activeSlide.canvas && _case) {
-      //     this.clearCaseChildrenFromCanvas(activeSlide);
-      //     if (_case.children && _case.children.length) {
-      //       setTimeout(() => {
-      //         this.setCaseChildrenOnCanvas(activeSlide, _case);
-      //       }, 50);
-      //     }
-      //   }
-      // }
     });
     setTimeout(() => {
       const droppedZoneRef = this.$refs['droppedZoneRef'];

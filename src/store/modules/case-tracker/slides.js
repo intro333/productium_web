@@ -200,6 +200,7 @@ const actions = {
                 }
                 if (!payload.isFirstLoad) {
                   setTimeout(() => {
+                    state.activeTool = 'superTool';
                     commit('SELECT_CASE', {
                       case: null,
                       reloadWithSlide: false

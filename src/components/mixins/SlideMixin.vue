@@ -3,6 +3,7 @@ import {slidesOfProjectFilterWithSelect} from "@/functions/case-tracker/projects
 import {mapActions, mapGetters} from "vuex";
 import {fabric} from "fabric";
 import CanvasMixin from "@/components/mixins/CanvasMixin";
+import {ShapeModel} from "@/models/case-tracker/ShapeModel";
 
 const STATE_IDLE = 'idle';
 const STATE_PANNING = 'panning';
@@ -18,6 +19,9 @@ export default {
     lastClientX: 0,
     lastClientY: 0,
     panState: STATE_IDLE,
+    drawStarted: false,
+    drawX: 0,
+    drawY: 0,
   }),
   created() {
     this.slideUnsubscribe = this.$store.subscribe((mutation) => {
@@ -50,6 +54,9 @@ export default {
     },
     dragMode() {
       return this.activeTool === 'handTool';
+    },
+    drawMode() {
+      return this.activeTool === 'shapeTool' || this.activeTool === 'superTool';
     },
     canvasInfo() {
       return this.getCanvasInfo();
@@ -122,6 +129,31 @@ export default {
               _this.panState = STATE_PANNING;
               slide.panLeftMouseDownPoint = e.e.clientX;
               slide.panTopMouseDownPoint = e.e.clientY;
+            } else if (_this.drawMode) {
+              const mouse = slide.canvas.getPointer(e.e);
+              _this.drawStarted = true;
+              this.drawX = mouse.x;
+              this.drawY = mouse.y;
+              // TODO Посмотреть какая activeShapeTool и добавить фигуру динамически
+              // TODO id должен формироваться на серваке, поэтому добавить через store(что делать с задержкой потом продумать)
+              // TODO Добавляться фигура должна в mouse:move. Если будет просто клик, нет смысла добавлять.
+              // TODO Нужно сделать дефолтные фигуры, где по-умолчанию будет fill, stroke, strokeWidth и прочее (для всех разное)
+              const shape = _this.createShapeObjByCaseChild(new ShapeModel(
+                  100,
+                  'Rectangle 100',
+                  'rectangle',
+                  {
+                    width: 0,
+                    height: 0,
+                    left: this.drawX,
+                    top: this.drawY,
+                    fill: 'transparent',
+                    stroke: '#00a6ed',
+                    strokeWidth: 2,
+                  }));
+              slide.canvas.add(shape);
+              slide.canvas.renderAll();
+              slide.canvas.setActiveObject(shape);
             }
           });
           slide.canvas.on('mouse:up', function(e) {
@@ -187,23 +219,52 @@ export default {
                   }
                 }
               }
+            } else if (_this.drawMode) {
+              if(_this.drawStarted) {
+                _this.drawStarted = false;
+              }
+              const shape = slide.canvas.getActiveObject();
+              slide.canvas.add(shape);
+              // TODO push shape в case children
+              slide.canvas.renderAll();
+              setTimeout(() => {
+                _this.setActiveTool('moveTool');
+                setTimeout(() => {
+                  _this.panningHandler(slide);
+                }, 50);
+              }, 50);
             }
           });
           slide.canvas.on('mouse:move', function(e) {
-            if (_this.dragMode && (_this.panState === STATE_PANNING) && e && e.e) {
-              let deltaX = 0;
-              let deltaY = 0;
-              if (_this.lastClientX) {
-                deltaX = e.e.clientX - _this.lastClientX;
-              }
-              if (_this.lastClientY) {
-                deltaY = e.e.clientY - _this.lastClientY;
-              }
-              _this.lastClientX = e.e.clientX;
-              _this.lastClientY = e.e.clientY;
+            if (_this.dragMode) {
+              if ((_this.panState === STATE_PANNING) && e && e.e) {
+                let deltaX = 0;
+                let deltaY = 0;
+                if (_this.lastClientX) {
+                  deltaX = e.e.clientX - _this.lastClientX;
+                }
+                if (_this.lastClientY) {
+                  deltaY = e.e.clientY - _this.lastClientY;
+                }
+                _this.lastClientX = e.e.clientX;
+                _this.lastClientY = e.e.clientY;
 
-              let delta = new fabric.Point(deltaX, deltaY);
-              slide.canvas.relativePan(delta);
+                let delta = new fabric.Point(deltaX, deltaY);
+                slide.canvas.relativePan(delta);
+              }
+            } else if (_this.drawMode) {
+              if(!_this.drawStarted) {
+                return false;
+              }
+              const mouse = slide.canvas.getPointer(e.e);
+              const w = Math.abs(mouse.x - this.drawX),
+                  h = Math.abs(mouse.y - this.drawY);
+              if (!w || !h) {
+                return false;
+              }
+              const shape = slide.canvas.getActiveObject();
+              shape.set('width', w).set('height', h);
+              slide.canvas.renderAll();
             }
           });
           /* IMAGE HANDLER */
@@ -298,21 +359,29 @@ export default {
         slide.canvas.forEachObject(function(object) {
           object.hoverCursor = 'pointer';
           if (object.type !== 'image') {
-            object.prevEvented = object.evented;
-            object.prevSelectable = object.selectable;
+            object.evented = false;
+            object.selectable = false;
+          }
+        });
+      } else if (this.drawMode) {
+        slide.canvas.selection = true;
+        slide.canvas.discardActiveObject();
+        slide.canvas.forEachObject(function(object) {
+          object.hoverCursor = 'crosshair';
+          if (object.type !== 'image') {
             object.evented = false;
             object.selectable = false;
           }
         });
       } else {
+        slide.canvas.selection = true;
         slide.canvas.forEachObject(function(object) {
           object.hoverCursor = 'default';
           if (object.type !== 'image') {
-            object.evented = (object.prevEvented !== undefined) ? object.prevEvented : object.evented;
-            object.selectable = (object.prevSelectable !== undefined) ? object.prevSelectable : object.selectable;
+            object.evented = true;
+            object.selectable = true;
           }
         });
-        slide.canvas.selection = true;
       }
       slide.canvas.defaultCursor = this.canvasDefaultCursor();
     },
@@ -326,6 +395,8 @@ export default {
           return 'crosshair';
         case 'textTool':
           return 'crosshair'; // TODO Какой курсор у текста?
+        case 'superTool':
+          return 'crosshair';
         default:
           return 'default';
       }
