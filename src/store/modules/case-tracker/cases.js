@@ -45,12 +45,18 @@ const actions = {
       });
       commit('PUSH_CASE', newSCase);
       setTimeout(() => {
-        dispatch('goToSelectedCase', newSCase);
+        dispatch('goToSelectedCase', {
+          case: newSCase,
+          reloadWithSlide: true
+        });
       }, 20);
     }
   },
   selectCase({dispatch}, _case) {
-    dispatch('goToSelectedCase', _case);
+    dispatch('goToSelectedCase', {
+      case: _case,
+      reloadWithSlide: true
+    });
   },
   removeCase({commit, dispatch}, _case) {
     commit('REMOVE_CASE', _case);
@@ -63,7 +69,10 @@ const actions = {
           const filteredCases = state.cases.filter(_s =>
             _s.caseStatus !== 'archived' && _s.slideListId === _slideListId);
           if (filteredCases.length) {
-            dispatch('goToSelectedCase', filteredCases[filteredCases.length-1]);
+            dispatch('goToSelectedCase', {
+              case: filteredCases[filteredCases.length-1],
+              reloadWithSlide: true
+            });
           } else {
             setTimeout(() => {
               router.push({
@@ -126,12 +135,16 @@ const actions = {
       const _caseId = parseInt(query.caseId);
       const foundCase = cases.find(_s => _s.id === _caseId);
       if (foundCase) {
-        dispatch('goToSelectedCase', foundCase);
+        dispatch('goToSelectedCase', {
+          case: foundCase,
+          reloadWithSlide: false
+        });
       }
     }
   },
-  goToSelectedCase({commit}, _case) {
-    commit('SELECT_CASE', _case);
+  goToSelectedCase({commit}, payload) {
+    commit('SELECT_CASE', payload);
+    const _case = payload.case;
     const query = router.currentRoute.query;
     if (query && query.caseId) {
       const caseId = parseInt(query.caseId);

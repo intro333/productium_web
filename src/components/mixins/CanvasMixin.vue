@@ -13,7 +13,7 @@ export default {
           opacity: 1,
           uniScaleTransform: true,
           hasRotatingPoint: false,
-          hoverCursor: 'default'
+          hoverCursor: 'default',
         }, _child.params));
       } else if (_child.shapeType === 'circle') {
         return new fabric.Circle(Object.assign({}, {
@@ -23,7 +23,7 @@ export default {
           opacity: 1,
           uniScaleTransform: true,
           hasRotatingPoint: false,
-          hoverCursor: 'default'
+          hoverCursor: 'default',
         }, _child.params));
       }
     }

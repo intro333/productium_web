@@ -105,15 +105,15 @@ export const mockCases = [
     discus: '',
     resolut: '',
     children: [
-      // new ShapeModel( 1, 'Rectangle 1', 'rectangle', {
-      //   width: 100,
-      //   height: 100,
-      //   top: 300,
-      //   left: 200,
-      //   fill: 'transparent',
-      //   stroke: 'red',
-      //   strokeWidth: 3
-      // }),
+      new ShapeModel( 1, 'Rectangle 1', 'rectangle', {
+        width: 100,
+        height: 100,
+        top: 300,
+        left: 200,
+        fill: 'transparent',
+        stroke: 'red',
+        strokeWidth: 3
+      }),
       // new ShapeModel( 2, 'Rectangle 2', 'rectangle', {
       //   width: 150,
       //   height: 150,
@@ -203,17 +203,17 @@ export const mockCases = [
     ],
     order: 1,
   }),
-  new CaseModel({
-    id: 6,
-    slideListId: 3,
-    title: 'Задача 7',
-    caseStatus: 'in-work',
-    isOpen: false,
-    discus: '',
-    resolut: '',
-    children: [],
-    order: 0,
-  }),
+  // new CaseModel({
+  //   id: 6,
+  //   slideListId: 3,
+  //   title: 'Задача 7',
+  //   caseStatus: 'in-work',
+  //   isOpen: false,
+  //   discus: '',
+  //   resolut: '',
+  //   children: [],
+  //   order: 0,
+  // }),
   new CaseModel({
     id: 7,
     slideListId: 4,

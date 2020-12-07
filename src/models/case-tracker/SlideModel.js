@@ -16,6 +16,7 @@ export class SlideModel {
   isTopDirection = null;
   panLeftMouseDownPoint = 0;
   panLeftMouseUpPoint = 0;
+  allLineCoords = [];
 
   constructor(_slide) {
     this.id = _slide.id;

@@ -177,9 +177,14 @@ const actions = {
                     })
                   });
                 }
-                setTimeout(() => {
-                  commit('SELECT_CASE', _case);
-                }, 200);
+                if (!payload.isFirstLoad) {
+                  setTimeout(() => {
+                    commit('SELECT_CASE', {
+                      case: _case,
+                      reloadWithSlide: false
+                    });
+                  }, 200)
+                }
               }, 20)
             } else {
               setTimeout(() => {
@@ -193,9 +198,14 @@ const actions = {
                     })
                   });
                 }
-                setTimeout(() => {
-                  commit('SELECT_CASE', null);
-                }, 200);
+                if (!payload.isFirstLoad) {
+                  setTimeout(() => {
+                    commit('SELECT_CASE', {
+                      case: null,
+                      reloadWithSlide: false
+                    });
+                  }, 200);
+                }
               }, 20)
             }
           }

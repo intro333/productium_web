@@ -3,7 +3,6 @@ import {slidesOfProjectFilterWithSelect} from "@/functions/case-tracker/projects
 import {mapActions, mapGetters} from "vuex";
 import {fabric} from "fabric";
 import CanvasMixin from "@/components/mixins/CanvasMixin";
-// import router from "@/router";
 
 const STATE_IDLE = 'idle';
 const STATE_PANNING = 'panning';
@@ -118,17 +117,13 @@ export default {
           });
           /* CANVAS HANDLERS */
           slide.canvas.on('mouse:down', function(e) {
-            slide.panLeftMouseDownPoint = 0;
-            slide.panTopMouseDownPoint = 0;
-            slide.panLeftMouseUpPoint = 0;
-            slide.panTopMouseUpPoint = 0;
-            if (e.target) {
-              const obj = e.target;
-              const objType = obj.type;
-              if (objType === 'image') {
-                //
-              }
-            }
+            // if (e.target) {
+            //   const obj = e.target;
+            //   const objType = obj.type;
+            //   if (objType === 'image') {
+            //     //
+            //   }
+            // }
             if (_this.dragMode) {
               _this.panState = STATE_PANNING;
               slide.panLeftMouseDownPoint = e.e.clientX;
@@ -155,6 +150,18 @@ export default {
                   activeSlideList: _this.activeSlideList
                 });
               }
+              // slide.canvas.forEachObject(function(obj) {
+              //   // if (obj.type !== 'image' && obj.lineCoords) {
+              //   //   const tl = obj.lineCoords.tl;
+              //   //   // obj.left = tl.x;
+              //   //   // obj.lineCoords = null;
+              //   //   // obj.oCoords = null;
+              //   //   // obj.aCoords = null;
+              //   //   obj.set({left: 500});
+              //   //   obj.setCoords();
+              //   //   console.log(3, obj);
+              //   // }
+              // });
               _this.lastClientX = 0;
               _this.lastClientY = 0;
             }
@@ -226,7 +233,7 @@ export default {
         }, 20);
       }
     },
-    setCanvasWithClear(_slide, timeout=100) {
+    setCanvasWithClear(_slide, timeout=50) {
       this.clearCanvas(_slide);
       setTimeout(() => {
         this.createCanvas();
@@ -237,10 +244,13 @@ export default {
       const objects = slide.canvas.getObjects();
       for (let i in objects) {
         if (objects[i].type !== 'image') {
-          console.log(1, objects[i]);
-          slide.canvas.remove(objects[i]);
+          const obj = objects[i];
+          slide.canvas.remove(obj);
         }
       }
+      setTimeout(() => {
+        slide.canvas.renderAll();
+      }, 300);
     },
     setCaseChildrenOnCanvas(slide, _case) {
       setTimeout(() => {
@@ -249,24 +259,6 @@ export default {
             _case.children.forEach(_child => {
               const shape = this.createShapeObjByCaseChild(_child);
               if (slide.canvas && shape) {
-                // console.log(5, _child);
-                console.log(2, shape);
-                // console.log('isTopDirection', slide.isTopDirection);
-                // console.log('top', shape.top);
-                // console.log('panLeftMouseDownPoint', slide.panLeftMouseDownPoint);
-                // console.log('panLeftMouseUpPoint', slide.panLeftMouseUpPoint);
-                // if (slide.isLeftDirection !== null) {
-                //   const newShapeLeft = slide.isLeftDirection ? (childLeft.left - (slide.panLeftMouseDownPoint - slide.panLeftMouseUpPoint)) :
-                //       (childLeft.left + (slide.panLeftMouseUpPoint - slide.panLeftMouseDownPoint));
-                //   shape.left = newShapeLeft;
-                //   _child.params.left = newShapeLeft;
-                //   console.log(2, _child.params.left);
-                // }
-                // if (slide.isTopDirection !== null) {
-                //   shape.top = slide.isTopDirection ? (shape.top - (slide.panTopMouseDownPoint - slide.panTopMouseUpPoint)) :
-                //       (shape.top + (slide.panTopMouseUpPoint - slide.panTopMouseDownPoint));
-                // }
-                // console.log(9, shape);
                 slide.canvas.add(shape);
               }
             });

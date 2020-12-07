@@ -32,7 +32,7 @@ const actions = {
                     dispatch('selectFoundSlideFromSlides', getters.getSlides).then(() => {
                         setTimeout(() => {
                             dispatch('selectFoundCaseFromCases', getters.getCases);
-                        }, 200);
+                        }, 400);
                     });
                 }, 100);
                 resolve(data);
