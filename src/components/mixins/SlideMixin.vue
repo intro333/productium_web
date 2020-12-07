@@ -59,7 +59,8 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setActiveTool', 'setActiveShapeTool', 'setCanvasInfo', 'setActiveSlide', 'changeCasesParamsByOffset']),
+    ...mapActions(['setActiveTool', 'setActiveShapeTool', 'setCanvasInfo', 'setActiveSlide', 'changeCasesParamsByOffset',
+      'changeCaseElemBYLineCoords']),
     ...mapGetters(['getSlides', 'getActiveSlide',  'getActiveSlideList', 'getActiveTool', 'getActiveShapeTool', 'getCanvasInfo',
       'getSelectedCase', 'getCases']),
     fetchSlidesL() {
@@ -117,13 +118,6 @@ export default {
           });
           /* CANVAS HANDLERS */
           slide.canvas.on('mouse:down', function(e) {
-            // if (e.target) {
-            //   const obj = e.target;
-            //   const objType = obj.type;
-            //   if (objType === 'image') {
-            //     //
-            //   }
-            // }
             if (_this.dragMode) {
               _this.panState = STATE_PANNING;
               slide.panLeftMouseDownPoint = e.e.clientX;
@@ -164,6 +158,35 @@ export default {
               // });
               _this.lastClientX = 0;
               _this.lastClientY = 0;
+            } else if (_this.activeTool === 'moveTool') {
+              const activeObject = slide.canvas.getActiveObjects();
+              if (activeObject && activeObject.length > 1) {
+                slide.canvas.discardActiveObject();
+              }
+              const setObjCoords = (obj) => {
+                if (obj.lineCoords) {
+                  const tl = obj.lineCoords.tl;
+                  _this.changeCaseElemBYLineCoords({
+                    id: obj.id,
+                    left: tl.x,
+                    top: tl.y,
+                  });
+                }
+              };
+              if (e.target) {
+                const obj = e.target;
+                const objType = obj.type;
+                if (objType !== 'image') {
+                  if (objType === 'activeSelection' && obj._objects) { /* Несколько сгруппированных объектов */
+                    // TODO Пока что выше отключил выделение в группу, т.к. некорректно задаёт lineCoords для объектов
+                    // obj._objects.forEach(_o => {
+                    //   setObjCoords(_o);
+                    // });
+                  } else { /* Один объект */
+                    setObjCoords(obj);
+                  }
+                }
+              }
             }
           });
           slide.canvas.on('mouse:move', function(e) {
@@ -250,7 +273,7 @@ export default {
       }
       setTimeout(() => {
         slide.canvas.renderAll();
-      }, 300);
+      }, 10);
     },
     setCaseChildrenOnCanvas(slide, _case) {
       setTimeout(() => {

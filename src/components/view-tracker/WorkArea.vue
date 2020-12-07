@@ -74,7 +74,6 @@ export default {
           }, 100);
         }
       } else if (mutation.type === 'SELECT_CASE') {
-        console.log(1, mutation.payload)
         const _case = mutation.payload.case;
         const activeSlide = this.activeSlide;
         if (activeSlide && activeSlide.canvas && _case) {
