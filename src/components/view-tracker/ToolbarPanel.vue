@@ -211,7 +211,7 @@ export default {
       switch (this.activeShapeTool) {
         case 'rectangleTool':
           return 'Прямоугольник';
-        case 'circleTool':
+        case 'ellipseTool':
           return 'Эллипс';
         default:
           return 'Прямоугольник';

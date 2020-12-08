@@ -25,3 +25,15 @@ export function calcTextareaHeight(value) {
   let newHeight = 31 + numberOfLineBreaks * 14;
   return newHeight;
 }
+/* Радиус окружности по площади */
+export function getCircleRadiusByTriangleArea(width, height) {
+  return Math.sqrt((height * width) / Math.PI);
+}
+/* Периметр окружности */
+export function getCirclePerimeter(width, height) {
+  return 2 * Math.PI * (Math.sqrt(
+    (
+      (width * 2) +
+      (height * 2)
+    ) / 8) );
+}

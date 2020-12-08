@@ -11,7 +11,7 @@ const state = {
   activeSlide: null,
   activeSlideList: null,
   activeTool: 'moveTool', /* moveTool | textTool | shapeTool | superTool | handTool */
-  activeShapeTool: 'rectangleTool', /* rectangleTool | circleTool */
+  activeShapeTool: 'rectangleTool', /* rectangleTool | ellipseTool */
   canvasInfo: {
     canvasWidth: 0,
     canvasHeight: 0,
@@ -31,7 +31,7 @@ const getters = {
 const actions = {
   /* SLIDES */
   fetchSlides({commit}) {
-    setTimeout(() => { // TODO Имитация задержки с сервера
+    setTimeout(() => { // TODO Имитация задержки с сервера (УБРАТЬ!)
       return new Promise((resolve) => {
         const data = mockSlides;
         commit('SET_SLIDES', data);

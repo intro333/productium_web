@@ -19,7 +19,7 @@ const getters = {
 const actions = {
   /* CASES */
   fetchCases({commit}) {
-    setTimeout(() => { // TODO Имитация задержки с сервера
+    setTimeout(() => { // TODO Имитация задержки с сервера (УБРАТЬ!)
       return new Promise((resolve) => {
         const data = mockCases;
         commit('SET_CASES', data);
@@ -128,6 +128,24 @@ const actions = {
           })
     );
   },
+  /* SHAPES */
+  addShapeToCase({commit}, shapeObj) {
+    return new Promise((resolve) => {
+      setTimeout(() => { // TODO Имитация задержки с сервера (УБРАТЬ!)
+        // TODO После события mouse:up попадаем сюда, создаём в БД фигуру и затем добавляем её в foundCase
+        const id = getRandomInt(10, 1000);
+        shapeObj.id = id;
+        const foundCase = state.cases.find(_c => _c.id === state.selectedCase.id);
+        if (foundCase) {
+          commit('ADD_SHAPE_TO_CASE', {
+            case: foundCase,
+            shapeObj
+          });
+        }
+        resolve(shapeObj);
+      }, 500);
+    });
+  },
   /* LOCAL ACTIONS */
   selectFoundCaseFromCases({dispatch}, cases) {
     const query = router.currentRoute.query;
@@ -214,6 +232,12 @@ const mutations = {
         }
       })
     }
+  },
+  ADD_SHAPE_TO_CASE(state, payload) {
+    const _case = payload.case;
+    const children = _case.children;
+    children.push(payload.shapeObj);
+    _case.children = children;
   },
 };
 

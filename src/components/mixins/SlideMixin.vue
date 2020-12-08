@@ -4,6 +4,7 @@ import {mapActions, mapGetters} from "vuex";
 import {fabric} from "fabric";
 import CanvasMixin from "@/components/mixins/CanvasMixin";
 import {ShapeModel} from "@/models/case-tracker/ShapeModel";
+// import {getCirclePerimeter, getCircleRadiusByTriangleArea} from "@/functions/calculations";
 
 const STATE_IDLE = 'idle';
 const STATE_PANNING = 'panning';
@@ -19,9 +20,10 @@ export default {
     lastClientX: 0,
     lastClientY: 0,
     panState: STATE_IDLE,
-    drawStarted: false,
+    drawStarted: 'stop',
     drawX: 0,
     drawY: 0,
+    newShapeObj: null
   }),
   created() {
     this.slideUnsubscribe = this.$store.subscribe((mutation) => {
@@ -67,7 +69,7 @@ export default {
   },
   methods: {
     ...mapActions(['setActiveTool', 'setActiveShapeTool', 'setCanvasInfo', 'setActiveSlide', 'changeCasesParamsByOffset',
-      'changeCaseElemBYLineCoords']),
+      'changeCaseElemBYLineCoords', 'addShapeToCase']),
     ...mapGetters(['getSlides', 'getActiveSlide',  'getActiveSlideList', 'getActiveTool', 'getActiveShapeTool', 'getCanvasInfo',
       'getSelectedCase', 'getCases']),
     fetchSlidesL() {
@@ -131,29 +133,13 @@ export default {
               slide.panTopMouseDownPoint = e.e.clientY;
             } else if (_this.drawMode) {
               const mouse = slide.canvas.getPointer(e.e);
-              _this.drawStarted = true;
+              _this.drawStarted = 'firstStart';
               this.drawX = mouse.x;
               this.drawY = mouse.y;
-              // TODO Посмотреть какая activeShapeTool и добавить фигуру динамически
+
               // TODO id должен формироваться на серваке, поэтому добавить через store(что делать с задержкой потом продумать)
               // TODO Добавляться фигура должна в mouse:move. Если будет просто клик, нет смысла добавлять.
               // TODO Нужно сделать дефолтные фигуры, где по-умолчанию будет fill, stroke, strokeWidth и прочее (для всех разное)
-              const shape = _this.createShapeObjByCaseChild(new ShapeModel(
-                  100,
-                  'Rectangle 100',
-                  'rectangle',
-                  {
-                    width: 0,
-                    height: 0,
-                    left: this.drawX,
-                    top: this.drawY,
-                    fill: 'transparent',
-                    stroke: '#00a6ed',
-                    strokeWidth: 2,
-                  }));
-              slide.canvas.add(shape);
-              slide.canvas.renderAll();
-              slide.canvas.setActiveObject(shape);
             }
           });
           slide.canvas.on('mouse:up', function(e) {
@@ -220,19 +206,35 @@ export default {
                 }
               }
             } else if (_this.drawMode) {
-              if(_this.drawStarted) {
-                _this.drawStarted = false;
+              if(_this.drawStarted !== 'stop') {
+                _this.drawStarted = 'stop';
               }
+              const shapeType = _this.activeShapeTool.replace(/Tool/g, '');
               const shape = slide.canvas.getActiveObject();
-              slide.canvas.add(shape);
-              // TODO push shape в case children
-              slide.canvas.renderAll();
-              setTimeout(() => {
-                _this.setActiveTool('moveTool');
-                setTimeout(() => {
-                  _this.panningHandler(slide);
-                }, 50);
-              }, 50);
+              if (shape) {
+                if (shapeType === 'rectangle') {
+                  _this.newShapeObj.params.width = shape.width;
+                  _this.newShapeObj.params.height = shape.height;
+                } else if (shapeType === 'ellipse') {
+                  console.log(5, shape);
+                  _this.newShapeObj.params.radius = shape.radius;
+                  _this.newShapeObj.params.originX = shape.originX;
+                  _this.newShapeObj.params.originY = shape.originY;
+                  _this.newShapeObj.params.rx = shape.rx;
+                  _this.newShapeObj.params.ry = shape.ry;
+                  _this.newShapeObj.params.angle = shape.angle;
+                }
+                _this.addShapeToCase(_this.newShapeObj).then((shapeObj) => {
+                  console.log('shapeObj', shapeObj)
+                  shape.id = shapeObj.id;
+                  slide.canvas.add(shape);
+                  _this.setActiveTool('moveTool');
+                  setTimeout(() => {
+                    slide.canvas.renderAll();
+                    _this.panningHandler(slide);
+                  }, 50);
+                });
+              }
             }
           });
           slide.canvas.on('mouse:move', function(e) {
@@ -253,19 +255,73 @@ export default {
                 slide.canvas.relativePan(delta);
               }
             } else if (_this.drawMode) {
-              if(!_this.drawStarted) {
+              if(_this.drawStarted === 'stop') {
                 return false;
               }
-              const mouse = slide.canvas.getPointer(e.e);
-              const w = Math.abs(mouse.x - this.drawX),
-                  h = Math.abs(mouse.y - this.drawY);
-              if (!w || !h) {
-                return false;
+              const shapeType = _this.activeShapeTool.replace(/Tool/g, '');
+              if (_this.drawStarted === 'firstStart') {
+                let params = {};
+                if (shapeType === 'rectangle') {
+                  params = {
+                    left: this.drawX,
+                    top: this.drawY,
+                  };
+                } else if (shapeType === 'ellipse') {
+                  params = {
+                    left: this.drawX,
+                    top: this.drawY,
+                  };
+                }
+                const newShapeObj = _this.newShapeObj = new ShapeModel(
+                    0,
+                    null,
+                    shapeType,
+                    params);
+                const shape = _this.createShapeObjByCaseChild(newShapeObj);
+                slide.canvas.add(shape);
+                slide.canvas.renderAll();
+                slide.canvas.setActiveObject(shape);
+                _this.drawStarted = 'start';
+              } else if (_this.drawStarted === 'start') {
+                const shape = slide.canvas.getActiveObject();
+                const mouse = slide.canvas.getPointer(e.e);
+                const w = Math.abs(mouse.x - this.drawX),
+                    h = Math.abs(mouse.y - this.drawY);
+                if (!w || !h) {
+                  return false;
+                }
+                if (shapeType === 'rectangle') {
+                  shape.set('width', w).set('height', h);
+                } else if (shapeType === 'ellipse') {
+                  let rx = Math.abs(w) / 2;
+                  let ry = Math.abs(h) / 2;
+                  if (rx > shape.strokeWidth) {
+                    rx -= shape.strokeWidth / 2
+                  }
+                  if (ry > shape.strokeWidth) {
+                    ry -= shape.strokeWidth / 2
+                  }
+                  shape.set({ rx: rx, ry: ry});
+
+                  if (this.drawX > mouse.x) {
+                    shape.set({originX: 'right'});
+                  } else {
+                    shape.set({originX: 'left'});
+                  }
+                  if (this.drawY > mouse.y){
+                    shape.set({originY: 'bottom'});
+                  } else {
+                    shape.set({originY: 'top'});
+                  }
+                }
+                slide.canvas.renderAll();
               }
-              const shape = slide.canvas.getActiveObject();
-              shape.set('width', w).set('height', h);
-              slide.canvas.renderAll();
             }
+          });
+          slide.canvas.on('object:modified', function(e) {
+            const obj = e.target;
+            console.log(1, obj);
+            // const objType = obj.type;
           });
           /* IMAGE HANDLER */
           if (slide && slide.img) {
@@ -413,9 +469,9 @@ export default {
           },
           {
             title: 'Эллипс',
-            type: 'circle',
+            type: 'ellipse',
             action: () => {
-              this.selectActiveToolWithShape('circleTool');
+              this.selectActiveToolWithShape('ellipseTool');
             }
           },
           {
@@ -454,3 +510,5 @@ export default {
   }
 }
 </script>
+<!-- https://stackoverflow.com/questions/9417603/fabric-js-free-draw-a-rectangle -->
+<!-- DRAW ELLIPS https://stackoverflow.com/questions/34100866/how-to-free-draw-ellipse-using-fabricjs -->

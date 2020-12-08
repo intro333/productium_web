@@ -15,8 +15,8 @@ export default {
           hasRotatingPoint: false,
           hoverCursor: 'default',
         }, _child.params));
-      } else if (_child.shapeType === 'circle') {
-        return new fabric.Circle(Object.assign({}, {
+      } else if (_child.shapeType === 'ellipse') {
+        return new fabric.Ellipse(Object.assign({}, {
           id: _child.id,
           shapeType: _child.shapeType,
           title: _child.title,
