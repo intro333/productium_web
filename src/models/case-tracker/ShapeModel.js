@@ -19,6 +19,9 @@ export class ShapeModel {
         strokeWidth: 2,
         width: 0,
         height: 0,
+        lockRotation: true,
+        // lockScalingX: true,
+        // lockUniScaling: true,
       }
     } else if (shapeType === 'ellipse') {
       this.params = {
@@ -33,6 +36,7 @@ export class ShapeModel {
         rx: 0,
         ry: 0,
         angle: 0,
+        lockRotation: true,
       }
     }
     this.params = Object.assign(this.params, params);

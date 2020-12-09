@@ -23,7 +23,8 @@ export default {
     drawStarted: 'stop',
     drawX: 0,
     drawY: 0,
-    newShapeObj: null
+    newShapeObj: null,
+    objIsScaling: false
   }),
   created() {
     this.slideUnsubscribe = this.$store.subscribe((mutation) => {
@@ -69,7 +70,7 @@ export default {
   },
   methods: {
     ...mapActions(['setActiveTool', 'setActiveShapeTool', 'setCanvasInfo', 'setActiveSlide', 'changeCasesParamsByOffset',
-      'changeCaseElemBYLineCoords', 'addShapeToCase']),
+      'changeCaseElemFields', 'addShapeToCase']),
     ...mapGetters(['getSlides', 'getActiveSlide',  'getActiveSlideList', 'getActiveTool', 'getActiveShapeTool', 'getCanvasInfo',
       'getSelectedCase', 'getCases']),
     fetchSlidesL() {
@@ -126,23 +127,19 @@ export default {
             preserveObjectStacking: true // Не менять позицию объектов при нажатии на них (чтобы картинка не уходила на первый план)
           });
           /* CANVAS HANDLERS */
-          slide.canvas.on('mouse:down', function(e) {
+          slide.canvas.on('mouse:down', function(e) { /* MOUSE DOWN */
             if (_this.dragMode) {
               _this.panState = STATE_PANNING;
               slide.panLeftMouseDownPoint = e.e.clientX;
               slide.panTopMouseDownPoint = e.e.clientY;
             } else if (_this.drawMode) {
-              const mouse = slide.canvas.getPointer(e.e);
               _this.drawStarted = 'firstStart';
-              this.drawX = mouse.x;
-              this.drawY = mouse.y;
-
-              // TODO id должен формироваться на серваке, поэтому добавить через store(что делать с задержкой потом продумать)
-              // TODO Добавляться фигура должна в mouse:move. Если будет просто клик, нет смысла добавлять.
-              // TODO Нужно сделать дефолтные фигуры, где по-умолчанию будет fill, stroke, strokeWidth и прочее (для всех разное)
             }
-          });
-          slide.canvas.on('mouse:up', function(e) {
+            const mouse = slide.canvas.getPointer(e.e);
+            _this.drawX = mouse.x;
+            _this.drawY = mouse.y;
+          }); /* MOUSE DOWN END */
+          slide.canvas.on('mouse:up', function(e) { /* MOUSE UP */
             if (_this.dragMode) {
               _this.panState = STATE_IDLE;
               const clX = slide.panLeftMouseUpPoint = e.e.clientX;
@@ -177,18 +174,38 @@ export default {
               _this.lastClientX = 0;
               _this.lastClientY = 0;
             } else if (_this.activeTool === 'moveTool') {
-              const activeObject = slide.canvas.getActiveObjects();
-              if (activeObject && activeObject.length > 1) {
+              const activeObject = slide.canvas.getActiveObject();
+              const activeObjects = slide.canvas.getActiveObjects();
+              if (activeObjects && activeObjects.length > 1) {
                 slide.canvas.discardActiveObject();
               }
-              const setObjCoords = (obj) => {
+              const setObjFields = (obj, objType) => {
                 if (obj.lineCoords) {
                   const tl = obj.lineCoords.tl;
-                  _this.changeCaseElemBYLineCoords({
+                  let fields = {
                     id: obj.id,
                     left: tl.x,
                     top: tl.y,
-                  });
+                  };
+                  if (_this.objIsScaling) {
+                    _this.objIsScaling = false;
+                    if (objType === 'rect') {
+                      fields = Object.assign(fields, {
+                        width: activeObject.width,
+                        height: activeObject.height,
+                      });
+                    } else if (objType === 'ellipse') {
+                      fields = Object.assign(fields, {
+                        originX: activeObject.originX,
+                        originY: activeObject.originY,
+                        rx: activeObject.rx,
+                        ry: activeObject.ry,
+                        radius: activeObject.radius,
+                        angle: activeObject.angle,
+                      });
+                    }
+                  }
+                  _this.changeCaseElemFields(fields);
                 }
               };
               if (e.target) {
@@ -198,10 +215,10 @@ export default {
                   if (objType === 'activeSelection' && obj._objects) { /* Несколько сгруппированных объектов */
                     // TODO Пока что выше отключил выделение в группу, т.к. некорректно задаёт lineCoords для объектов
                     // obj._objects.forEach(_o => {
-                    //   setObjCoords(_o);
+                    //   setObjFields(_o, objType);
                     // });
                   } else { /* Один объект */
-                    setObjCoords(obj);
+                    setObjFields(obj, objType);
                   }
                 }
               }
@@ -216,7 +233,6 @@ export default {
                   _this.newShapeObj.params.width = shape.width;
                   _this.newShapeObj.params.height = shape.height;
                 } else if (shapeType === 'ellipse') {
-                  console.log(5, shape);
                   _this.newShapeObj.params.radius = shape.radius;
                   _this.newShapeObj.params.originX = shape.originX;
                   _this.newShapeObj.params.originY = shape.originY;
@@ -224,20 +240,19 @@ export default {
                   _this.newShapeObj.params.ry = shape.ry;
                   _this.newShapeObj.params.angle = shape.angle;
                 }
-                _this.addShapeToCase(_this.newShapeObj).then((shapeObj) => {
-                  console.log('shapeObj', shapeObj)
-                  shape.id = shapeObj.id;
-                  slide.canvas.add(shape);
-                  _this.setActiveTool('moveTool');
-                  setTimeout(() => {
+                _this.setActiveTool('moveTool');
+                setTimeout(() => {
+                  _this.panningHandler(slide);
+                  slide.canvas.renderAll();
+                  _this.addShapeToCase(_this.newShapeObj).then((shapeObj) => {
+                    shape.set({ id: shapeObj.id});
                     slide.canvas.renderAll();
-                    _this.panningHandler(slide);
-                  }, 50);
-                });
+                  });
+                }, 30);
               }
             }
-          });
-          slide.canvas.on('mouse:move', function(e) {
+          }); /* MOUSE UP END */
+          slide.canvas.on('mouse:move', function(e) { /* MOUSE MOVE */
             if (_this.dragMode) {
               if ((_this.panState === STATE_PANNING) && e && e.e) {
                 let deltaX = 0;
@@ -263,13 +278,13 @@ export default {
                 let params = {};
                 if (shapeType === 'rectangle') {
                   params = {
-                    left: this.drawX,
-                    top: this.drawY,
+                    left: _this.drawX,
+                    top: _this.drawY,
                   };
                 } else if (shapeType === 'ellipse') {
                   params = {
-                    left: this.drawX,
-                    top: this.drawY,
+                    left: _this.drawX,
+                    top: _this.drawY,
                   };
                 }
                 const newShapeObj = _this.newShapeObj = new ShapeModel(
@@ -285,8 +300,8 @@ export default {
               } else if (_this.drawStarted === 'start') {
                 const shape = slide.canvas.getActiveObject();
                 const mouse = slide.canvas.getPointer(e.e);
-                const w = Math.abs(mouse.x - this.drawX),
-                    h = Math.abs(mouse.y - this.drawY);
+                const w = Math.abs(mouse.x - _this.drawX),
+                    h = Math.abs(mouse.y - _this.drawY);
                 if (!w || !h) {
                   return false;
                 }
@@ -303,12 +318,12 @@ export default {
                   }
                   shape.set({ rx: rx, ry: ry});
 
-                  if (this.drawX > mouse.x) {
+                  if (_this.drawX > mouse.x) {
                     shape.set({originX: 'right'});
                   } else {
                     shape.set({originX: 'left'});
                   }
-                  if (this.drawY > mouse.y){
+                  if (_this.drawY > mouse.y){
                     shape.set({originY: 'bottom'});
                   } else {
                     shape.set({originY: 'top'});
@@ -317,11 +332,41 @@ export default {
                 slide.canvas.renderAll();
               }
             }
-          });
-          slide.canvas.on('object:modified', function(e) {
-            const obj = e.target;
-            console.log(1, obj);
-            // const objType = obj.type;
+          }); /* MOUSE MOVE END */
+          slide.canvas.on('object:scaling', function(e) {
+            _this.objIsScaling = true;
+            const shape = e.target;
+            const objType = shape.type;
+            // const mouse = slide.canvas.getPointer(e.e);
+            const scaleXIsChanged = shape.scaleX !== 1;
+            const scaleYIsChanged = shape.scaleY !== 1;
+            const w = Math.abs(shape.width * shape.scaleX),
+                h = Math.abs(shape.height * shape.scaleY);
+            if (!w || !h) {
+              return false;
+            }
+            if (objType === 'rect') {
+              shape.set({width: w});
+              shape.set({height: h});
+            } else if (objType === 'ellipse') {
+              if (scaleXIsChanged) {
+                let rx = Math.abs(w) / 2;
+                if (rx > shape.strokeWidth) {
+                  rx -= shape.strokeWidth / 2
+                }
+                shape.set({ rx: rx});
+              }
+              if (scaleYIsChanged) {
+                let ry = Math.abs(h) / 2;
+                if (ry > shape.strokeWidth) {
+                  ry -= shape.strokeWidth / 2
+                }
+                shape.set({ry: ry});
+              }
+            }
+            shape.set({scaleX: 1});
+            shape.set({scaleY: 1});
+            slide.canvas.renderAll();
           });
           /* IMAGE HANDLER */
           if (slide && slide.img) {
@@ -366,8 +411,8 @@ export default {
           }
           setTimeout(() => {
             if (slide.canvas) {
-              slide.canvas.renderAll();
               this.panningHandler(slide);
+              slide.canvas.renderAll();
             }
           }, 20);
         }, 20);
@@ -403,8 +448,8 @@ export default {
               }
             });
           }
-          slide.canvas.renderAll();
           this.panningHandler(slide);
+          slide.canvas.renderAll();
         }
       }, 20);
     },

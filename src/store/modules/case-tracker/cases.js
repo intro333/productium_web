@@ -179,8 +179,8 @@ const actions = {
   changeCasesParamsByOffset({commit}, payload) {
     commit('CHANGE_CASES_PARAMS_BY_OFFSET', payload);
   },
-  changeCaseElemBYLineCoords({commit}, payload) {
-    commit('CHANGE_CASE_ELEM_BY_LINE_COORDS', payload);
+  changeCaseElemFields({commit}, payload) {
+    commit('CHANGE_CASE_ELEM_FIELDS', payload);
   },
 };
 
@@ -222,13 +222,14 @@ const mutations = {
       return _c;
     });
   },
-  CHANGE_CASE_ELEM_BY_LINE_COORDS(state, payload) {
+  CHANGE_CASE_ELEM_FIELDS(state, fields) {
     const foundCase = state.cases.find(_c => _c.id === state.selectedCase.id);
     if (foundCase) {
       foundCase.children.forEach(_child => {
-        if (_child.id === payload.id) {
-          _child.params.left = payload.left;
-          _child.params.top = payload.top;
+        if (_child.id === fields.id) {
+          Object.keys(fields).forEach(field => {
+            _child.params[field] = fields[field];
+          });
         }
       })
     }
