@@ -1,5 +1,7 @@
 <template>
-  <div class="sl-b-box">
+  <div @mouseover="showSlideOptions(true)"
+       @mouseleave="showSlideOptions(false)"
+       class="sl-b-box">
     <span class="sl-b-num">{{cKey+1}}</span>
     <div @click="selectSlide(slide)"
          class="sl-b-slide"
@@ -14,7 +16,8 @@
            class="notify-circle sl-b-slide-notify"
            :class="{'of-selected': slide.isSelected}"></div>
     </div>
-    <img @click="openOptionsMenu(134, 'optionsRef')"
+    <img v-if="isShowSlideOptions || getContextMenuBase().state"
+         @click="openOptionsMenu(134, 'optionsRef')"
          :ref="'optionsRef'"
          src="@/assets/img/common/options.svg"
          class="sl-b-options"
@@ -34,6 +37,9 @@ export default {
     cKey: Number,
     slidesLength: Number
   },
+  data: () => ({
+    isShowSlideOptions: false,
+  }),
   computed: {
     casesComments() {
       return this.getCasesComments().filter(_c =>
@@ -47,7 +53,7 @@ export default {
   },
   methods: {
     ...mapActions(['setContextMenuBase', 'removeSlide', 'selectSlide']),
-    ...mapGetters(['getCasesComments']),
+    ...mapGetters(['getCasesComments', 'getContextMenuBase']),
     openOptionsMenu(width, _refStr) {
       const _ref = this.$refs[_refStr];
       if (_ref && _ref.getBoundingClientRect()) {
@@ -85,6 +91,9 @@ export default {
         );
       }
     },
+    showSlideOptions(_state) {
+      this.isShowSlideOptions = _state;
+    }
   }
 }
 </script>

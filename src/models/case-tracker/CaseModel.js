@@ -3,7 +3,7 @@ export class CaseModel {
   slideListId = 0;
   title = 'Задача 1';
   caseStatus = 'in-work'; // in-work | done | archived | deleted
-  isOpen = false;
+  isOpen = true;
   discus = '';
   resolut = '';
   children = []; /* ShapeModel[] */

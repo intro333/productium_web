@@ -200,6 +200,9 @@ export default {
       );
     },
     selectActiveTool(tool) {
+      if (tool === 'superTool') {
+        this.setActiveShapeTool('rectangleTool');
+      }
       this.setActiveTool(tool);
       setTimeout(() => {
         if (this.activeSlide && this.activeSlide.canvas) {

@@ -70,7 +70,7 @@ export default {
   },
   methods: {
     ...mapActions(['setActiveTool', 'setActiveShapeTool', 'setCanvasInfo', 'setActiveSlide', 'changeCasesParamsByOffset',
-      'changeCaseElemFields', 'addShapeToCase']),
+      'changeCaseElemFields', 'addShapeToCase', 'pushCase']),
     ...mapGetters(['getSlides', 'getActiveSlide',  'getActiveSlideList', 'getActiveTool', 'getActiveShapeTool', 'getCanvasInfo',
       'getSelectedCase', 'getCases']),
     fetchSlidesL() {
@@ -223,6 +223,7 @@ export default {
                 }
               }
             } else if (_this.drawMode) {
+              const oldActiveTool = _this.activeTool;
               if(_this.drawStarted !== 'stop') {
                 _this.drawStarted = 'stop';
               }
@@ -241,13 +242,26 @@ export default {
                   _this.newShapeObj.params.angle = shape.angle;
                 }
                 _this.setActiveTool('moveTool');
+                _this.panningHandler(slide);
+                slide.canvas.renderAll();
                 setTimeout(() => {
-                  _this.panningHandler(slide);
-                  slide.canvas.renderAll();
-                  _this.addShapeToCase(_this.newShapeObj).then((shapeObj) => {
-                    shape.set({ id: shapeObj.id});
-                    slide.canvas.renderAll();
-                  });
+                  if (oldActiveTool === 'superTool') {
+                    /* Если супертул, то создаём новый кейс и рисуем прямоугольник */
+                    _this.pushCase().then(_newCase => {
+                      _this.newShapeObj.id = _newCase.id;
+                      _this.addShapeToCase(_this.newShapeObj).then((shapeObj) => {
+                        shape.set({ id: shapeObj.id});
+                        slide.canvas.add(shape);
+                        slide.canvas.renderAll();
+                        slide.canvas.setActiveObject(shape);
+                      });
+                    });
+                  } else {
+                    _this.addShapeToCase(_this.newShapeObj).then((shapeObj) => {
+                      shape.set({ id: shapeObj.id});
+                      slide.canvas.renderAll();
+                    });
+                  }
                 }, 30);
               }
             }
@@ -445,6 +459,9 @@ export default {
               const shape = this.createShapeObjByCaseChild(_child);
               if (slide.canvas && shape) {
                 slide.canvas.add(shape);
+                if (_child.isSelected) {
+                  slide.canvas.setActiveObject(shape);
+                }
               }
             });
           }

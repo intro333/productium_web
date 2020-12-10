@@ -31,13 +31,13 @@ const actions = {
                 setTimeout(() => {
                     dispatch('selectFoundSlideFromSlides', getters.getSlides).then(() => {
                         setTimeout(() => {
-                            dispatch('selectFoundCaseFromCases', getters.getCases);
+                            dispatch('selectFoundCaseFromCases');
                         }, 400);
                     });
                 }, 100);
                 resolve(data);
             });
-        }, 500);
+        }, 200);
     },
     /* PROJECTS */
     fetchProjects({commit}) {

@@ -59,6 +59,7 @@ export default {
         setTimeout(() => {
           if (state && _ref) {
             _ref.focus();
+            _ref.select();
           }
           if (!state && _case.title === '') {
             _case.title = 'Case ' + (i+1)
@@ -129,7 +130,8 @@ export default {
                       }
                     },
                   ]
-                })
+                },
+                i)
             .more({
               isRight,
               zIndex: 8

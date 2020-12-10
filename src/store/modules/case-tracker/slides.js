@@ -37,7 +37,7 @@ const actions = {
         commit('SET_SLIDES', data);
         resolve(data);
       });
-    }, 500);
+    }, 200);
   },
   pushSlide({commit, getters, dispatch}) {
     /* TODO Mock */
@@ -155,7 +155,7 @@ const actions = {
     const _slideId = parseInt(query.slideId);
     const slideIdNotEqual = _slideId !== _slide.id;
     if (query && query.slideId) {
-      if (payload.isNew || payload.isFirstLoad || slideIdNotEqual) {
+      if (payload.isNew || payload.isFirstLoad || payload.isRepaint || slideIdNotEqual) {
         commit('SELECT_SLIDE', _slide);
         setTimeout(() => {
           const _slideList = state.slideLists
@@ -166,6 +166,9 @@ const actions = {
             const _case = _cases.find(_c => (_c.slideListId === slideListId) &&
               _c.caseStatus !== 'archived');
             if (_case) {
+              if (state.activeTool === 'superTool') {
+                state.activeTool = 'moveTool';
+              }
               setTimeout(() => {
                 if (slideIdNotEqual) {
                   router.push({
@@ -200,6 +203,7 @@ const actions = {
                 }
                 if (!payload.isFirstLoad) {
                   setTimeout(() => {
+                    state.activeShapeTool = 'rectangleTool';
                     state.activeTool = 'superTool';
                     commit('SELECT_CASE', {
                       case: null,

@@ -6,6 +6,8 @@ export class ShapeModel {
 
   };
 
+  isSelected = false;
+
   constructor(id, title, shapeType, params) {
     this.id = id;
     this.title = title ? title : this.fillTitle(shapeType);

@@ -93,7 +93,17 @@ export const mockCases = [
     isOpen: false,
     discus: '',
     resolut: '',
-    children: [],
+    children: [
+      new ShapeModel( 1, 'Rectangle 1', 'rectangle', {
+        width: 100,
+        height: 100,
+        top: 300,
+        left: 200,
+        fill: 'transparent',
+        stroke: 'red',
+        strokeWidth: 2
+      }),
+    ],
     order: 0,
   }),
   new CaseModel({
@@ -112,7 +122,7 @@ export const mockCases = [
         left: 200,
         fill: 'transparent',
         stroke: 'red',
-        strokeWidth: 3
+        strokeWidth: 2
       }),
       new ShapeModel( 2, 'Rectangle 2', 'rectangle', {
         width: 150,
@@ -121,7 +131,7 @@ export const mockCases = [
         left: 400,
         fill: 'transparent',
         stroke: 'green',
-        strokeWidth: 3,
+        strokeWidth: 2,
       }),
       new ShapeModel( 3, 'Ellipse 1', 'ellipse', {
         left: 650,
@@ -155,14 +165,14 @@ export const mockCases = [
         left: 300,
         fill: 'transparent',
         stroke: 'red',
-        strokeWidth: 5,
+        strokeWidth: 2,
       }),
       new ShapeModel( 5, 'Ellipse 2', 'ellipse', {
         left: 650,
         top: 320,
         fill: 'transparent',
         stroke: 'green',
-        strokeWidth: 5,
+        strokeWidth: 2,
         radius: 100,
         originX: 'left',
         originY: 'top',
@@ -245,7 +255,7 @@ export const mockCases = [
         left: 100,
         fill: 'transparent',
         stroke: 'red',
-        strokeWidth: 3,
+        strokeWidth: 2,
       }),
     ],
     order: 1,

@@ -25,38 +25,49 @@ const actions = {
         commit('SET_CASES', data);
         resolve(data);
       });
-    }, 500);
+    }, 200);
   },
   pushCase({commit, dispatch}) {
-    const query = router.currentRoute.query;
-    if (query && query.slideListId) {
-      // TODO MOCK
-      const caseId = getRandomInt(10, 1000);
-      const newSCase = new CaseModel({
-        id: caseId,
-        slideListId: parseInt(query.slideListId),
-        title: 'Задача ' + caseId,
-        caseStatus: 'in-work',
-        isOpen: false,
-        discus: '',
-        resolut: '',
-        children: [],
-        order: 0,
-      });
-      commit('PUSH_CASE', newSCase);
-      setTimeout(() => {
-        dispatch('goToSelectedCase', {
-          case: newSCase,
-          reloadWithSlide: true
-        });
-      }, 20);
-    }
+    return new Promise((resolve) => {
+      setTimeout(() => { // TODO Имитация задержки с сервера (УБРАТЬ!)
+        const query = router.currentRoute.query;
+        if (query && query.slideListId) {
+          // TODO MOCK
+          const caseId = getRandomInt(10, 1000);
+          const newSCase = new CaseModel({
+            id: caseId,
+            slideListId: parseInt(query.slideListId),
+            title: 'Задача ' + caseId,
+            caseStatus: 'in-work',
+            isOpen: true,
+            discus: '',
+            resolut: '',
+            children: [],
+            order: 0,
+          });
+          commit('PUSH_CASE', newSCase);
+          setTimeout(() => {
+            dispatch('goToSelectedCase', {
+              case: newSCase,
+              reloadWithSlide: true
+            });
+          }, 20);
+          resolve(newSCase);
+        }
+      }, 200);
+    });
   },
-  selectCase({dispatch}, _case) {
+  selectCase({commit, dispatch}, payload) {
+    if (!payload.isSelectedChild) {
+      commit('CLEAR_CASE_CHILDREN', payload._case);
+    }
     dispatch('goToSelectedCase', {
-      case: _case,
+      case: payload._case,
       reloadWithSlide: true
     });
+  },
+  selectCaseChild({commit}, payload) {
+    commit('SELECT_CASE_CHILD', payload);
   },
   removeCase({commit, dispatch}, _case) {
     commit('REMOVE_CASE', _case);
@@ -68,24 +79,26 @@ const actions = {
           const _slideListId = parseInt(query.slideListId);
           const filteredCases = state.cases.filter(_s =>
             _s.caseStatus !== 'archived' && _s.slideListId === _slideListId);
-          if (filteredCases.length) {
-            dispatch('goToSelectedCase', {
-              case: filteredCases[filteredCases.length-1],
-              reloadWithSlide: true
-            });
-          } else {
-            setTimeout(() => {
-              router.push({
-                path: '/case-tracker',
-                query: Object.assign({}, query, {caseId: 0})
-              });
-            }, 20)
-          }
+          const anotherCase = filteredCases.length ? filteredCases[filteredCases.length-1] : { id: 0 };
+          dispatch('goToSelectedCase', {
+            case: anotherCase,
+            reloadWithSlide: true
+          });
+          // if (filteredCases.length) {
+          //
+          // } else {
+          //   setTimeout(() => {
+          //     router.push({
+          //       path: '/case-tracker',
+          //       query: Object.assign({}, query, {caseId: 0})
+          //     });
+          //   }, 20)
+          // }
         }
       }, 20);
     }
   },
-  goToSlideAndCase({dispatch}, notify) {
+  goToSlideAndCase({dispatch, getters}, notify) {
     router.push({
       path: '/case-tracker',
       query: {
@@ -96,6 +109,14 @@ const actions = {
         commentId: notify.id
       }
     });
+    const _slideId = parseInt(notify.slideId);
+    const foundSlide = getters.getSlides.find(_s => _s.id === _slideId);
+    if (foundSlide) {
+      dispatch('selectCaseListAndCaseOfActiveSlide', {
+        slide: foundSlide,
+        isRepaint: true
+      });
+    }
     dispatch('openCommentsModalByCommentId', notify.id);
   },
   /* CASE COMMENTS */
@@ -143,36 +164,40 @@ const actions = {
           });
         }
         resolve(shapeObj);
-      }, 500);
+      }, 200);
     });
   },
   /* LOCAL ACTIONS */
-  selectFoundCaseFromCases({dispatch}, cases) {
+  selectFoundCaseFromCases({dispatch}) {
     const query = router.currentRoute.query;
     if (query && query.caseId) {
       const _caseId = parseInt(query.caseId);
-      const foundCase = cases.find(_s => _s.id === _caseId);
+      const foundCase = state.cases.find(_s => _s.id === _caseId);
       if (foundCase) {
         dispatch('goToSelectedCase', {
           case: foundCase,
-          reloadWithSlide: false
+          reloadWithSlide: false,
+          isFirstLoad: true
         });
       }
     }
   },
   goToSelectedCase({commit}, payload) {
-    commit('SELECT_CASE', payload);
     const _case = payload.case;
     const query = router.currentRoute.query;
     if (query && query.caseId) {
       const caseId = parseInt(query.caseId);
+      if (payload.isFirstLoad) {
+        commit('SELECT_CASE', payload);
+      }
       if (caseId !== _case.id) {
+        commit('SELECT_CASE', payload);
         setTimeout(() => {
           router.push({
             path: '/case-tracker',
             query: Object.assign({}, query, {caseId: _case.id})
           });
-        }, 20)
+        }, 20);
       }
     }
   },
@@ -192,6 +217,19 @@ const mutations = {
   PUSH_CASE(state, _case) { state.cases.push(_case); },
   SELECT_CASE(state, payload) {
     state.selectedCase = payload.case;
+  },
+  SELECT_CASE_CHILD(state, payload) {
+    payload._case.children.forEach(_child => {
+      _child.isSelected = _child.id === payload._child.id;
+    });
+  },
+  CLEAR_CASE_CHILDREN(state, _case) {
+    if (_case.children && _case.children.length) {
+      /* Если кликнули по самому кейсу, а НЕ по его эементу, то анселектим все эл-ты */
+      _case.children.forEach(_child => {
+        _child.isSelected = false;
+      })
+    }
   },
   REMOVE_CASE(state, _case) {
     _case.caseStatus = 'archived';
