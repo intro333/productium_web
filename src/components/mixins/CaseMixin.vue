@@ -30,7 +30,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setContextMenuBase', 'removeCase']),
+    ...mapActions(['setContextMenuBase', 'removeCase', 'removeCaseChild']),
     ...mapGetters(['getCases', 'getSelectedCase']),
     fetchCasesL() {
       const query = this.$route.query;
@@ -76,7 +76,8 @@ export default {
     openCaseOptionsMenu(width,
                         _refOptionsStr,
                         _refCaseStr,
-                        _case,
+                        _caseOrCaseChild,
+                        _obj,
                         triangle,
                         isRight,
                         isMultiple=false,
@@ -87,6 +88,52 @@ export default {
       }
       if (_ref && _ref.getBoundingClientRect()) {
         const modalPosition = getModalPositionFunc(_ref, isRight, width);
+        const selectOptions = {
+          _case: [
+            {
+              isItemOfMenu: true,
+              title: 'В работе',
+              isActive: _caseOrCaseChild.caseStatus === 'in-work',
+              action: () => {
+                _caseOrCaseChild.caseStatus = 'in-work'
+              },
+            },
+            {
+              isItemOfMenu: true,
+              title: 'Готово',
+              isActive: _caseOrCaseChild.caseStatus === 'done',
+              action: () => {
+                _caseOrCaseChild.caseStatus = 'done'
+              }
+            },
+            {
+              isItemOfMenu: false,
+            },
+            {
+              isItemOfMenu: true,
+              title: 'Переименовать',
+              action: () => {
+                this.changeCaseNameEditable(_caseOrCaseChild,  _refCaseStr, true, isMultiple, i);
+              }
+            },
+            {
+              isItemOfMenu: true,
+              title: 'Удалить',
+              action: () => {
+                this.removeCase(_caseOrCaseChild);
+              }
+            },
+          ],
+          _caseChild: [
+            {
+              isItemOfMenu: true,
+              title: 'Удалить',
+              action: () => {
+                this.removeCaseChild(_caseOrCaseChild);
+              }
+            },
+          ]
+        }
         this.setContextMenuBase(new ContextMenuBaseModel()
             .set(true,
                 'SelectPopup',
@@ -95,41 +142,7 @@ export default {
                 modalPosition.left,
                 triangle,
                 {
-                  selectOptions: [
-                    {
-                      isItemOfMenu: true,
-                      title: 'В работе',
-                      isActive: _case.caseStatus === 'in-work',
-                      action: () => {
-                        _case.caseStatus = 'in-work'
-                      },
-                    },
-                    {
-                      isItemOfMenu: true,
-                      title: 'Готово',
-                      isActive: _case.caseStatus === 'done',
-                      action: () => {
-                        _case.caseStatus = 'done'
-                      }
-                    },
-                    {
-                      isItemOfMenu: false,
-                    },
-                    {
-                      isItemOfMenu: true,
-                      title: 'Переименовать',
-                      action: () => {
-                        this.changeCaseNameEditable(_case,  _refCaseStr, true, isMultiple, i);
-                      }
-                    },
-                    {
-                      isItemOfMenu: true,
-                      title: 'Удалить',
-                      action: () => {
-                        this.removeCase(_case);
-                      }
-                    },
-                  ]
+                  selectOptions: selectOptions[_obj]
                 },
                 i)
             .more({

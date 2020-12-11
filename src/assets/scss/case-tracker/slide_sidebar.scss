@@ -36,6 +36,10 @@
           height: 100%;
           background-color: $color-block;
           &-img {
+            max-width: calc(100% - 2px);
+            max-height: calc(100% - 2px);
+          }
+          &-no-img {
             width: 49px;
             height: 49px;
           }

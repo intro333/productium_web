@@ -21,7 +21,7 @@
            :class="{'case-info-case-title-black': isBlack}">
     <img v-if="!selectedCase.isEdited"
          @click="openCaseOptionsMenu(167, 'caseNameOptionsRef', 'caseNameInputRef',
-               selectedCase, 'down', false)"
+               selectedCase, '_case','down', false)"
          ref="caseNameOptionsRef"
          :src="arrowImg()"
          class="case-info-case-arrow select-arrow"

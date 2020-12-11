@@ -167,6 +167,9 @@ const actions = {
   selectCaseChild({commit}, payload) {
     commit('SELECT_CASE_CHILD', payload);
   },
+  removeCaseChild({commit}, _caseChild) {
+    commit('REMOVE_CASE_CHILD', _caseChild);
+  },
   /* LOCAL ACTIONS */
   selectFoundCaseFromCases({dispatch}) {
     const query = router.currentRoute.query;
@@ -228,6 +231,14 @@ const mutations = {
       }
     })
   },
+  REMOVE_CASE_CHILD(state, _caseChild) {
+    const activeCase = state.cases.find(_c => _c.id === state.selectedCase.id);
+    if (activeCase) {
+      activeCase.children = activeCase.children
+        .filter(_ch => _ch.id !== _caseChild.id);
+      state.selectedCase = activeCase;
+    }
+  },
   /* CASE COMMENTS */
   SET_CASES_COMMENTS(state, comments) {
     state.casesComments = comments;
@@ -268,9 +279,11 @@ const mutations = {
     _case.children = children;
   },
   SELECT_CASE_CHILD(state, payload) {
-    payload._case.children.forEach(_child => {
-      _child.isSelected = _child.id === payload._child.id;
-    });
+    if (payload._case) {
+      payload._case.children.forEach(_child => {
+        _child.isSelected = _child.id === payload._child.id;
+      });
+    }
   },
   CLEAR_CASE_CHILDREN(state, _case) {
     if (_case.children && _case.children.length) {

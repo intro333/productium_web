@@ -109,9 +109,18 @@ export default {
         }
       } else if (mutation.type === 'CLEAR_CASE_CHILDREN') {
         if (this.activeSlide && this.activeSlide.canvas) {
-          console.log(1)
           const canvas = this.activeSlide.canvas;
           canvas.discardActiveObject();
+          canvas.renderAll();
+        }
+      } else if (mutation.type === 'REMOVE_CASE_CHILD') {
+        if (this.activeSlide && this.activeSlide.canvas) {
+          const canvas = this.activeSlide.canvas;
+          canvas.forEachObject(function(object) {
+            if (object.id === mutation.payload.id) {
+              canvas.remove(object);
+            }
+          });
           canvas.renderAll();
         }
       }

@@ -37,7 +37,7 @@
       </div>
       <div v-if="isShowCaseOptions || (contextMenu.state && contextMenu.cKey === cKey)"
            @click="openCaseOptionsMenu(167, 'caseOptionsRef_' + cKey,
-              caseRef(_case, cKey), _case, 'up', true, false, cKey)"
+              caseRef(_case, cKey), _case, '_case', 'up', true, false, cKey)"
            :ref="'caseOptionsRef_' + cKey"
            class="csb-cases-item-options-box">
         <img src="@/assets/img/common/options.svg"
@@ -49,20 +49,12 @@
          @click="selectCase({_case, isSelectedChild: true})"
          class="csb-cases-item-children"
          :class="{'rgb-base-10': caseActiveAndSelected}">
-      <div v-for="(_child, k) in _case.children"
-           @click="selectCaseChild({
-             _case,
-             _child,
-             isShape: false
-           })"
-           :key="k"
-           class="csb-cases-item-child"
-           :class="{'rgb-base-20': caseChildActiveAndSelected(_child)}">
-        <img :src="getCaseShapeChildImg(_child)"
-             class="csb-cases-item-child-img"
-             alt="">
-        <span class="csb-cases-item-child-text text-ellipsis">{{_child.title}}</span>
-      </div>
+      <CaseChildItem v-for="(_child, k) in _case.children"
+                     :contextMenu="contextMenu"
+                     :_case="_case"
+                     :_child="_child"
+                     :key="k"
+                     :cKey="k" />
     </div>
   </div>
 </template>
@@ -70,10 +62,14 @@
 <script>
 import {mapActions} from "vuex";
 import CaseMixin from "@/components/mixins/CaseMixin";
+import CaseChildItem from "@/components/view-tracker/part/CaseChildItem";
 
 export default {
   name: "CaseSidebarItem",
   mixins: [CaseMixin],
+  components: {
+    CaseChildItem
+  },
   props: {
     cKey: Number,
     _case: Object,
@@ -95,7 +91,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['selectCase', 'selectCaseChild']),
+    ...mapActions(['selectCase']),
     caseRef(_case, i) {
       return 'caseNameInputRef_' + i;
     },
@@ -104,12 +100,6 @@ export default {
     },
     showCaseOptions(_state) {
       this.isShowCaseOptions = _state;
-    },
-    getCaseShapeChildImg(_child) {
-      return require('@/assets/img/case-tracker/case-sidebar/' + _child.shapeType + '.svg')
-    },
-    caseChildActiveAndSelected(_child) { /* Если выбран элемент кейса (и кейс при этом активен) */
-      return this._case.isSelected && _child.isSelected;
     },
   },
 }

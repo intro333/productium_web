@@ -8,7 +8,12 @@
          :class="['sl-b-slide-' + slide.slideState, slide.isSelected && 'sl-b-slide-active']">
       <div class="sl-b-slide-bg"
            :class="['sl-b-slide-bg-' + slide.slideState]">
-        <img src="@/assets/img/case-tracker/slide-sidebar/noImage.svg"
+        <img v-if="!slide.img"
+             src="@/assets/img/case-tracker/slide-sidebar/noImage.svg"
+             class="sl-b-slide-bg-no-img"
+             alt="">
+        <img v-if="slide.img"
+             :src="slide.imgUrl ? slide.imgUrl : slide.imgBase64"
              class="sl-b-slide-bg-img"
              alt="">
       </div>
