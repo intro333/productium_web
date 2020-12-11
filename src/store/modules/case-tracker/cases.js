@@ -66,9 +66,6 @@ const actions = {
       reloadWithSlide: true
     });
   },
-  selectCaseChild({commit}, payload) {
-    commit('SELECT_CASE_CHILD', payload);
-  },
   removeCase({commit, dispatch}, _case) {
     commit('REMOVE_CASE', _case);
     if (_case.isSelected) {
@@ -167,6 +164,9 @@ const actions = {
       }, 200);
     });
   },
+  selectCaseChild({commit}, payload) {
+    commit('SELECT_CASE_CHILD', payload);
+  },
   /* LOCAL ACTIONS */
   selectFoundCaseFromCases({dispatch}) {
     const query = router.currentRoute.query;
@@ -218,19 +218,6 @@ const mutations = {
   SELECT_CASE(state, payload) {
     state.selectedCase = payload.case;
   },
-  SELECT_CASE_CHILD(state, payload) {
-    payload._case.children.forEach(_child => {
-      _child.isSelected = _child.id === payload._child.id;
-    });
-  },
-  CLEAR_CASE_CHILDREN(state, _case) {
-    if (_case.children && _case.children.length) {
-      /* Если кликнули по самому кейсу, а НЕ по его эементу, то анселектим все эл-ты */
-      _case.children.forEach(_child => {
-        _child.isSelected = false;
-      })
-    }
-  },
   REMOVE_CASE(state, _case) {
     _case.caseStatus = 'archived';
     // TODO На серваке поместим в архив кейс и что делать с оповещениями?
@@ -241,6 +228,7 @@ const mutations = {
       }
     })
   },
+  /* CASE COMMENTS */
   SET_CASES_COMMENTS(state, comments) {
     state.casesComments = comments;
   },
@@ -272,11 +260,26 @@ const mutations = {
       })
     }
   },
+  /* SHAPES */
   ADD_SHAPE_TO_CASE(state, payload) {
     const _case = payload.case;
     const children = _case.children;
     children.push(payload.shapeObj);
     _case.children = children;
+  },
+  SELECT_CASE_CHILD(state, payload) {
+    console.log(1, payload);
+    payload._case.children.forEach(_child => {
+      _child.isSelected = _child.id === payload._child.id;
+    });
+  },
+  CLEAR_CASE_CHILDREN(state, _case) {
+    if (_case.children && _case.children.length) {
+      /* Если кликнули по самому кейсу, а НЕ по его эементу, то анселектим все эл-ты */
+      _case.children.forEach(_child => {
+        _child.isSelected = false;
+      })
+    }
   },
 };
 

@@ -70,7 +70,7 @@ export default {
   },
   methods: {
     ...mapActions(['setActiveTool', 'setActiveShapeTool', 'setCanvasInfo', 'setActiveSlide', 'changeCasesParamsByOffset',
-      'changeCaseElemFields', 'addShapeToCase', 'pushCase']),
+      'changeCaseElemFields', 'addShapeToCase', 'pushCase', 'selectCaseChild']),
     ...mapGetters(['getSlides', 'getActiveSlide',  'getActiveSlideList', 'getActiveTool', 'getActiveShapeTool', 'getCanvasInfo',
       'getSelectedCase', 'getCases']),
     fetchSlidesL() {
@@ -128,6 +128,7 @@ export default {
           });
           /* CANVAS HANDLERS */
           slide.canvas.on('mouse:down', function(e) { /* MOUSE DOWN */
+            const obj = e.target;
             if (_this.dragMode) {
               _this.panState = STATE_PANNING;
               slide.panLeftMouseDownPoint = e.e.clientX;
@@ -138,6 +139,12 @@ export default {
             const mouse = slide.canvas.getPointer(e.e);
             _this.drawX = mouse.x;
             _this.drawY = mouse.y;
+            if (obj) {
+              _this.selectCaseChild({
+                _case: _this.selectedCase,
+                _child: obj
+              });
+            }
           }); /* MOUSE DOWN END */
           slide.canvas.on('mouse:up', function(e) { /* MOUSE UP */
             if (_this.dragMode) {
@@ -159,18 +166,6 @@ export default {
                   activeSlideList: _this.activeSlideList
                 });
               }
-              // slide.canvas.forEachObject(function(obj) {
-              //   // if (obj.type !== 'image' && obj.lineCoords) {
-              //   //   const tl = obj.lineCoords.tl;
-              //   //   // obj.left = tl.x;
-              //   //   // obj.lineCoords = null;
-              //   //   // obj.oCoords = null;
-              //   //   // obj.aCoords = null;
-              //   //   obj.set({left: 500});
-              //   //   obj.setCoords();
-              //   //   console.log(3, obj);
-              //   // }
-              // });
               _this.lastClientX = 0;
               _this.lastClientY = 0;
             } else if (_this.activeTool === 'moveTool') {
