@@ -5,6 +5,7 @@
                :key="i"
                :cKey="i"
                :slidesLength="slidesLength"
+               :cases="cases"
     />
     <div class="sl-b-add">
       <div @click="addSlide"
@@ -21,7 +22,7 @@
 </template>
 
 <script>
-import {mapActions} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 import SlideItem from "@/components/view-tracker/part/SlideItem";
 import SlideMixin from "@/components/mixins/SlideMixin";
 
@@ -34,10 +35,16 @@ export default {
   computed: {
     slidesLength() {
       return this.slides.length;
-    }
+    },
+    cases() {
+      return this.getCases()
+          .filter(_c => _c.caseStatus !== 'archived');
+      // TODO Можно к кейсам добавить projectId, чтобы не фильтровать все кейсы всех проектов (здесь и в других местах так же)
+    },
   },
   methods: {
     ...mapActions(['setContextMenuBase', 'pushSlide']),
+    ...mapGetters(['getCases']),
     addSlide() {
       this.pushSlide();
     },

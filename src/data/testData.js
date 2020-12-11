@@ -87,6 +87,8 @@ export const mockSlideLists = [
 export const mockCases = [
   new CaseModel({
     id: 1,
+    projectId: 1,
+    slideId: 1,
     slideListId: 1,
     title: 'Задача 1',
     caseStatus: 'in-work',
@@ -108,6 +110,8 @@ export const mockCases = [
   }),
   new CaseModel({
     id: 2,
+    projectId: 1,
+    slideId: 1,
     slideListId: 1,
     title: 'Баг с выпадающим списком, когда на него нажимаешь.',
     caseStatus: 'done',
@@ -152,6 +156,8 @@ export const mockCases = [
   new CaseModel({
     id: 3,
     title: 'Задача 3.',
+    projectId: 1,
+    slideId: 1,
     slideListId: 1,
     caseStatus: 'done',
     isOpen: true,
@@ -185,9 +191,11 @@ export const mockCases = [
   }),
   new CaseModel({
     id: 4,
+    projectId: 1,
+    slideId: 2,
     slideListId: 2,
     title: 'Задача 2',
-    caseStatus: 'in-work',
+    caseStatus: 'done',
     isOpen: false,
     discus: '',
     resolut: '',
@@ -196,6 +204,8 @@ export const mockCases = [
   }),
   new CaseModel({
     id: 5,
+    projectId: 1,
+    slideId: 2,
     slideListId: 2,
     title: 'Задача 3',
     caseStatus: 'done',
@@ -230,6 +240,8 @@ export const mockCases = [
   }),
   new CaseModel({
     id: 6,
+    projectId: 1,
+    slideId: 3,
     slideListId: 3,
     title: 'Задача 7',
     caseStatus: 'in-work',
@@ -241,6 +253,8 @@ export const mockCases = [
   }),
   new CaseModel({
     id: 7,
+    projectId: 1,
+    slideId: 4,
     slideListId: 4,
     title: 'Задача 8',
     caseStatus: 'done',
@@ -262,6 +276,8 @@ export const mockCases = [
   }),
   new CaseModel({
     id: 8,
+    projectId: 1,
+    slideId: 4,
     slideListId: 4,
     title: 'Задача 9',
     caseStatus: 'in-work',

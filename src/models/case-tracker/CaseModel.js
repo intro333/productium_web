@@ -1,5 +1,7 @@
 export class CaseModel {
   id = 0;
+  projectId = 0;
+  slideId = 0;
   slideListId = 0;
   title = 'Задача 1';
   caseStatus = 'in-work'; // in-work | done | archived | deleted
@@ -17,14 +19,19 @@ export class CaseModel {
   isDiscusEdited = false;
 
   constructor(_case) {
-    this.id = _case.id;
-    this.slideListId = _case.slideListId;
-    this.title = _case.title;
-    this.caseStatus = _case.caseStatus;
-    this.isOpen = _case.isOpen;
-    this.discus = _case.discus;
-    this.resolut = _case.resolut;
-    this.children = _case.children;
-    this.order = _case.order;
+    Object.keys(_case).forEach(field => {
+      this[field] = _case[field];
+    });
+    // this.id = _case.id;
+    // this.projectId = _case.projectId;
+    // this.slideId = _case.slideId;
+    // this.slideListId = _case.slideListId;
+    // this.title = _case.title;
+    // this.caseStatus = _case.caseStatus;
+    // this.isOpen = _case.isOpen;
+    // this.discus = _case.discus;
+    // this.resolut = _case.resolut;
+    // this.children = _case.children;
+    // this.order = _case.order;
   }
 }

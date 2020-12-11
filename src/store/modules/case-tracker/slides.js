@@ -108,9 +108,6 @@ const actions = {
   setActiveSlide({commit}, _slide) {
     commit('SET_ACTIVE_SLIDE', _slide);
   },
-  changeSlideState({commit}, payload) {
-    commit('CHANGE_SLIDE_STATE', payload);
-  },
   /* SLIDE LISTS */
   fetchSlideLists({commit}) {
     commit('SET_SLIDE_LISTS', mockSlideLists);
@@ -237,13 +234,6 @@ const mutations = {
   },
   SET_ACTIVE_SLIDE(state, _slide) {
     state.activeSlide = _slide;
-  },
-  CHANGE_SLIDE_STATE(state, payload) {
-    const foundSlide = state.slides
-        .found(_s => _s.id === payload.slideId);
-    if (foundSlide) {
-      foundSlide.slideState = payload.slideState
-    }
   },
   /* SLIDE LISTS */
   SET_SLIDE_LISTS(state, _slideLists) {

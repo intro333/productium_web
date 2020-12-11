@@ -35,8 +35,9 @@
           align-items: center;
           height: 100%;
           background-color: $color-block;
+          overflow: hidden;
           &-img {
-            max-width: calc(100% - 2px);
+            //max-width: calc(100% - 2px);
             max-height: calc(100% - 2px);
           }
           &-no-img {
@@ -55,7 +56,7 @@
           }
         }
         &-done {
-          border: none;
+          //border: none;
         }
         &-active {
           border: 2px solid $color-base;

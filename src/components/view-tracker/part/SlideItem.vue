@@ -5,9 +5,9 @@
     <span class="sl-b-num">{{cKey+1}}</span>
     <div @click="selectSlide(slide)"
          class="sl-b-slide"
-         :class="['sl-b-slide-' + slide.slideState, slide.isSelected && 'sl-b-slide-active']">
+         :class="['sl-b-slide-' + slideState, slide.isSelected && 'sl-b-slide-active']">
       <div class="sl-b-slide-bg"
-           :class="['sl-b-slide-bg-' + slide.slideState]">
+           :class="['sl-b-slide-bg-' + slideState]">
         <img v-if="!slide.img"
              src="@/assets/img/case-tracker/slide-sidebar/noImage.svg"
              class="sl-b-slide-bg-no-img"
@@ -40,7 +40,8 @@ export default {
   props: {
     slide: Object,
     cKey: Number,
-    slidesLength: Number
+    slidesLength: Number,
+    cases: Array
   },
   data: () => ({
     isShowSlideOptions: false,
@@ -54,7 +55,18 @@ export default {
       const result = this.casesComments.find(_c =>
           _c.notifyInfo && _c.notifyInfo.status === 'notRead');
       return !!result;
-    }
+    },
+    slideCases() {
+      return this.cases.filter(_c => _c.slideId === this.slide.id);
+    },
+    slideIsWork() {
+      return this.slideCases.filter(_c =>
+          _c.caseStatus === 'in-work')
+          .length;
+    },
+    slideState() {
+      return this.slideIsWork ? 'in-work' : 'done';
+    },
   },
   methods: {
     ...mapActions(['setContextMenuBase', 'removeSlide', 'selectSlide']),

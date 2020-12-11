@@ -36,6 +36,8 @@ const actions = {
           const caseId = getRandomInt(10, 1000);
           const newSCase = new CaseModel({
             id: caseId,
+            projectId: parseInt(query.projectId),
+            slideId: parseInt(query.slideId),
             slideListId: parseInt(query.slideListId),
             title: 'Задача ' + caseId,
             caseStatus: 'in-work',
@@ -79,18 +81,9 @@ const actions = {
           const anotherCase = filteredCases.length ? filteredCases[filteredCases.length-1] : { id: 0 };
           dispatch('goToSelectedCase', {
             case: anotherCase,
-            reloadWithSlide: true
+            reloadWithSlide: true,
+            closeCommentsModal: true
           });
-          // if (filteredCases.length) {
-          //
-          // } else {
-          //   setTimeout(() => {
-          //     router.push({
-          //       path: '/case-tracker',
-          //       query: Object.assign({}, query, {caseId: 0})
-          //     });
-          //   }, 20)
-          // }
         }
       }, 20);
     }
@@ -170,20 +163,8 @@ const actions = {
   removeCaseChild({commit}, _caseChild) {
     commit('REMOVE_CASE_CHILD', _caseChild);
   },
-  changeCaseStatus({commit, dispatch}, payload) {
-    const _case = payload._case;
-    let slideState = 'done';
+  changeCaseStatus({commit}, payload) {
     commit('CHANGE_CASE_STATUS', payload);
-    state.cases.filter(_c => _c.slideId === _case.slideId)
-        .forEach(_ca => {
-          if (_ca.caseStatus === 'in-work') {
-            slideState = 'in-work'
-          }
-        });
-    dispatch('changeSlideState', {
-      slideId: _case.slideId,
-      slideState
-    });
   },
   /* LOCAL ACTIONS */
   selectFoundCaseFromCases({dispatch}) {
@@ -200,7 +181,7 @@ const actions = {
       }
     }
   },
-  goToSelectedCase({commit}, payload) {
+  goToSelectedCase({commit, dispatch}, payload) {
     const _case = payload.case;
     const query = router.currentRoute.query;
     if (query && query.caseId) {
@@ -210,6 +191,10 @@ const actions = {
       }
       if (caseId !== _case.id) {
         commit('SELECT_CASE', payload);
+        if (payload.closeCommentsModal && query.commentId) {
+          delete query.commentId;
+          dispatch('setCentralModal', new CentralModalModel());
+        }
         setTimeout(() => {
           router.push({
             path: '/case-tracker',
