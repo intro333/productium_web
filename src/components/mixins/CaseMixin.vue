@@ -30,7 +30,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setContextMenuBase', 'removeCase', 'removeCaseChild']),
+    ...mapActions(['setContextMenuBase', 'removeCase', 'removeCaseChild', 'changeCaseStatus']),
     ...mapGetters(['getCases', 'getSelectedCase']),
     fetchCasesL() {
       const query = this.$route.query;
@@ -95,7 +95,11 @@ export default {
               title: 'В работе',
               isActive: _caseOrCaseChild.caseStatus === 'in-work',
               action: () => {
-                _caseOrCaseChild.caseStatus = 'in-work'
+                this.changeCaseStatus({
+                  _case: _caseOrCaseChild,
+                  status: 'in-work'
+                });
+                // _caseOrCaseChild.caseStatus = 'in-work'
               },
             },
             {
@@ -103,7 +107,11 @@ export default {
               title: 'Готово',
               isActive: _caseOrCaseChild.caseStatus === 'done',
               action: () => {
-                _caseOrCaseChild.caseStatus = 'done'
+                this.changeCaseStatus({
+                  _case: _caseOrCaseChild,
+                  status: 'done'
+                });
+                // _caseOrCaseChild.caseStatus = 'done'
               }
             },
             {

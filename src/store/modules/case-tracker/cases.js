@@ -170,6 +170,21 @@ const actions = {
   removeCaseChild({commit}, _caseChild) {
     commit('REMOVE_CASE_CHILD', _caseChild);
   },
+  changeCaseStatus({commit, dispatch}, payload) {
+    const _case = payload._case;
+    let slideState = 'done';
+    commit('CHANGE_CASE_STATUS', payload);
+    state.cases.filter(_c => _c.slideId === _case.slideId)
+        .forEach(_ca => {
+          if (_ca.caseStatus === 'in-work') {
+            slideState = 'in-work'
+          }
+        });
+    dispatch('changeSlideState', {
+      slideId: _case.slideId,
+      slideState
+    });
+  },
   /* LOCAL ACTIONS */
   selectFoundCaseFromCases({dispatch}) {
     const query = router.currentRoute.query;
@@ -238,6 +253,9 @@ const mutations = {
         .filter(_ch => _ch.id !== _caseChild.id);
       state.selectedCase = activeCase;
     }
+  },
+  CHANGE_CASE_STATUS(state, payload) {
+    payload._case.caseStatus = payload.status;
   },
   /* CASE COMMENTS */
   SET_CASES_COMMENTS(state, comments) {
