@@ -52,7 +52,8 @@
       <div v-for="(_child, k) in _case.children"
            @click="selectCaseChild({
              _case,
-             _child
+             _child,
+             isShape: false
            })"
            :key="k"
            class="csb-cases-item-child"

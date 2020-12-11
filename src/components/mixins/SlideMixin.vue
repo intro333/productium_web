@@ -142,7 +142,8 @@ export default {
             if (obj) {
               _this.selectCaseChild({
                 _case: _this.selectedCase,
-                _child: obj
+                _child: obj,
+                isShape: true
               });
             }
           }); /* MOUSE DOWN END */

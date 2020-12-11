@@ -268,7 +268,6 @@ const mutations = {
     _case.children = children;
   },
   SELECT_CASE_CHILD(state, payload) {
-    console.log(1, payload);
     payload._case.children.forEach(_child => {
       _child.isSelected = _child.id === payload._child.id;
     });

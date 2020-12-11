@@ -89,6 +89,31 @@ export default {
             }
           }, 150);
         }
+      } else if (mutation.type === 'SELECT_CASE_CHILD') {
+        if (this.activeSlide && this.activeSlide.canvas) {
+          const payload = mutation.payload;
+          const canvas = this.activeSlide.canvas;
+          canvas.discardActiveObject();
+          if (payload.isShape) {
+            canvas.setActiveObject(payload._child);
+          } else {
+            canvas.forEachObject(function(object) {
+              if (object.id === payload._child.id) {
+                canvas.setActiveObject(object);
+              }
+            });
+          }
+          setTimeout(() => {
+            canvas.renderAll();
+          }, 30);
+        }
+      } else if (mutation.type === 'CLEAR_CASE_CHILDREN') {
+        if (this.activeSlide && this.activeSlide.canvas) {
+          console.log(1)
+          const canvas = this.activeSlide.canvas;
+          canvas.discardActiveObject();
+          canvas.renderAll();
+        }
       }
     });
     setTimeout(() => {
