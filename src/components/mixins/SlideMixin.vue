@@ -4,6 +4,7 @@ import {mapActions, mapGetters} from "vuex";
 import {fabric} from "fabric";
 import CanvasMixin from "@/components/mixins/CanvasMixin";
 import {ShapeModel} from "@/models/case-tracker/ShapeModel";
+import {zoomConst} from "@/data/consts";
 // import {pickerColors} from "@/data/consts";
 
 const STATE_IDLE = 'idle';
@@ -76,7 +77,8 @@ export default {
   },
   methods: {
     ...mapActions(['setActiveTool', 'setActiveShapeTool', 'setCanvasInfo', 'setActiveSlide', 'changeCasesParamsByOffset',
-      'changeCaseElemFields', 'addShapeToCase', 'pushCase', 'selectCaseChild', 'setActiveColor']),
+      'changeCaseElemFields', 'addShapeToCase', 'pushCase', 'selectCaseChild', 'setActiveColor', 'openCase',
+      'clearCaseChildren', 'changeSlideZoom']),
     ...mapGetters(['getSlides', 'getActiveSlide',  'getActiveSlideList', 'getActiveTool', 'getActiveShapeTool', 'getCanvasInfo',
       'getSelectedCase', 'getCases', 'getActiveColor']),
     fetchSlidesL() {
@@ -132,9 +134,15 @@ export default {
           slide.canvas = new fabric.Canvas('canvas', {
             preserveObjectStacking: true // Не менять позицию объектов при нажатии на них (чтобы картинка не уходила на первый план)
           });
+          if (slide.zoom && slide.zoom.z) {
+            slide.canvas.zoomToPoint({x: slide.zoom.offsetX, y: slide.zoom.offsetY}, slide.zoom.z);
+          }
           /* CANVAS HANDLERS */
           slide.canvas.on('mouse:down', function(e) { /* MOUSE DOWN */
             const obj = e.target;
+            const mouse = slide.canvas.getPointer(e.e);
+            _this.drawX = mouse.x;
+            _this.drawY = mouse.y;
             if (_this.dragMode) {
               _this.panState = STATE_PANNING;
               slide.panLeftMouseDownPoint = e.e.clientX;
@@ -142,17 +150,19 @@ export default {
             } else if (_this.drawMode) {
               _this.drawStarted = 'firstStart';
             } else if (_this.moveMode) {
+              if (obj && obj.type !== 'image') {
+                if (!_this.selectedCase.isOpen) { /* Если выделили фигуру и кейс закрыт, то нужно развернуть */
+                  _this.openCase();
+                }
+                _this.selectCaseChild({
+                  _case: _this.selectedCase,
+                  _child: obj,
+                  isShape: true
+                });
+              } else {
+                _this.clearCaseChildren(_this.selectedCase);
+              }
               // _this.setActiveColor('auto');
-            }
-            const mouse = slide.canvas.getPointer(e.e);
-            _this.drawX = mouse.x;
-            _this.drawY = mouse.y;
-            if (obj && obj.type !== 'image') {
-              _this.selectCaseChild({
-                _case: _this.selectedCase,
-                _child: obj,
-                isShape: true
-              });
             }
           }); /* MOUSE DOWN END */
           slide.canvas.on('mouse:up', function(e) { /* MOUSE UP */
@@ -355,6 +365,23 @@ export default {
               }
             }
           }); /* MOUSE MOVE END */
+          slide.canvas.on('mouse:wheel', function(opt) { /* MOUSE WHEEL */
+            let delta = opt.e.deltaY;
+            let zoom = slide.canvas.getZoom();
+            zoom *= 0.999 ** delta;
+            if (zoom > zoomConst.maxZoomIn) zoom = zoomConst.maxZoomIn;
+            if (zoom < zoomConst.minZoomOut) zoom = zoomConst.minZoomOut;
+            const offsetX = opt.e.offsetX, offsetY = opt.e.offsetY;
+            slide.canvas.zoomToPoint({ x: offsetX, y: offsetY }, zoom);
+            _this.changeSlideZoom({
+              offsetX: offsetX,
+              offsetY: offsetY,
+              z: zoom,
+              updateCanvas: false
+            });
+            opt.e.preventDefault();
+            opt.e.stopPropagation();
+          }); /* MOUSE WHEEL END */
           slide.canvas.on('object:scaling', function(e) {
             _this.objIsScaling = true;
             const shape = e.target;

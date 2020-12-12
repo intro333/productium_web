@@ -7,3 +7,8 @@ export const pickerColors = {
   blue: '0D31ED',
   pink: 'F40CEB',
 };
+
+export const zoomConst = {
+  maxZoomIn: 7,
+  minZoomOut: 0.1,
+}

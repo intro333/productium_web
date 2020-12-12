@@ -146,6 +146,9 @@ const actions = {
       }
     }
   },
+  openCase({commit}) {
+    commit('OPEN_CASE');
+  },
   /* CASE COMMENTS */
   fetchCaseComments({commit}) {
     commit('SET_CASES_COMMENTS', mockCaseComments);
@@ -220,6 +223,9 @@ const actions = {
       }
     });
   },
+  clearCaseChildren({commit}, _case) {
+    commit('CLEAR_CASE_CHILDREN', _case);
+  },
 };
 
 const mutations = {
@@ -251,6 +257,9 @@ const mutations = {
   },
   CHANGE_CASE_STATUS(state, payload) {
     payload._case.caseStatus = payload.status;
+  },
+  OPEN_CASE(state) {
+    state.selectedCase.isOpen = true;
   },
   /* CASE COMMENTS */
   SET_CASES_COMMENTS(state, comments) {

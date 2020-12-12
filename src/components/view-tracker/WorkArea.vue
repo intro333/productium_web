@@ -148,6 +148,14 @@ export default {
             });
           }
         }
+      } else if (mutation.type === 'CHANGE_SLIDE_ZOOM') {
+        if (this.activeSlide && this.activeSlide.canvas) {
+          const zoom = mutation.payload;
+          if (zoom.updateCanvas) {
+            const canvas = this.activeSlide.canvas;
+            canvas.zoomToPoint({ x: zoom.offsetX, y: zoom.offsetY }, zoom.z);
+          }
+        }
       }
     });
     setTimeout(() => {

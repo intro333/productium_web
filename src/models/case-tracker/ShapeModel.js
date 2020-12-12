@@ -5,7 +5,11 @@ export class ShapeModel {
   title = 'Задача 1';
   shapeType = 'rectangle'; /* rectangle | ellipse */
   params = {
-
+    borderColor: '#00a6ed',
+    cornerStrokeColor: '#00a6ed',
+    cornerColor: 'white',
+    cornerSize: 6,
+    transparentCorners: false
   };
 
   isSelected = false;
@@ -15,7 +19,7 @@ export class ShapeModel {
     this.title = title ? title : this.fillTitle(shapeType);
     this.shapeType = shapeType;
     if (shapeType === 'rectangle') {
-      this.params = {
+      this.params = Object.assign(this.params, {
         left: 0,
         top: 0,
         fill: 'transparent',
@@ -25,9 +29,9 @@ export class ShapeModel {
         lockRotation: true,
         // lockScalingX: true,
         // lockUniScaling: true,
-      }
+      });
     } else if (shapeType === 'ellipse') {
-      this.params = {
+      this.params = Object.assign(this.params, {
         left: 0,
         top: 0,
         fill: 'transparent',
@@ -39,7 +43,7 @@ export class ShapeModel {
         ry: 0,
         angle: 0,
         lockRotation: true,
-      }
+      });
     }
     if (params.stroke) {
       params.stroke = (params.stroke === 'auto') ? `#${generateColorFromPicker()}` :

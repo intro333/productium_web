@@ -50,7 +50,6 @@ const actions = {
     },
     /*  */
     setActiveColor({commit}, color) {
-        console.log(9, color);
         if (color && color !== '') {
             // TODO Можно ещё поставить проверку, есть ли этот увет в массиве pickerColors (через Object.keys)
             commit('SET_ACTIVE_COLOR', color);

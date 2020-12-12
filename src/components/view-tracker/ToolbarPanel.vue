@@ -115,7 +115,7 @@
         <div @click="openContextMenu('ScaleModal', 208, 'scaleRef', true)"
              ref="scaleRef"
              class="tp-icon-box tp-icon-box-2-2">
-          <p class="tp-icon-item tp-text">100%</p>
+          <p class="tp-icon-item tp-text">{{zoomPercent}}%</p>
           <img src="@/assets/img/common/selectArrow.svg"
                class="tp-icon-item select-arrow"
                alt="">
@@ -164,6 +164,12 @@ export default {
     contextMenu() {
       return this.getContextMenuBase();
     },
+    zoomPercent() {
+      if (this.activeSlide && this.activeSlide.zoom) {
+        return Math.ceil(this.activeSlide.zoom.z * 100);
+      }
+      return 100;
+    }
   },
   methods: {
     ...mapActions(['setContextMenuBase', 'setCentralModal']),
@@ -223,7 +229,7 @@ export default {
     shapeSvg() {
       return require('@/assets/img/case-tracker/toolbar_panel/shapes/' + this.activeShapeTool
           .replace(/Tool/g, '') + '.svg');
-    }
+    },
   }
 }
 </script>

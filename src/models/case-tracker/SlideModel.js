@@ -17,6 +17,11 @@ export class SlideModel {
   panLeftMouseDownPoint = 0;
   panLeftMouseUpPoint = 0;
   allLineCoords = [];
+  zoom = {
+    offsetX: 0,
+    offsetY: 0,
+    z: 1
+  };
 
   constructor(_slide) {
     this.id = _slide.id;
