@@ -21,7 +21,8 @@
            class="notify-circle sl-b-slide-notify"
            :class="{'of-selected': slide.isSelected}"></div>
     </div>
-    <img v-if="isShowSlideOptions || getContextMenuBase().state"
+    <img v-if="isShowSlideOptions || (contextMenu.state && contextMenu.cKey === cKey &&
+      (contextMenu.body) && contextMenu.body.subject === 'slide')"
          @click="openOptionsMenu(134, 'optionsRef')"
          :ref="'optionsRef'"
          src="@/assets/img/common/options.svg"
@@ -47,6 +48,9 @@ export default {
     isShowSlideOptions: false,
   }),
   computed: {
+    contextMenu() {
+      return this.getContextMenuBase();
+    },
     casesComments() {
       return this.getCasesComments().filter(_c =>
           _c.slideId === this.slide.id);
@@ -103,8 +107,10 @@ export default {
 
                       }
                     }
-                  ]
-                })
+                  ],
+                  subject: 'slide'
+                },
+                this.cKey)
         );
       }
     },

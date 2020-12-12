@@ -1,3 +1,6 @@
+import {getRandomInt} from "@/functions/calculations";
+import {pickerColors} from "@/data/consts";
+
 export function userRoleToTitle(role) {
   switch (role) {
     case 'guest':
@@ -17,4 +20,12 @@ export function copyStructureDefaultState(structure) {
 }
 export function formUserLink(link) {
   return (link && (link !== '')) ? `${link}, ` : '';
+}
+export function generateColorFromPicker() {
+  const array = Object.keys(pickerColors);
+  const colorIndex = getRandomInt(0, array.length-1);
+  if (array[colorIndex]) {
+    return pickerColors[array[colorIndex]];
+  }
+  return pickerColors.black;
 }

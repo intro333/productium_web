@@ -109,6 +109,43 @@ const actions = {
     }
     dispatch('openCommentsModalByCommentId', notify.id);
   },
+  selectFoundCaseFromCases({dispatch}) {
+    const query = router.currentRoute.query;
+    if (query && query.caseId) {
+      const _caseId = parseInt(query.caseId);
+      const foundCase = state.cases.find(_s => _s.id === _caseId);
+      if (foundCase) {
+        dispatch('goToSelectedCase', {
+          case: foundCase,
+          reloadWithSlide: false,
+          isFirstLoad: true
+        });
+      }
+    }
+  },
+  goToSelectedCase({commit, dispatch}, payload) {
+    const _case = payload.case;
+    const query = router.currentRoute.query;
+    if (query && query.caseId) {
+      const caseId = parseInt(query.caseId);
+      if (payload.isFirstLoad) {
+        commit('SELECT_CASE', payload);
+      }
+      if (caseId !== _case.id) {
+        commit('SELECT_CASE', payload);
+        if (payload.closeCommentsModal && query.commentId) {
+          delete query.commentId;
+          dispatch('setCentralModal', new CentralModalModel());
+        }
+        setTimeout(() => {
+          router.push({
+            path: '/case-tracker',
+            query: Object.assign({}, query, {caseId: _case.id})
+          });
+        }, 20);
+      }
+    }
+  },
   /* CASE COMMENTS */
   fetchCaseComments({commit}) {
     commit('SET_CASES_COMMENTS', mockCaseComments);
@@ -166,49 +203,22 @@ const actions = {
   changeCaseStatus({commit}, payload) {
     commit('CHANGE_CASE_STATUS', payload);
   },
-  /* LOCAL ACTIONS */
-  selectFoundCaseFromCases({dispatch}) {
-    const query = router.currentRoute.query;
-    if (query && query.caseId) {
-      const _caseId = parseInt(query.caseId);
-      const foundCase = state.cases.find(_s => _s.id === _caseId);
-      if (foundCase) {
-        dispatch('goToSelectedCase', {
-          case: foundCase,
-          reloadWithSlide: false,
-          isFirstLoad: true
-        });
-      }
-    }
-  },
-  goToSelectedCase({commit, dispatch}, payload) {
-    const _case = payload.case;
-    const query = router.currentRoute.query;
-    if (query && query.caseId) {
-      const caseId = parseInt(query.caseId);
-      if (payload.isFirstLoad) {
-        commit('SELECT_CASE', payload);
-      }
-      if (caseId !== _case.id) {
-        commit('SELECT_CASE', payload);
-        if (payload.closeCommentsModal && query.commentId) {
-          delete query.commentId;
-          dispatch('setCentralModal', new CentralModalModel());
-        }
-        setTimeout(() => {
-          router.push({
-            path: '/case-tracker',
-            query: Object.assign({}, query, {caseId: _case.id})
-          });
-        }, 20);
-      }
-    }
-  },
   changeCasesParamsByOffset({commit}, payload) {
     commit('CHANGE_CASES_PARAMS_BY_OFFSET', payload);
   },
-  changeCaseElemFields({commit}, payload) {
-    commit('CHANGE_CASE_ELEM_FIELDS', payload);
+  changeCaseElemFields({commit}, fields) {
+    return new Promise((resolve, reject) => {
+      const foundCase = state.cases.find(_c => _c.id === state.selectedCase.id);
+      if (foundCase) {
+        commit('CHANGE_CASE_ELEM_FIELDS', {
+          fields,
+          foundCase
+        });
+        resolve(foundCase);
+      } else {
+        reject(false);
+      }
+    });
   },
 };
 
@@ -262,17 +272,17 @@ const mutations = {
       return _c;
     });
   },
-  CHANGE_CASE_ELEM_FIELDS(state, fields) {
-    const foundCase = state.cases.find(_c => _c.id === state.selectedCase.id);
-    if (foundCase) {
-      foundCase.children.forEach(_child => {
-        if (_child.id === fields.id) {
-          Object.keys(fields).forEach(field => {
+  CHANGE_CASE_ELEM_FIELDS(state, payload) {
+    const fields = payload.fields;
+    payload.foundCase.children.forEach(_child => {
+      if (_child.id === fields.id) {
+        Object.keys(fields).forEach(field => {
+          if (field !== 'id') {
             _child.params[field] = fields[field];
-          });
-        }
-      })
-    }
+          }
+        });
+      }
+    });
   },
   /* SHAPES */
   ADD_SHAPE_TO_CASE(state, payload) {

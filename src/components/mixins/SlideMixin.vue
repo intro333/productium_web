@@ -4,7 +4,7 @@ import {mapActions, mapGetters} from "vuex";
 import {fabric} from "fabric";
 import CanvasMixin from "@/components/mixins/CanvasMixin";
 import {ShapeModel} from "@/models/case-tracker/ShapeModel";
-// import {getCirclePerimeter, getCircleRadiusByTriangleArea} from "@/functions/calculations";
+// import {pickerColors} from "@/data/consts";
 
 const STATE_IDLE = 'idle';
 const STATE_PANNING = 'panning';
@@ -58,6 +58,9 @@ export default {
     dragMode() {
       return this.activeTool === 'handTool';
     },
+    moveMode() {
+      return this.activeTool === 'moveTool';
+    },
     drawMode() {
       return this.activeTool === 'shapeTool' || this.activeTool === 'superTool';
     },
@@ -67,12 +70,15 @@ export default {
     selectedCase() {
       return this.getSelectedCase();
     },
+    activeColor() {
+      return this.getActiveColor();
+    },
   },
   methods: {
     ...mapActions(['setActiveTool', 'setActiveShapeTool', 'setCanvasInfo', 'setActiveSlide', 'changeCasesParamsByOffset',
-      'changeCaseElemFields', 'addShapeToCase', 'pushCase', 'selectCaseChild']),
+      'changeCaseElemFields', 'addShapeToCase', 'pushCase', 'selectCaseChild', 'setActiveColor']),
     ...mapGetters(['getSlides', 'getActiveSlide',  'getActiveSlideList', 'getActiveTool', 'getActiveShapeTool', 'getCanvasInfo',
-      'getSelectedCase', 'getCases']),
+      'getSelectedCase', 'getCases', 'getActiveColor']),
     fetchSlidesL() {
       const query = this.$route.query;
       if (query && query.projectId) {
@@ -135,11 +141,13 @@ export default {
               slide.panTopMouseDownPoint = e.e.clientY;
             } else if (_this.drawMode) {
               _this.drawStarted = 'firstStart';
+            } else if (_this.moveMode) {
+              // _this.setActiveColor('auto');
             }
             const mouse = slide.canvas.getPointer(e.e);
             _this.drawX = mouse.x;
             _this.drawY = mouse.y;
-            if (obj) {
+            if (obj && obj.type !== 'image') {
               _this.selectCaseChild({
                 _case: _this.selectedCase,
                 _child: obj,
@@ -169,7 +177,7 @@ export default {
               }
               _this.lastClientX = 0;
               _this.lastClientY = 0;
-            } else if (_this.activeTool === 'moveTool') {
+            } else if (_this.moveMode) {
               const activeObject = slide.canvas.getActiveObject();
               const activeObjects = slide.canvas.getActiveObjects();
               if (activeObjects && activeObjects.length > 1) {
@@ -182,6 +190,8 @@ export default {
                     id: obj.id,
                     left: tl.x,
                     top: tl.y,
+                    originX: activeObject.originX,
+                    originY: activeObject.originY,
                   };
                   if (_this.objIsScaling) {
                     _this.objIsScaling = false;
@@ -192,8 +202,6 @@ export default {
                       });
                     } else if (objType === 'ellipse') {
                       fields = Object.assign(fields, {
-                        originX: activeObject.originX,
-                        originY: activeObject.originY,
                         rx: activeObject.rx,
                         ry: activeObject.ry,
                         radius: activeObject.radius,
@@ -229,6 +237,7 @@ export default {
                 if (shapeType === 'rectangle') {
                   _this.newShapeObj.params.width = shape.width;
                   _this.newShapeObj.params.height = shape.height;
+                  _this.newShapeObj.params.stroke = `#${shape.stroke.replace(/#/g, '')}`;
                 } else if (shapeType === 'ellipse') {
                   _this.newShapeObj.params.radius = shape.radius;
                   _this.newShapeObj.params.originX = shape.originX;
@@ -236,6 +245,7 @@ export default {
                   _this.newShapeObj.params.rx = shape.rx;
                   _this.newShapeObj.params.ry = shape.ry;
                   _this.newShapeObj.params.angle = shape.angle;
+                  _this.newShapeObj.params.stroke = `#${shape.stroke.replace(/#/g, '')}`;
                 }
                 _this.setActiveTool('moveTool');
                 _this.panningHandler(slide);
@@ -285,18 +295,20 @@ export default {
               }
               const shapeType = _this.activeShapeTool.replace(/Tool/g, '');
               if (_this.drawStarted === 'firstStart') {
-                let params = {};
-                if (shapeType === 'rectangle') {
-                  params = {
-                    left: _this.drawX,
-                    top: _this.drawY,
-                  };
-                } else if (shapeType === 'ellipse') {
-                  params = {
-                    left: _this.drawX,
-                    top: _this.drawY,
-                  };
-                }
+                let params = {
+                  stroke: _this.activeColor,
+                  left: _this.drawX,
+                  top: _this.drawY,
+                };
+                // if (shapeType === 'rectangle') {
+                //   params = {
+                //
+                //   };
+                // } else if (shapeType === 'ellipse') {
+                //   params = {
+                //
+                //   };
+                // }
                 const newShapeObj = _this.newShapeObj = new ShapeModel(
                     0,
                     null,
@@ -306,6 +318,7 @@ export default {
                 slide.canvas.add(shape);
                 slide.canvas.renderAll();
                 slide.canvas.setActiveObject(shape);
+                // _this.setActiveColor(shape.stroke);
                 _this.drawStarted = 'start';
               } else if (_this.drawStarted === 'start') {
                 const shape = slide.canvas.getActiveObject();
@@ -327,17 +340,16 @@ export default {
                     ry -= shape.strokeWidth / 2
                   }
                   shape.set({ rx: rx, ry: ry});
-
-                  if (_this.drawX > mouse.x) {
-                    shape.set({originX: 'right'});
-                  } else {
-                    shape.set({originX: 'left'});
-                  }
-                  if (_this.drawY > mouse.y){
-                    shape.set({originY: 'bottom'});
-                  } else {
-                    shape.set({originY: 'top'});
-                  }
+                }
+                if (_this.drawX > mouse.x) {
+                  shape.set({originX: 'right'});
+                } else {
+                  shape.set({originX: 'left'});
+                }
+                if (_this.drawY > mouse.y){
+                  shape.set({originY: 'bottom'});
+                } else {
+                  shape.set({originY: 'top'});
                 }
                 slide.canvas.renderAll();
               }
@@ -350,14 +362,18 @@ export default {
             // const mouse = slide.canvas.getPointer(e.e);
             const scaleXIsChanged = shape.scaleX !== 1;
             const scaleYIsChanged = shape.scaleY !== 1;
-            const w = Math.abs(shape.width * shape.scaleX),
-                h = Math.abs(shape.height * shape.scaleY);
-            if (!w || !h) {
-              return false;
-            }
+            let w, h;
+            // if (shape.scaleX > 1) { /* Расширяем объект */
+            //   w = shape.width + Math.abs(mouse.x - _this.drawX);
+            // } else if (shape.scaleY > 1) {
+            //   h = Math.abs(mouse.y - _this.drawY);
+            // } else { /* Сужаем объект */
+              w = Math.abs(shape.width * shape.scaleX);
+              h = Math.abs(shape.height * shape.scaleY);
+            // }
             if (objType === 'rect') {
-              shape.set({width: w});
-              shape.set({height: h});
+              if (w) { shape.set({width: w}) }
+              if (h) { shape.set({height: h}) }
             } else if (objType === 'ellipse') {
               if (scaleXIsChanged) {
                 let rx = Math.abs(w) / 2;
@@ -374,6 +390,16 @@ export default {
                 shape.set({ry: ry});
               }
             }
+            // if (_this.drawX > mouse.x) {
+            //   shape.set({originX: 'right'});
+            // } else {
+            //   shape.set({originX: 'left'});
+            // }
+            // if (_this.drawY > mouse.y){
+            //   shape.set({originY: 'bottom'});
+            // } else {
+            //   shape.set({originY: 'top'});
+            // }
             shape.set({scaleX: 1});
             shape.set({scaleY: 1});
             slide.canvas.renderAll();

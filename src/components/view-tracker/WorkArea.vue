@@ -41,6 +41,7 @@
 <script>
 import {mapActions, mapGetters} from "vuex";
 import SlideMixin from "@/components/mixins/SlideMixin";
+// import {pickerColors} from "@/data/consts";
 
 export default {
   name: "WorkArea",
@@ -94,15 +95,20 @@ export default {
           const payload = mutation.payload;
           const canvas = this.activeSlide.canvas;
           canvas.discardActiveObject();
+          let stroke = '';
           if (payload.isShape) {
-            canvas.setActiveObject(payload._child);
+            const _child = payload._child;
+            canvas.setActiveObject(_child);
+            stroke = _child.stroke;
           } else {
             canvas.forEachObject(function(object) {
               if (object.id === payload._child.id) {
                 canvas.setActiveObject(object);
+                stroke = object.stroke;
               }
             });
           }
+          this.setActiveColor(stroke);
           setTimeout(() => {
             canvas.renderAll();
           }, 30);
@@ -112,6 +118,7 @@ export default {
           const canvas = this.activeSlide.canvas;
           canvas.discardActiveObject();
           canvas.renderAll();
+          // this.setActiveColor('auto');
         }
       } else if (mutation.type === 'REMOVE_CASE_CHILD') {
         if (this.activeSlide && this.activeSlide.canvas) {
@@ -122,6 +129,24 @@ export default {
             }
           });
           canvas.renderAll();
+        }
+      } else if (mutation.type === 'SET_ACTIVE_COLOR') {
+        const activeColor = mutation.payload;
+        if ((activeColor !== 'auto') && this.activeSlide && this.activeSlide.canvas) {
+          const canvas = this.activeSlide.canvas;
+          const shape = canvas.getActiveObject();
+          if (shape) {
+            const stroke = `#${activeColor.replace(/#/g, '')}`;
+            this.changeCaseElemFields({
+              id: shape.id,
+              stroke: stroke
+            }).then(() => {
+              setTimeout(() => {
+                shape.set('stroke', stroke);
+                canvas.renderAll();
+              }, 50);
+            });
+          }
         }
       }
     });

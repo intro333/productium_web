@@ -3,6 +3,7 @@ import {SlideModel} from "@/models/case-tracker/SlideModel";
 import {SlideList} from "@/models/case-tracker/SlideList";
 import {CaseModel} from "@/models/case-tracker/CaseModel";
 import {ShapeModel} from "@/models/case-tracker/ShapeModel";
+import {pickerColors} from "@/data/consts";
 
 export const mockProjects = [
   new ProjectModel({
@@ -102,7 +103,7 @@ export const mockCases = [
         top: 300,
         left: 200,
         fill: 'transparent',
-        stroke: 'red',
+        stroke: pickerColors.red,
         strokeWidth: 2
       }),
     ],
@@ -125,7 +126,7 @@ export const mockCases = [
         top: 300,
         left: 200,
         fill: 'transparent',
-        stroke: 'red',
+        stroke: pickerColors.red,
         strokeWidth: 2
       }),
       new ShapeModel( 2, 'Rectangle 2', 'rectangle', {
@@ -134,14 +135,14 @@ export const mockCases = [
         top: 300,
         left: 400,
         fill: 'transparent',
-        stroke: 'green',
+        stroke: pickerColors.green,
         strokeWidth: 2,
       }),
       new ShapeModel( 3, 'Ellipse 1', 'ellipse', {
         left: 650,
         top: 320,
         fill: 'transparent',
-        stroke: 'black',
+        stroke: pickerColors.black,
         strokeWidth: 2,
         radius: 50,
         originX: 'left',
@@ -170,14 +171,14 @@ export const mockCases = [
         top: 500,
         left: 300,
         fill: 'transparent',
-        stroke: 'red',
+        stroke: pickerColors.blue,
         strokeWidth: 2,
       }),
       new ShapeModel( 5, 'Ellipse 2', 'ellipse', {
         left: 650,
         top: 320,
         fill: 'transparent',
-        stroke: 'green',
+        stroke: pickerColors.green,
         strokeWidth: 2,
         radius: 100,
         originX: 'left',
@@ -219,14 +220,14 @@ export const mockCases = [
         top: 400,
         left: 300,
         fill: 'transparent',
-        stroke: 'red',
+        stroke: pickerColors.red,
         strokeWidth: 2,
       }),
       new ShapeModel( 7, 'Ellipse 7', 'ellipse', {
         left: 650,
         top: 320,
         fill: 'transparent',
-        stroke: 'green',
+        stroke: pickerColors.yellow,
         strokeWidth: 2,
         radius: 100,
         originX: 'left',
@@ -268,7 +269,7 @@ export const mockCases = [
         top: 100,
         left: 100,
         fill: 'transparent',
-        stroke: 'red',
+        stroke: pickerColors.pink,
         strokeWidth: 2,
       }),
     ],

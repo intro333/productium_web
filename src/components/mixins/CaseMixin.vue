@@ -150,7 +150,8 @@ export default {
                 modalPosition.left,
                 triangle,
                 {
-                  selectOptions: selectOptions[_obj]
+                  selectOptions: selectOptions[_obj],
+                  subject: _obj
                 },
                 i)
             .more({

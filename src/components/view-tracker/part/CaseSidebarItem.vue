@@ -35,7 +35,8 @@
                  class="csb-cases-item-text csb-cases-item-input text-ellipsis">
         </div>
       </div>
-      <div v-if="isShowCaseOptions || (contextMenu.state && contextMenu.cKey === cKey)"
+      <div v-if="isShowCaseOptions || (contextMenu.state && contextMenu.cKey === cKey &&
+      (contextMenu.body) && contextMenu.body.subject === '_case')"
            @click="openCaseOptionsMenu(167, 'caseOptionsRef_' + cKey,
               caseRef(_case, cKey), _case, '_case', 'up', true, false, cKey)"
            :ref="'caseOptionsRef_' + cKey"

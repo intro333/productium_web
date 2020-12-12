@@ -3,10 +3,12 @@ import {mockCaseComments, mockCases, mockProjects, mockSlideLists, mockSlides} f
 
 const state = {
     projects: [],
+    activeColor: 'auto'
 };
 
 const getters = {
     getProjects: state => state.projects,
+    getActiveColor: state => state.activeColor,
 };
 
 const actions = {
@@ -46,6 +48,14 @@ const actions = {
     pushProject({commit}) {
         commit('PUSH_PROJECT', {});
     },
+    /*  */
+    setActiveColor({commit}, color) {
+        console.log(9, color);
+        if (color && color !== '') {
+            // TODO Можно ещё поставить проверку, есть ли этот увет в массиве pickerColors (через Object.keys)
+            commit('SET_ACTIVE_COLOR', color);
+        }
+    }
 };
 
 const mutations = {
@@ -63,6 +73,7 @@ const mutations = {
         }
     },
     PUSH_PROJECT(state, _project) { state.projects.push(_project); },
+    SET_ACTIVE_COLOR(state, color) { state.activeColor = color.replace(/#/g, ''); },
 };
 
 export default {

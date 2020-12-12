@@ -1,3 +1,5 @@
+import {generateColorFromPicker} from "@/functions/conversation";
+
 export class ShapeModel {
   id = 0;
   title = 'Задача 1';
@@ -17,7 +19,6 @@ export class ShapeModel {
         left: 0,
         top: 0,
         fill: 'transparent',
-        stroke: '#00a6ed',
         strokeWidth: 2,
         width: 0,
         height: 0,
@@ -30,7 +31,6 @@ export class ShapeModel {
         left: 0,
         top: 0,
         fill: 'transparent',
-        stroke: '#00a6ed',
         strokeWidth: 2,
         radius: 0,
         originX: 'left',
@@ -40,6 +40,10 @@ export class ShapeModel {
         angle: 0,
         lockRotation: true,
       }
+    }
+    if (params.stroke) {
+      params.stroke = (params.stroke === 'auto') ? `#${generateColorFromPicker()}` :
+        `#${params.stroke.replace(/#/g, '')}`;
     }
     this.params = Object.assign(this.params, params);
   }
