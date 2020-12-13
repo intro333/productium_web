@@ -26,7 +26,8 @@ export default {
   mixins: [CommonMixin],
   props: ['contextMenu'],
   data: () => ({
-    scalePercent: 100
+    scalePercent: 100,
+    doActionBeforeDestroy: true,
   }),
   mounted() {
     this.scalePercent = (this.activeSlideZoom && this.activeSlideZoom.z) ?
@@ -34,6 +35,9 @@ export default {
     this.keyUpEnterEscEvent(() => { this.enterScalePercent() }, () => {  });
   },
   beforeDestroy() {
+    if (this.doActionBeforeDestroy) {
+      this.enterScalePercent();
+    }
     this.keyUpEnterEscEventRemove();
   },
   components: {
@@ -82,6 +86,7 @@ export default {
               z: 1,
               updateCanvas: true
             });
+            this.doActionBeforeDestroy = false;
           }
         },
         {
@@ -101,6 +106,7 @@ export default {
       ]
     },
     zoomIn(step) {
+      this.doActionBeforeDestroy = false;
       if (this.activeSlide && this.activeSlide.zoom) {
         const zoom = this.activeSlide.zoom;
         const newZoom = zoom.z + step;
@@ -115,6 +121,7 @@ export default {
       }
     },
     zoomOut(step) {
+      this.doActionBeforeDestroy = false;
       if (this.activeSlide && this.activeSlide.zoom) {
         const zoom = this.activeSlide.zoom;
         const newZoom = zoom.z - step;

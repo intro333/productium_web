@@ -219,7 +219,6 @@ const actions = {
     }
   },
   changeSlideZoom({commit}, payload) {
-    console.log(5, payload.z);
     commit('CHANGE_SLIDE_ZOOM', payload);
   },
 };

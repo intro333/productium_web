@@ -101,6 +101,15 @@
           &-first {
             margin-right: 4px;
           }
+          &-into-content {
+            &.active {
+              content: url(../img/case-tracker/toolbar_panel/superTool.svg);
+            }
+            &.not-active {
+              opacity: 1 !important;
+              content: url(../img/case-tracker/toolbar_panel/superToolNotActive.svg);
+            }
+          }
         }
         &-user-i {
           @include w-icon-user();

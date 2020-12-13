@@ -77,8 +77,8 @@
              ref="superToolRef"
              class="tp-icon-box tp-icon-box-4"
              :class="{active: activeTool === 'superTool'}">
-          <img src="@/assets/img/case-tracker/toolbar_panel/superTool.svg"
-               class="tp-icon-item tp-icon-img"
+          <img class="tp-icon-item tp-icon-img tp-icon-img-into-content"
+               :class="{active: activeTool === 'superTool', 'not-active': activeTool !== 'superTool'}"
                alt="">
         </div>
         <div @mouseenter="showTooltip($event, 'handToolRef','Hand Tool')"

@@ -190,11 +190,23 @@ export default {
             } else if (_this.moveMode) {
               const activeObject = slide.canvas.getActiveObject();
               const activeObjects = slide.canvas.getActiveObjects();
-              if (activeObjects && activeObjects.length > 1) {
-                slide.canvas.discardActiveObject();
+              if (activeObjects) {
+                if (activeObjects.length > 1) {
+                  slide.canvas.discardActiveObject();
+                } else if (activeObjects.length === 1) {
+                  if (!_this.selectedCase.isOpen) { /* Если выделили фигуру и кейс закрыт, то нужно развернуть */
+                    _this.openCase();
+                  }
+                  _this.selectCaseChild({
+                    _case: _this.selectedCase,
+                    _child: activeObject,
+                    isShape: true
+                  });
+                }
               }
               const setObjFields = (obj, objType) => {
                 if (obj.lineCoords) {
+                  console.log(1, obj)
                   const tl = obj.lineCoords.tl;
                   let fields = {
                     id: obj.id,
@@ -382,6 +394,13 @@ export default {
             opt.e.preventDefault();
             opt.e.stopPropagation();
           }); /* MOUSE WHEEL END */
+          // slide.canvas.on('mouse:over', function(e) {
+          //   const obj = e.target;
+          //   if (obj && obj.type !== 'image') {
+          //
+          //   }
+          //   slide.canvas.renderAll();
+          // });
           slide.canvas.on('object:scaling', function(e) {
             _this.objIsScaling = true;
             const shape = e.target;
