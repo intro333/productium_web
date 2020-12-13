@@ -4,8 +4,10 @@ import router from './router';
 import store from './store';
 import device from "vue-device-detector";
 import { fabric } from 'fabric';
+import VueTheMask from 'vue-the-mask';
 
 Vue.config.productionTip = false;
+Vue.use(VueTheMask);
 Vue.use(device);
 Vue.use(fabric);
 

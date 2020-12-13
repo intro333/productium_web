@@ -166,7 +166,7 @@ export default {
     },
     zoomPercent() {
       if (this.activeSlide && this.activeSlide.zoom) {
-        return Math.ceil(this.activeSlide.zoom.z * 100);
+        return Math.round(this.activeSlide.zoom.z * 100);
       }
       return 100;
     }

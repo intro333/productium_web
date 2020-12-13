@@ -219,7 +219,7 @@ const actions = {
     }
   },
   changeSlideZoom({commit}, payload) {
-    console.log(5, payload.z)
+    console.log(5, payload.z);
     commit('CHANGE_SLIDE_ZOOM', payload);
   },
 };
@@ -279,6 +279,7 @@ const mutations = {
   SET_ACTIVE_SHAPE_TOOL(state, _activeShapeTool) { state.activeShapeTool = _activeShapeTool; },
   SET_CANVAS_INFO(state, info) { state.canvasInfo = info; },
   CHANGE_SLIDE_ZOOM(state, payload) {
+    payload.z = parseFloat(payload.z.toFixed(2));
     state.activeSlide.zoom = payload;
   },
 };
