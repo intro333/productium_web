@@ -283,11 +283,13 @@ const mutations = {
   },
   CHANGE_CASE_ELEM_FIELDS(state, payload) {
     const fields = payload.fields;
+    console.log(2, fields)
     payload.foundCase.children.forEach(_child => {
       if (_child.id === fields.id) {
         Object.keys(fields).forEach(field => {
           if (field !== 'id') {
             _child.params[field] = fields[field];
+            // console.log(3, fields[field])
           }
         });
       }

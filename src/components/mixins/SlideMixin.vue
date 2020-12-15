@@ -206,12 +206,12 @@ export default {
               }
               const setObjFields = (obj, objType) => {
                 if (obj.lineCoords) {
-                  console.log(1, obj)
-                  const tl = obj.lineCoords.tl;
+                  console.log(1, obj.left)
+                  // const tl = obj.lineCoords.tl;
                   let fields = {
                     id: obj.id,
-                    left: tl.x,
-                    top: tl.y,
+                    left: obj.left /* tl.x */,
+                    top: obj.top /* tl.y */,
                     originX: activeObject.originX,
                     originY: activeObject.originY,
                   };
