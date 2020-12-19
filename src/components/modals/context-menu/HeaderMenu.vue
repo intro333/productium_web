@@ -20,7 +20,7 @@
 
 <script>
 import ContextMenuItem from "@/components/includes/ContextMenuItem";
-import {mapActions} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 
 export default {
   name: "HeaderMenu",
@@ -34,10 +34,14 @@ export default {
   computed: {
     cm() {
       return this.contextMenu();
-    }
+    },
+    activeSlide() {
+      return this.getActiveSlide();
+    },
   },
   methods: {
-    ...mapActions(['pushSlide', 'pushCase']),
+    ...mapActions(['pushSlide', 'pushCase', 'setSlideImg']),
+    ...mapGetters(['getActiveSlide']),
     setSubMenu(subMenu) {
       this.subMenu = subMenu;
     },
@@ -58,16 +62,18 @@ export default {
               isItemOfMenu: true,
               title: 'Создать слайд',
               action: () => {
-                console.log('ACTION Создать слайд');
                 this.pushSlide();
               }
             },
             {
               isItemOfMenu: true,
+              isDisable: !this.activeSlide.img,
               title: 'Создать задачу',
               action: () => {
-                console.log('ACTION Создать задачу');
-                this.pushCase();
+                /* Задачу можно создать только если изображение добавлено */
+                if (this.activeSlide.img) {
+                  this.pushCase();
+                }
               }
             },
             {
@@ -75,10 +81,20 @@ export default {
             },
             {
               isItemOfMenu: true,
+              isFileInput: true,
+              isDisable: !!this.activeSlide.img,
               title: 'Добавить изображение',
-              action: () => {
-                console.log('ACTION Добавить изображение')
-              }
+              action: () => {},
+              fileAction: ($event) => {
+                /* Нельзя добавить более одного изображения */
+                if (!this.activeSlide.img) {
+                  const files = $event.target.files;
+                  if (files && files[0]) {
+                    const file = files[0];
+                    this.setSlideImg(file);
+                  }
+                }
+              },
             },
           ]
         },

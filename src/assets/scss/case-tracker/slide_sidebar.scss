@@ -45,13 +45,16 @@
             height: 49px;
           }
           // Статусы
+          &-empty {
+
+          }
           &-in-work {
 
           }
           &-done {
-            opacity: .3;
+            opacity: .5;
             .sl-b-slide-bg-img {
-              opacity: .8;
+              //opacity: .8;
             }
           }
         }

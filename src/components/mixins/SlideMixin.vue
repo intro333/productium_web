@@ -17,7 +17,6 @@ export default {
   mixins: [CanvasMixin],
   data: () => ({
     slides: [],
-    isSlideImage: false,
     canvasWidth: 0,
     canvasHeight: 0,
     lastClientX: 0,
@@ -480,7 +479,6 @@ export default {
           });
           /* IMAGE HANDLER */
           if (slide && slide.img) {
-            this.isSlideImage = true;
             const slideImg = new Image();
             slideImg.onload = function () {
               let imgLeft = 0;

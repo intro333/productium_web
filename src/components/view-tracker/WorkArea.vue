@@ -10,17 +10,19 @@
            @dragleave="dragleave"
            @drop="drop"
            ref="droppedZoneRef"
-           class="wa-empty"
-           :class="{'wa-empty-is-dropped': fileIsDragOver}">
-        <div class="wa-empty-info-box">
-          <p class="wa-empty-info rgb-black-50">перетащите файл сюда, или <span class="wa-empty-info-link"
-          >выберите файл</span></p>
+           class="wa-empty">
+        <div class="wa-empty-info-box"
+             :class="{'wa-empty-is-dropped': fileIsDragOver}">
+          <div style="position: relative">
+            <p class="wa-empty-info rgb-black-50">перетащите файл сюда, или <span class="wa-empty-info-link"
+            >выберите файл</span></p>
+            <input ref="inputFileRef"
+                   accept="image/png,image/jpeg,image/jpg,image/svg"
+                   @change="uploadImageToCanvasBg"
+                   type="file"
+                   class="wa-empty-info-input">
+          </div>
           <p class="wa-empty-info-more rgb-black-50">jpg, jpeg, png, svg</p>
-          <input ref="inputFileRef"
-                 accept="image/png,image/jpeg,image/jpg,image/svg"
-                 @change="uploadImageToCanvasBg"
-                 type="file"
-                 class="wa-empty-info-input">
         </div>
       </div>
       <div v-if="activeSlide.img"
@@ -50,7 +52,6 @@ export default {
   mixins: [SlideMixin, CommonMixin],
   data: () => ({
     fileIsDragOver: false,
-    filename: '',
     // For resize
     rTime: 0,
     timeout: false,
@@ -224,8 +225,6 @@ export default {
     setFile(files) {
       if (files && files[0]) {
         const file = files[0];
-        this.isSlideImage = true;
-        this.filename = file.name;
         this.setSlideImg(file);
       }
     },

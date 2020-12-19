@@ -69,7 +69,11 @@ export default {
           .length;
     },
     slideState() {
-      return this.slideIsWork ? 'in-work' : 'done';
+      if (this.slideCases.length) {
+        return this.slideIsWork ? 'in-work' : 'done';
+      } else {
+        return 'empty';
+      }
     },
   },
   methods: {
