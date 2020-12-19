@@ -41,11 +41,13 @@
 <script>
 import {mapActions, mapGetters} from "vuex";
 import SlideMixin from "@/components/mixins/SlideMixin";
+import CommonMixin from "@/components/mixins/CommonMixin";
+// import {fabric} from "fabric";
 // import {pickerColors} from "@/data/consts";
 
 export default {
   name: "WorkArea",
-  mixins: [SlideMixin],
+  mixins: [SlideMixin, CommonMixin],
   data: () => ({
     fileIsDragOver: false,
     filename: '',
@@ -54,10 +56,17 @@ export default {
     timeout: false,
     delta: 50,
   }),
-  created() {
-
-  },
   mounted() {
+    // this.keyUpCtrlEvent(() => {
+    //   if (this.zoomOffsetX !== undefined) {
+    //     this.changeSlideZoom({
+    //       offsetX: this.zoomOffsetX,
+    //       offsetY: this.zoomOffsetY,
+    //       z: this.zoomZ,
+    //       updateCanvas: false
+    //     });
+    //   }
+    // });
     this.selectSlideUnsubscribe = this.$store.subscribe((mutation) => {
       if (mutation.type === 'SELECT_SLIDE') {
         if (mutation.payload) {
@@ -152,8 +161,19 @@ export default {
         if (this.activeSlide && this.activeSlide.canvas) {
           const zoom = mutation.payload;
           if (zoom.updateCanvas) {
-            const canvas = this.activeSlide.canvas;
-            canvas.zoomToPoint({ x: zoom.offsetX, y: zoom.offsetY }, zoom.z);
+            this.setCanvasWithClear(this.activeSlide);
+            setTimeout(() => {
+              this.clearCaseChildrenFromCanvas(this.activeSlide);
+              if (this.selectedCase.children && this.selectedCase.children.length) {
+                setTimeout(() => {
+                  this.setCaseChildrenOnCanvas(this.activeSlide, this.selectedCase);
+                }, 50);
+              }
+            }, 150);
+            // const canvas = this.activeSlide.canvas;
+            // let delta = new fabric.Point(this.activeSlide.lastClientX, this.activeSlide.lastClientY);
+            // this.activeSlide.canvas.relativePan(delta);
+            // canvas.zoomToPoint({ x: zoom.offsetX, y: zoom.offsetY }, zoom.z);
           }
         }
       }
@@ -174,6 +194,7 @@ export default {
     }
     window.removeEventListener('drop', this.uploadImageToCanvasBg);
     window.removeEventListener('resize', this.browserResize);
+    // this.keyUpEnterEscEventRemove();
   },
   computed: {
 

@@ -80,12 +80,16 @@ export default {
           isItemOfMenu: true,
           title: 'Показать весь рабочий стол',
           action: () => {
-            this.changeSlideZoom({
-              offsetX: 0,
-              offsetY: 0,
-              z: 1,
-              updateCanvas: true
-            });
+            if (this.activeSlide && this.activeSlide.canvas) {
+              this.activeSlide.lastClientX = 0;
+              this.activeSlide.lastClientY = 0;
+              this.changeSlideZoom({
+                offsetX: 0,
+                offsetY: 0,
+                z: 1,
+                updateCanvas: true
+              });
+            }
             this.doActionBeforeDestroy = false;
           }
         },
@@ -105,10 +109,11 @@ export default {
         },
       ]
     },
-    zoomIn(step) {
+    zoomIn(step) { /* Увеличить */
       this.doActionBeforeDestroy = false;
       if (this.activeSlide && this.activeSlide.zoom) {
         const zoom = this.activeSlide.zoom;
+        console.log(7, zoom);
         const newZoom = zoom.z + step;
         if (newZoom <= zoomConst.maxZoomIn) {
           this.changeSlideZoom({
@@ -120,7 +125,7 @@ export default {
         }
       }
     },
-    zoomOut(step) {
+    zoomOut(step) { /* Уменьшить */
       this.doActionBeforeDestroy = false;
       if (this.activeSlide && this.activeSlide.zoom) {
         const zoom = this.activeSlide.zoom;

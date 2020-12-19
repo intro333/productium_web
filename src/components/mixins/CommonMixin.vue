@@ -3,24 +3,37 @@ export default {
   name: "CommonMixin",
   data() {
     return {
-      EventListenerObj: null
+      EventListenerEnterEsc: null,
+      EventListenerCtrl: null,
     }
   },
   methods: {
     keyUpEnterEscEvent(enter, esc) {
-      const EventListenerObj = this.EventListenerObj = (event) => {
+      const EventListenerEnterEsc = this.EventListenerEnterEsc = (event) => {
         if (event.code === 'Enter' || event.code === 'NumpadEnter') {
           enter();
         } else if (event.code === 'Escape') {
           esc();
         }
-      }
-      document.addEventListener('keyup', EventListenerObj, true);
+      };
+      document.addEventListener('keyup', EventListenerEnterEsc, true);
     },
     keyUpEnterEscEventRemove() {
-      document.removeEventListener('keyup', this.EventListenerObj, true);
-      this.EventListenerObj = null;
-    }
+      document.removeEventListener('keyup', this.EventListenerEnterEsc, true);
+      this.EventListenerEnterEsc = null;
+    },
+    keyUpCtrlEvent(ctrl) {
+      const EventListenerCtrl = this.EventListenerCtrl = (event) => {
+        if (event.code === 'ControlLeft' || event.code === 'ControlRight') {
+          ctrl();
+        }
+      };
+      document.addEventListener('keyup', EventListenerCtrl, true);
+    },
+    keyUpCtrlEventRemove() {
+      document.removeEventListener('keyup', this.EventListenerCtrl, true);
+      this.EventListenerCtrl = null;
+    },
   },
 }
 </script>

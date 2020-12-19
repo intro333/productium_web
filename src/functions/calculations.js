@@ -37,3 +37,21 @@ export function getCirclePerimeter(width, height) {
       (height * 2)
     ) / 8) );
 }
+export function getOffsetByZoom(z, offset) {
+  if (z > 1) {
+    return offset * z;
+  } else if(z < 1) {
+    return offset / z;
+  } else {
+    return offset;
+  }
+}
+export function getObjectOffsetByZoom(z, offset) {
+  if (z > 1) {
+    return offset / z;
+  } else if(z < 1) {
+    return offset * z;
+  } else {
+    return offset;
+  }
+}

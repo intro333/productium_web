@@ -5,6 +5,8 @@ import {fabric} from "fabric";
 import CanvasMixin from "@/components/mixins/CanvasMixin";
 import {ShapeModel} from "@/models/case-tracker/ShapeModel";
 import {zoomConst} from "@/data/consts";
+// import {getObjectOffsetByZoom, getOffsetByZoom} from "@/functions/calculations";
+// import {getOffsetByZoom} from "@/functions/calculations";
 // import {pickerColors} from "@/data/consts";
 
 const STATE_IDLE = 'idle';
@@ -25,7 +27,10 @@ export default {
     drawX: 0,
     drawY: 0,
     newShapeObj: null,
-    objIsScaling: false
+    objIsScaling: false,
+    zoomOffsetX: 0,
+    zoomOffsetY: 0,
+    zoomZ: 0,
   }),
   created() {
     this.slideUnsubscribe = this.$store.subscribe((mutation) => {
@@ -135,7 +140,10 @@ export default {
             preserveObjectStacking: true // Не менять позицию объектов при нажатии на них (чтобы картинка не уходила на первый план)
           });
           if (slide.zoom && slide.zoom.z) {
-            slide.canvas.zoomToPoint({x: slide.zoom.offsetX, y: slide.zoom.offsetY}, slide.zoom.z);
+            // slide.canvas.zoomToPoint({x: slide.zoom.offsetX, y: slide.zoom.offsetY}, slide.zoom.z);
+            slide.canvas.zoomToPoint({x: slide.canvasWidth / 2, y: slide.canvasHeight / 2}, slide.zoom.z);
+            let delta = new fabric.Point(slide.lastClientX, slide.lastClientY);
+            slide.canvas.relativePan(delta);
           }
           /* CANVAS HANDLERS */
           slide.canvas.on('mouse:down', function(e) { /* MOUSE DOWN */
@@ -170,21 +178,32 @@ export default {
               _this.panState = STATE_IDLE;
               const clX = slide.panLeftMouseUpPoint = e.e.clientX;
               const clY = slide.panTopMouseUpPoint = e.e.clientY;
+              // const z = slide.zoom.z;
               slide.isLeftDirection = slide.panLeftMouseDownPoint > clX; /* Мышку потянули влево или вправо */
               slide.isTopDirection = slide.panTopMouseDownPoint > clY; /* Мышку потянули вверх или вниз */
               const offsetLeft = slide.isLeftDirection ? slide.panLeftMouseDownPoint - clX : clX - slide.panLeftMouseDownPoint;
               const offsetTop = slide.isTopDirection ? slide.panTopMouseDownPoint - clY : clY - slide.panTopMouseDownPoint;
-              slide.imgLeft = slide.isLeftDirection ? (slide.imgLeft - offsetLeft) : (slide.imgLeft + offsetLeft);
-              slide.imgTop = slide.isTopDirection ? (slide.imgTop - offsetTop) : (slide.imgTop + offsetTop);
-              if (_this.activeSlideList) {
-                _this.changeCasesParamsByOffset({
-                  offsetLeft,
-                  offsetTop,
-                  isLeftDirection: slide.isLeftDirection,
-                  isTopDirection: slide.isTopDirection,
-                  activeSlideList: _this.activeSlideList
-                });
-              }
+              // console.log(1, offsetLeft);
+              // const imgOldLeft = getObjectOffsetByZoom(z, slide.imgLeft);
+              // console.log(2, imgOldLeft);
+              // const imgOldTop = getObjectOffsetByZoom(z, slide.imgTop);
+              // slide.imgLeft = slide.isLeftDirection ? getOffsetByZoom(z, imgOldLeft - offsetLeft) : getOffsetByZoom(z, imgOldLeft + offsetLeft);
+              // console.log(3, slide.imgLeft);
+              // slide.imgTop = slide.isTopDirection ? getOffsetByZoom(z, imgOldTop - offsetTop) : getOffsetByZoom(z, imgOldTop + offsetTop);
+              // if (_this.activeSlideList) {
+              //   _this.changeCasesParamsByOffset({
+              //     offsetLeft,
+              //     offsetTop,
+              //     isLeftDirection: slide.isLeftDirection,
+              //     isTopDirection: slide.isTopDirection,
+              //     activeSlideList: _this.activeSlideList,
+              //     z
+              //   });
+              // }
+
+              slide.lastClientX = slide.isLeftDirection ? (slide.lastClientX - offsetLeft) : (slide.lastClientX + offsetLeft);
+              slide.lastClientY = slide.isTopDirection ? (slide.lastClientY - offsetTop) : (slide.lastClientY + offsetTop);
+
               _this.lastClientX = 0;
               _this.lastClientY = 0;
             } else if (_this.moveMode) {
@@ -206,7 +225,6 @@ export default {
               }
               const setObjFields = (obj, objType) => {
                 if (obj.lineCoords) {
-                  console.log(1, obj.left)
                   // const tl = obj.lineCoords.tl;
                   let fields = {
                     id: obj.id,
@@ -293,21 +311,23 @@ export default {
                 }, 30);
               }
             }
+
           }); /* MOUSE UP END */
           slide.canvas.on('mouse:move', function(e) { /* MOUSE MOVE */
             if (_this.dragMode) {
               if ((_this.panState === STATE_PANNING) && e && e.e) {
+                const eClientX = e.e.clientX;
+                const eClientY = e.e.clientY;
                 let deltaX = 0;
                 let deltaY = 0;
                 if (_this.lastClientX) {
-                  deltaX = e.e.clientX - _this.lastClientX;
+                  deltaX = eClientX - _this.lastClientX;
                 }
                 if (_this.lastClientY) {
-                  deltaY = e.e.clientY - _this.lastClientY;
+                  deltaY = eClientY - _this.lastClientY;
                 }
-                _this.lastClientX = e.e.clientX;
-                _this.lastClientY = e.e.clientY;
-
+                _this.lastClientX = eClientX;
+                _this.lastClientY = eClientY;
                 let delta = new fabric.Point(deltaX, deltaY);
                 slide.canvas.relativePan(delta);
               }
@@ -378,19 +398,27 @@ export default {
             }
           }); /* MOUSE MOVE END */
           slide.canvas.on('mouse:wheel', function(opt) { /* MOUSE WHEEL */
-            let delta = opt.e.deltaY;
-            let zoom = slide.canvas.getZoom();
-            zoom *= 0.999 ** delta;
-            if (zoom > zoomConst.maxZoomIn) zoom = zoomConst.maxZoomIn;
-            if (zoom < zoomConst.minZoomOut) zoom = zoomConst.minZoomOut;
-            const offsetX = opt.e.offsetX, offsetY = opt.e.offsetY;
-            slide.canvas.zoomToPoint({ x: offsetX, y: offsetY }, zoom);
-            _this.changeSlideZoom({
-              offsetX: offsetX,
-              offsetY: offsetY,
-              z: zoom,
-              updateCanvas: false
-            });
+            if (opt.e.ctrlKey) {
+              let delta = opt.e.deltaY;
+              let zoom = slide.canvas.getZoom();
+              zoom *= 0.999 ** delta;
+              if (zoom > zoomConst.maxZoomIn) zoom = zoomConst.maxZoomIn;
+              if (zoom < zoomConst.minZoomOut) zoom = zoomConst.minZoomOut;
+              const offsetX = opt.e.offsetX, offsetY = opt.e.offsetY;
+              _this.zoomOffsetX = offsetX;
+              _this.zoomOffsetY = offsetY;
+              _this.zoomZ = zoom;
+              slide.canvas.zoomToPoint({ x: slide.canvasWidth / 2, y: slide.canvasHeight / 2 }, zoom);
+              // slide.canvas.zoomToPoint({ x: offsetX, y: offsetY }, zoom);
+              // slide.lastClientX = offsetX;
+              // slide.lastClientY = offsetY;
+              _this.changeSlideZoom({
+                offsetX: offsetX,
+                offsetY: offsetY,
+                z: zoom,
+                updateCanvas: false
+              });
+            }
             opt.e.preventDefault();
             opt.e.stopPropagation();
           }); /* MOUSE WHEEL END */

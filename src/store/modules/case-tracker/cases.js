@@ -1,6 +1,6 @@
 import {CaseModel} from "@/models/case-tracker/CaseModel";
 import router from "@/router";
-import {getRandomInt} from "@/functions/calculations";
+import {getObjectOffsetByZoom, getOffsetByZoom, getRandomInt} from "@/functions/calculations";
 import {CentralModalModel} from "@/models/modals/CentralModalModel";
 import {mockCases, mockCaseComments} from "@/data/testData";
 
@@ -266,15 +266,19 @@ const mutations = {
     state.casesComments = comments;
   },
   CHANGE_CASES_PARAMS_BY_OFFSET(state, payload) {
+    const z = payload.z;
     state.cases = state.cases.map(_c => {
       if (_c.caseStatus !== 'archived' &&
         _c.slideListId === payload.activeSlideList.id) {
         if (_c.children && _c.children.length) {
           _c.children.forEach(_ch => {
-            const childOldLeft = _ch.params.left;
-            const childOldTop = _ch.params.top;
-            _ch.params.left = payload.isLeftDirection ? (childOldLeft - payload.offsetLeft) : (childOldLeft + payload.offsetLeft);
-            _ch.params.top = payload.isTopDirection ? (childOldTop - payload.offsetTop) : (childOldTop + payload.offsetTop);
+            const childOldLeft = getObjectOffsetByZoom(z, _ch.params.left);
+            const childOldTop = getObjectOffsetByZoom(z, _ch.params.top);
+            // console.log(1, childOldLeft)
+            // console.log(3, payload.offsetLeft)
+            _ch.params.left = payload.isLeftDirection ? getOffsetByZoom(z, childOldLeft - payload.offsetLeft) : getOffsetByZoom(z, childOldLeft + payload.offsetLeft);
+            _ch.params.top = payload.isTopDirection ? getOffsetByZoom(z, childOldTop - payload.offsetTop) : getOffsetByZoom(z, childOldTop + payload.offsetTop);
+            console.log('-----------------------')
           });
         }
       }

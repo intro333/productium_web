@@ -29,7 +29,9 @@ export const mockSlides = [
     projectId: 1,
     order: 0,
     img: true,
-    imgUrl: '/test-img/android-sdk.png'
+    imgUrl: '/test-img/android-sdk.png',
+    imgLeft: -20,
+    imgTop: 259,
   }),
   new SlideModel({
     id: 2,
@@ -37,7 +39,9 @@ export const mockSlides = [
     projectId: 1,
     order: 1,
     img: true,
-    imgUrl: '/test-img/import-error.png'
+    imgUrl: '/test-img/import-error.png',
+    imgLeft: 5,
+    imgTop: 5,
   }),
   new SlideModel({
     id: 3,
@@ -45,7 +49,9 @@ export const mockSlides = [
     projectId: 1,
     order: 2,
     img: true,
-    imgUrl: '/test-img/no-env.png'
+    imgUrl: '/test-img/no-env.png',
+    imgLeft: 200,
+    imgTop: 10,
   }),
   new SlideModel({
     id: 4,
@@ -53,14 +59,18 @@ export const mockSlides = [
     projectId: 1,
     order: 3,
     img: true,
-    imgUrl: '/test-img/spot-error.png'
+    imgUrl: '/test-img/spot-error.png',
+    imgLeft: 20,
+    imgTop: 10,
   }),
   new SlideModel({
     id: 5,
     slideState: 'archived',
     projectId: 2,
     order: 0,
-    img: null
+    img: null,
+    imgLeft: null,
+    imgTop: null,
   }),
 ];
 export const mockSlideLists = [
@@ -100,7 +110,7 @@ export const mockCases = [
       new ShapeModel( 1, 'Rectangle 1', 'rectangle', {
         width: 100,
         height: 100,
-        top: 300,
+        top: 220,
         left: 200,
         fill: 'transparent',
         stroke: pickerColors.red,
@@ -120,24 +130,24 @@ export const mockCases = [
     discus: '',
     resolut: '',
     children: [
-      new ShapeModel( 1, 'Rectangle 1', 'rectangle', {
-        width: 100,
-        height: 100,
-        top: 300,
-        left: 200,
-        fill: 'transparent',
-        stroke: pickerColors.red,
-        strokeWidth: 2
-      }),
-      new ShapeModel( 2, 'Rectangle 2', 'rectangle', {
-        width: 150,
-        height: 150,
-        top: 300,
-        left: 400,
-        fill: 'transparent',
-        stroke: pickerColors.green,
-        strokeWidth: 2,
-      }),
+      // new ShapeModel( 1, 'Rectangle 1', 'rectangle', {
+      //   width: 100,
+      //   height: 100,
+      //   top: 300,
+      //   left: 200,
+      //   fill: 'transparent',
+      //   stroke: pickerColors.red,
+      //   strokeWidth: 2
+      // }),
+      // new ShapeModel( 2, 'Rectangle 2', 'rectangle', {
+      //   width: 150,
+      //   height: 150,
+      //   top: 300,
+      //   left: 400,
+      //   fill: 'transparent',
+      //   stroke: pickerColors.green,
+      //   strokeWidth: 2,
+      // }),
       new ShapeModel( 3, 'Ellipse 1', 'ellipse', {
         left: 650,
         top: 320,
@@ -165,28 +175,28 @@ export const mockCases = [
     discus: '',
     resolut: '',
     children: [
-      new ShapeModel( 4, 'Rectangle 4', 'rectangle', {
-        width: 250,
-        height: 100,
-        top: 500,
-        left: 300,
-        fill: 'transparent',
-        stroke: pickerColors.blue,
-        strokeWidth: 2,
-      }),
-      new ShapeModel( 5, 'Ellipse 2', 'ellipse', {
-        left: 650,
-        top: 320,
-        fill: 'transparent',
-        stroke: pickerColors.green,
-        strokeWidth: 2,
-        radius: 100,
-        originX: 'left',
-        originY: 'top',
-        rx: 250,
-        ry: 100,
-        angle: 0,
-      }),
+      // new ShapeModel( 4, 'Rectangle 4', 'rectangle', {
+      //   width: 250,
+      //   height: 100,
+      //   top: 500,
+      //   left: 300,
+      //   fill: 'transparent',
+      //   stroke: pickerColors.blue,
+      //   strokeWidth: 2,
+      // }),
+      // new ShapeModel( 5, 'Ellipse 2', 'ellipse', {
+      //   left: 650,
+      //   top: 320,
+      //   fill: 'transparent',
+      //   stroke: pickerColors.green,
+      //   strokeWidth: 2,
+      //   radius: 100,
+      //   originX: 'left',
+      //   originY: 'top',
+      //   rx: 250,
+      //   ry: 100,
+      //   angle: 0,
+      // }),
     ],
     order: 2,
   }),

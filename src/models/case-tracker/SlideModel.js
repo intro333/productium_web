@@ -10,8 +10,10 @@ export class SlideModel {
   isSelected = false;
   canvasWidth = 0;
   canvasHeight = 0;
-  imgLeft = 0;
-  imgTop = 0;
+  imgLeft = null;
+  imgTop = null;
+  lastClientX = 0;
+  lastClientY = 0;
   isLeftDirection = null;
   isTopDirection = null;
   panLeftMouseDownPoint = 0;
@@ -30,5 +32,7 @@ export class SlideModel {
     this.order = _slide.order;
     this.img = _slide.img;
     this.imgUrl = _slide.imgUrl;
+    this.imgLeft = _slide.imgLeft;
+    this.imgTop = _slide.imgTop;
   }
 }
