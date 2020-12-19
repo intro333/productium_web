@@ -10,7 +10,7 @@ const state = {
   slideLists: [],
   activeSlide: null,
   activeSlideList: null,
-  activeTool: 'moveTool', /* moveTool | textTool | shapeTool | superTool | handTool */
+  activeTool: 'moveTool', /* moveTool | markerTool | textTool | shapeTool | superTool | handTool */
   activeShapeTool: 'rectangleTool', /* rectangleTool | ellipseTool */
   canvasInfo: {
     canvasWidth: 0,

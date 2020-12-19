@@ -1,5 +1,5 @@
 <script>
-import {slidesOfProjectFilterWithSelect} from "@/functions/case-tracker/projectsF";
+import {getRealColor, slidesOfProjectFilterWithSelect} from "@/functions/case-tracker/projectsF";
 import {mapActions, mapGetters} from "vuex";
 import {fabric} from "fabric";
 import CanvasMixin from "@/components/mixins/CanvasMixin";
@@ -65,6 +65,9 @@ export default {
     },
     moveMode() {
       return this.activeTool === 'moveTool';
+    },
+    markerMode() {
+      return this.activeTool === 'markerTool';
     },
     drawMode() {
       return this.activeTool === 'shapeTool' || this.activeTool === 'superTool';
@@ -136,8 +139,10 @@ export default {
         });
         setTimeout(() => {
           slide.canvas = new fabric.Canvas('canvas', {
-            preserveObjectStacking: true // Не менять позицию объектов при нажатии на них (чтобы картинка не уходила на первый план)
+            preserveObjectStacking: true, // Не менять позицию объектов при нажатии на них (чтобы картинка не уходила на первый план)
+            isDrawingMode: _this.markerMode
           });
+          slide.canvas.freeDrawingBrush.color = getRealColor(_this.activeColor);
           if (slide.zoom && slide.zoom.z) {
             // slide.canvas.zoomToPoint({x: slide.zoom.offsetX, y: slide.zoom.offsetY}, slide.zoom.z);
             slide.canvas.zoomToPoint({x: slide.canvasWidth / 2, y: slide.canvasHeight / 2}, slide.zoom.z);
@@ -170,6 +175,8 @@ export default {
                 _this.clearCaseChildren(_this.selectedCase);
               }
               // _this.setActiveColor('auto');
+            } else if (_this.markerMode) {
+              //
             }
           }); /* MOUSE DOWN END */
           slide.canvas.on('mouse:up', function(e) { /* MOUSE UP */
@@ -308,6 +315,20 @@ export default {
                     });
                   }
                 }, 30);
+              }
+            } else if (_this.markerMode) {
+              const objects = slide.canvas.getObjects();
+              const lastObj = objects.length ? objects[objects.length-1] : null;
+              if (lastObj) {
+                const shape = Object.assign({}, lastObj, {
+                  title: 'Marker 1',
+                  shapeType: 'marker',
+                });
+                _this.addShapeToCase(shape).then((shapeObj) => {
+                  lastObj.set({ id: shapeObj.id});
+                  slide.canvas.renderAll();
+                });
+                // slide.canvas.setActiveObject(lastObj);
               }
             }
           }); /* MOUSE UP END */
@@ -566,6 +587,7 @@ export default {
     panningHandler(slide) {
       if (this.dragMode) {
         slide.canvas.selection = false;
+        this.drawingModeState(slide, false);
         slide.canvas.discardActiveObject();
         slide.canvas.forEachObject(function(object) {
           object.hoverCursor = 'pointer';
@@ -576,6 +598,7 @@ export default {
         });
       } else if (this.drawMode) {
         slide.canvas.selection = true;
+        this.drawingModeState(slide, false);
         slide.canvas.discardActiveObject();
         slide.canvas.forEachObject(function(object) {
           object.hoverCursor = 'crosshair';
@@ -584,8 +607,9 @@ export default {
             object.selectable = false;
           }
         });
-      } else {
+      } else if (this.moveMode) {
         slide.canvas.selection = true;
+        this.drawingModeState(slide, false);
         slide.canvas.forEachObject(function(object) {
           object.hoverCursor = 'default';
           if (object.type !== 'image') {
@@ -593,13 +617,35 @@ export default {
             object.selectable = true;
           }
         });
+      } else if (this.markerMode) {
+        slide.canvas.selection = false;
+        this.drawingModeState(slide, true);
+        slide.canvas.discardActiveObject();
+        slide.canvas.forEachObject(function(object) {
+          object.hoverCursor = 'alias';
+          if (object.type !== 'image') {
+            object.evented = false;
+            object.selectable = false;
+          }
+        });
       }
       slide.canvas.defaultCursor = this.canvasDefaultCursor();
+    },
+    drawingModeState(slide, state) {
+      if (state) {
+        slide.canvas.isDrawingMode = true;
+        slide.canvas.freeDrawingBrush.width = 2;
+        slide.canvas.freeDrawingBrush.color = getRealColor(this.activeColor);
+      } else {
+        slide.canvas.isDrawingMode = false;
+      }
     },
     canvasDefaultCursor() {
       switch (this.activeTool) {
         case 'moveTool':
           return 'default';
+        case 'markerTool':
+          return 'alias';
         case 'handTool':
           return 'pointer';
         case 'shapeTool':

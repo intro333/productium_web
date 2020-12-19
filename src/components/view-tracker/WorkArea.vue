@@ -145,6 +145,7 @@ export default {
         if ((activeColor !== 'auto') && this.activeSlide && this.activeSlide.canvas) {
           const canvas = this.activeSlide.canvas;
           const shape = canvas.getActiveObject();
+          this.panningHandler(this.activeSlide);
           if (shape) {
             const stroke = `#${activeColor.replace(/#/g, '')}`;
             this.changeCaseElemFields({

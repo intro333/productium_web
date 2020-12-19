@@ -25,6 +25,8 @@ export default {
           hasRotatingPoint: false,
           hoverCursor: 'default',
         }, _child.params));
+      } else if (_child.shapeType === 'marker') {
+        //
       }
     }
   },

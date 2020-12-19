@@ -1,4 +1,4 @@
-import {generateColorFromPicker} from "@/functions/conversation";
+import {getRealColor} from "@/functions/case-tracker/projectsF";
 
 export class ShapeModel {
   id = 0;
@@ -44,10 +44,11 @@ export class ShapeModel {
         angle: 0,
         lockRotation: true,
       });
+    } else if (shapeType === 'marker') {
+      //
     }
     if (params.stroke) {
-      params.stroke = (params.stroke === 'auto') ? `#${generateColorFromPicker()}` :
-        `#${params.stroke.replace(/#/g, '')}`;
+      params.stroke = getRealColor(params.stroke);
     }
     this.params = Object.assign(this.params, params);
   }

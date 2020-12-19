@@ -32,12 +32,22 @@
                class="tp-icon-item tp-icon-img"
                alt="">
         </div>
-        <div @mouseenter="showTooltip($event, 'textRef','Текст')"
+<!--        <div @mouseenter="showTooltip($event, 'textRef','Текст')"-->
+<!--             @mouseleave="hideToolTip"-->
+<!--             ref="textRef"-->
+<!--             class="tp-icon-box tp-icon-box-2"-->
+<!--             :class="{active: activeTool === 'textTool'}">-->
+<!--          <img src="@/assets/img/case-tracker/toolbar_panel/text.svg"-->
+<!--               class="tp-icon-item tp-icon-img"-->
+<!--               alt="">-->
+<!--        </div>-->
+        <div @mouseenter="showTooltip($event, 'markerRef','Маркер')"
              @mouseleave="hideToolTip"
-             ref="textRef"
+             @click="selectActiveTool('markerTool')"
+             ref="markerRef"
              class="tp-icon-box tp-icon-box-2"
-             :class="{active: activeTool === 'textTool'}">
-          <img src="@/assets/img/case-tracker/toolbar_panel/text.svg"
+             :class="{active: activeTool === 'markerTool'}">
+          <img src="@/assets/img/case-tracker/toolbar_panel/marker.svg"
                class="tp-icon-item tp-icon-img"
                alt="">
         </div>

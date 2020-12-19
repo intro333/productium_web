@@ -1,3 +1,5 @@
+import {generateColorFromPicker} from "@/functions/conversation";
+
 export function slidesOfProjectFilterWithSelect(_slides, projectId, slideId) {
   return _slides.filter(_s => {
     if (_s.slideState !== 'archived' && _s.projectId === projectId) {
@@ -26,4 +28,9 @@ export function fillCasesCommentsTree(comments) {
       }
     });
   return result;
+}
+
+export function getRealColor(stroke) {
+  return (stroke === 'auto') ? `#${generateColorFromPicker()}` :
+    `#${stroke.replace(/#/g, '')}`;
 }
