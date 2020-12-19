@@ -19,13 +19,13 @@ const getters = {
 const actions = {
   /* CASES */
   fetchCases({commit}) {
-    setTimeout(() => { // TODO Имитация задержки с сервера (УБРАТЬ!)
-      return new Promise((resolve) => {
+    return new Promise((resolve) => {
+      setTimeout(() => { // TODO Имитация задержки с сервера (УБРАТЬ!)
         const data = mockCases;
         commit('SET_CASES', data);
         resolve(data);
-      });
-    }, 200);
+      }, 200);
+    });
   },
   pushCase({commit, dispatch}) {
     return new Promise((resolve) => {
@@ -48,6 +48,7 @@ const actions = {
             order: 0,
           });
           commit('PUSH_CASE', newSCase);
+          commit('SET_ACTIVE_TOOL', 'moveTool');
           setTimeout(() => {
             dispatch('goToSelectedCase', {
               case: newSCase,
@@ -287,7 +288,7 @@ const mutations = {
   },
   CHANGE_CASE_ELEM_FIELDS(state, payload) {
     const fields = payload.fields;
-    console.log(2, fields)
+    // console.log(2, fields)
     payload.foundCase.children.forEach(_child => {
       if (_child.id === fields.id) {
         Object.keys(fields).forEach(field => {

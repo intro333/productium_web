@@ -31,13 +31,13 @@ const getters = {
 const actions = {
   /* SLIDES */
   fetchSlides({commit}) {
-    setTimeout(() => { // TODO Имитация задержки с сервера (УБРАТЬ!)
-      return new Promise((resolve) => {
+    return new Promise((resolve) => {
+      setTimeout(() => { // TODO Имитация задержки с сервера (УБРАТЬ!)
         const data = mockSlides;
         commit('SET_SLIDES', data);
         resolve(data);
-      });
-    }, 200);
+      }, 200);
+    });
   },
   pushSlide({commit, getters, dispatch}) {
     /* TODO Mock */
@@ -167,7 +167,7 @@ const actions = {
               _c.caseStatus !== 'archived');
             if (_case) {
               if (state.activeTool === 'superTool') {
-                state.activeTool = 'moveTool';
+                commit('SET_ACTIVE_TOOL', 'moveTool');
               }
               setTimeout(() => {
                 if (slideIdNotEqual) {
@@ -189,7 +189,7 @@ const actions = {
                   }, 200)
                 }
               }, 20)
-            } else {
+            } else { /* Нет ни одного кейса */
               setTimeout(() => {
                 if (slideIdNotEqual) {
                   router.push({
@@ -203,8 +203,12 @@ const actions = {
                 }
                 if (!payload.isFirstLoad) {
                   setTimeout(() => {
-                    state.activeShapeTool = 'rectangleTool';
-                    state.activeTool = 'superTool';
+                    if (_slide.img) { /* Переключаемся на суперТул только, если добавлено изобр-е */
+                      commit('SET_ACTIVE_SHAPE_TOOL', 'rectangleTool');
+                      commit('SET_ACTIVE_TOOL', 'superTool');
+                    } else { /* Если нет изобр-я, то перекинуть на moveTool */
+                      commit('SET_ACTIVE_TOOL', 'moveTool');
+                    }
                     commit('SELECT_CASE', {
                       case: null,
                       reloadWithSlide: false
@@ -261,16 +265,20 @@ const mutations = {
     if (query && query.slideId) {
       const foundSlide = state.slides
         .find(_s => _s.id === parseInt(query.slideId));
-      if (img) {
-        foundSlide.img = img;
-        const reader = new FileReader();
-        reader.readAsDataURL(img);
-        reader.onload = () => {
-          foundSlide.imgBase64 = reader.result;
-        };
-      } else {
-        foundSlide.img = null;
-        foundSlide.imgBase64 = null;
+      if (foundSlide) {
+        state.activeShapeTool = 'rectangleTool';
+        state.activeTool = 'superTool'; /* При добавлении изобр-я переключаемся на суперТул, чтобы создать кейс */
+        if (img) {
+          foundSlide.img = img;
+          const reader = new FileReader();
+          reader.readAsDataURL(img);
+          reader.onload = () => {
+            foundSlide.imgBase64 = reader.result;
+          };
+        } else {
+          foundSlide.img = null;
+          foundSlide.imgBase64 = null;
+        }
       }
     }
   },

@@ -135,11 +135,17 @@ p {
           &:hover {
             cursor: default;
           }
+          &.disabled {
+            opacity: .6;
+          }
         }
         &-icon {
           width: 18px;
           height: 18px;
           margin-right: 8px;
+          &.disabled {
+            opacity: .6;
+          }
         }
         &-arrow {
           width: 22.63px;

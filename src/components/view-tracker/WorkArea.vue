@@ -177,6 +177,10 @@ export default {
             // canvas.zoomToPoint({ x: zoom.offsetX, y: zoom.offsetY }, zoom.z);
           }
         }
+      } else if (mutation.type === 'SET_ACTIVE_TOOL') {
+        if (this.activeSlide && this.activeSlide.canvas) {
+          this.panningHandler(this.activeSlide);
+        }
       }
     });
     setTimeout(() => {

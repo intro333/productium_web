@@ -266,7 +266,7 @@ export default {
                 }
               }
             } else if (_this.drawMode) {
-              const oldActiveTool = _this.activeTool;
+              const currentActiveTool = _this.activeTool;
               if(_this.drawStarted !== 'stop') {
                 _this.drawStarted = 'stop';
               }
@@ -290,15 +290,15 @@ export default {
                 _this.panningHandler(slide);
                 slide.canvas.renderAll();
                 setTimeout(() => {
-                  if (oldActiveTool === 'superTool') {
+                  if (currentActiveTool === 'superTool') {
                     /* Если супертул, то создаём новый кейс и рисуем прямоугольник */
                     _this.pushCase().then(_newCase => {
                       _this.newShapeObj.id = _newCase.id;
                       _this.addShapeToCase(_this.newShapeObj).then((shapeObj) => {
                         shape.set({ id: shapeObj.id});
                         slide.canvas.add(shape);
+                        // slide.canvas.setActiveObject(shape); // TODO Убрал выделение. Нужно выделять тогда и справа в кейс-баре
                         slide.canvas.renderAll();
-                        slide.canvas.setActiveObject(shape);
                       });
                     });
                   } else {
@@ -310,7 +310,6 @@ export default {
                 }, 30);
               }
             }
-
           }); /* MOUSE UP END */
           slide.canvas.on('mouse:move', function(e) { /* MOUSE MOVE */
             if (_this.dragMode) {
@@ -619,6 +618,7 @@ export default {
           {
             title: 'Прямоугольник',
             type: 'rectangle',
+            isDisabled: false,
             action: () => {
               this.selectActiveToolWithShape('rectangleTool');
             }
@@ -626,6 +626,7 @@ export default {
           {
             title: 'Эллипс',
             type: 'ellipse',
+            isDisabled: false,
             action: () => {
               this.selectActiveToolWithShape('ellipseTool');
             }
@@ -633,6 +634,7 @@ export default {
           {
             title: 'Стрелка',
             type: 'arrow',
+            isDisabled: true,
             action: () => {
               console.log('ACTION Стрелка')
             }
@@ -640,6 +642,7 @@ export default {
           {
             title: 'Линия',
             type: 'line',
+            isDisabled: true,
             action: () => {
               console.log('ACTION Линия')
             }

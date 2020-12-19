@@ -14,8 +14,8 @@ const getters = {
 const actions = {
     /* INIT */
     fetchInitData({commit, dispatch, getters}) {
-        setTimeout(() => { // TODO Имитация задержки с сервера (УБРАТЬ!)
-            return new Promise((resolve) => {
+        return new Promise((resolve) => {
+            setTimeout(() => { // TODO Имитация задержки с сервера (УБРАТЬ!)
                 const data = {
                     projects: mockProjects,
                     slides: mockSlides,
@@ -38,8 +38,8 @@ const actions = {
                     });
                 }, 100);
                 resolve(data);
-            });
-        }, 200);
+            }, 200);
+        });
     },
     /* PROJECTS */
     fetchProjects({commit}) {
