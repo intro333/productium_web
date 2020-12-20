@@ -6,29 +6,30 @@ export default {
   methods: {
     createShapeObjByCaseChild(_child) {
       if (_child.shapeType === 'rectangle') {
-        return new fabric.Rect(Object.assign({}, {
-          id: _child.id,
-          shapeType: _child.shapeType,
-          title: _child.title,
-          opacity: 1,
+        return new fabric.Rect(Object.assign(this.baseFields(_child), {
           uniScaleTransform: true,
           hasRotatingPoint: false,
           hoverCursor: 'default',
         }, _child.params));
       } else if (_child.shapeType === 'ellipse') {
-        return new fabric.Ellipse(Object.assign({}, {
-          id: _child.id,
-          shapeType: _child.shapeType,
-          title: _child.title,
-          opacity: 1,
+        return new fabric.Ellipse(Object.assign(this.baseFields(_child), {
           uniScaleTransform: true,
           hasRotatingPoint: false,
           hoverCursor: 'default',
         }, _child.params));
       } else if (_child.shapeType === 'marker') {
-        //
+        return new fabric.Path(_child.params.path, Object.assign(
+            this.baseFields(_child), _child.params));
       }
-    }
+    },
+    baseFields(_child) {
+      return {
+        id: _child.id,
+        shapeType: _child.shapeType,
+        title: _child.title,
+        opacity: 1,
+      };
+    },
   },
 }
 </script>

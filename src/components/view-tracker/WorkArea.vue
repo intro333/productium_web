@@ -99,6 +99,9 @@ export default {
               }, 50);
             }
           }, 150);
+          if (this.activeTool === 'markerTool') {
+            this.setActiveTool('moveTool');
+          }
         }
       } else if (mutation.type === 'SELECT_CASE_CHILD') {
         if (this.activeSlide && this.activeSlide.canvas) {

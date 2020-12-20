@@ -320,15 +320,15 @@ export default {
               const objects = slide.canvas.getObjects();
               const lastObj = objects.length ? objects[objects.length-1] : null;
               if (lastObj) {
-                const shape = Object.assign({}, lastObj, {
-                  title: 'Marker 1',
-                  shapeType: 'marker',
-                });
-                _this.addShapeToCase(shape).then((shapeObj) => {
+                const newShapeObj = _this.newShapeObj = new ShapeModel(
+                    0,
+                    null,
+                    'marker',
+                    lastObj);
+                _this.addShapeToCase(newShapeObj).then((shapeObj) => {
                   lastObj.set({ id: shapeObj.id});
                   slide.canvas.renderAll();
                 });
-                // slide.canvas.setActiveObject(lastObj);
               }
             }
           }); /* MOUSE UP END */

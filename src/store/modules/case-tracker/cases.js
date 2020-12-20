@@ -193,6 +193,9 @@ const actions = {
             case: foundCase,
             shapeObj
           });
+          if (!foundCase.isOpen) {
+            foundCase.isOpen = true;
+          }
         }
         resolve(shapeObj);
       }, 200);

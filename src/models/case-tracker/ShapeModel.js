@@ -45,7 +45,10 @@ export class ShapeModel {
         lockRotation: true,
       });
     } else if (shapeType === 'marker') {
-      //
+      this.params = {
+        left: 0,
+        top: 0,
+      };
     }
     if (params.stroke) {
       params.stroke = getRealColor(params.stroke);
@@ -58,6 +61,8 @@ export class ShapeModel {
       return 'Rectangle 1';
     } else if (shapeType === 'ellipse') {
       return 'Ellipse 1';
+    } else if (shapeType === 'marker') {
+      return 'Marker 1';
     } else {
       return 'Rectangle 1';
     }
