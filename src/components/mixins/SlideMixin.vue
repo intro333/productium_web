@@ -302,16 +302,20 @@ export default {
                     _this.pushCase().then(_newCase => {
                       _this.newShapeObj.id = _newCase.id;
                       _this.addShapeToCase(_this.newShapeObj).then((shapeObj) => {
-                        shape.set({ id: shapeObj.id});
-                        slide.canvas.add(shape);
-                        // slide.canvas.setActiveObject(shape); // TODO Убрал выделение. Нужно выделять тогда и справа в кейс-баре
-                        slide.canvas.renderAll();
+                        if (shapeObj) {
+                          shape.set({ id: shapeObj.id});
+                          slide.canvas.add(shape);
+                          // slide.canvas.setActiveObject(shape); // TODO Убрал выделение. Нужно выделять тогда и справа в кейс-баре
+                          slide.canvas.renderAll();
+                        }
                       });
                     });
                   } else {
                     _this.addShapeToCase(_this.newShapeObj).then((shapeObj) => {
-                      shape.set({ id: shapeObj.id});
-                      slide.canvas.renderAll();
+                      if (shapeObj) {
+                        shape.set({ id: shapeObj.id});
+                        slide.canvas.renderAll();
+                      }
                     });
                   }
                 }, 30);
@@ -320,14 +324,25 @@ export default {
               const objects = slide.canvas.getObjects();
               const lastObj = objects.length ? objects[objects.length-1] : null;
               if (lastObj) {
+                const shapeCmnPrms = ShapeModel.commonParams();
+                /* Назначить объекту необходимые поля, иначе они не будут отображаться */
+                Object.keys(shapeCmnPrms)
+                    .forEach(_k => {
+                      if (_k !== 'left' && _k !== 'top') {
+                        lastObj.set({ [_k]: shapeCmnPrms[_k]});
+                      }
+                    });
                 const newShapeObj = _this.newShapeObj = new ShapeModel(
                     0,
                     null,
                     'marker',
                     lastObj);
                 _this.addShapeToCase(newShapeObj).then((shapeObj) => {
-                  lastObj.set({ id: shapeObj.id});
-                  slide.canvas.renderAll();
+                  if (shapeObj) {
+                    lastObj.set({ id: shapeObj.id});
+                    lastObj.set({ hasControls: false});
+                    slide.canvas.renderAll();
+                  }
                 });
               }
             }

@@ -29,3 +29,4 @@ export function generateColorFromPicker() {
   }
   return pickerColors.black;
 }
+

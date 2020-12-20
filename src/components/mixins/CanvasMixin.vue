@@ -1,5 +1,6 @@
 <script>
 import {fabric} from "fabric";
+import {ShapeModel} from "@/models/case-tracker/ShapeModel";
 
 export default {
   name: "CanvasMixin",
@@ -23,12 +24,12 @@ export default {
       }
     },
     baseFields(_child) {
-      return {
+      return Object.assign(ShapeModel.commonParams(), {
         id: _child.id,
         shapeType: _child.shapeType,
         title: _child.title,
         opacity: 1,
-      };
+      });
     },
   },
 }

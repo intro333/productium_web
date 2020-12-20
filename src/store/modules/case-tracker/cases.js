@@ -3,6 +3,7 @@ import router from "@/router";
 import {getObjectOffsetByZoom, getOffsetByZoom, getRandomInt} from "@/functions/calculations";
 import {CentralModalModel} from "@/models/modals/CentralModalModel";
 import {mockCases, mockCaseComments} from "@/data/testData";
+import {shapeTitleAutoIncrement} from "@/functions/case-tracker/projectsF";
 
 const state = {
   cases: [],
@@ -182,22 +183,32 @@ const actions = {
   },
   /* SHAPES */
   addShapeToCase({commit}, shapeObj) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       setTimeout(() => { // TODO Имитация задержки с сервера (УБРАТЬ!)
         // TODO После события mouse:up попадаем сюда, создаём в БД фигуру и затем добавляем её в foundCase
         const id = getRandomInt(10, 1000);
         shapeObj.id = id;
         const foundCase = state.cases.find(_c => _c.id === state.selectedCase.id);
         if (foundCase) {
-          commit('ADD_SHAPE_TO_CASE', {
-            case: foundCase,
-            shapeObj
-          });
+          const children = foundCase.children;
+          const objsByType = children
+            .filter(_o => _o.shapeType === shapeObj.shapeType);
+          if (objsByType.length) {
+            shapeObj.title = shapeTitleAutoIncrement(shapeObj, objsByType);
+          }
+          setTimeout(() => {
+            commit('ADD_SHAPE_TO_CASE', {
+              case: foundCase,
+              shapeObj
+            });
+            resolve(shapeObj);
+          }, 30);
           if (!foundCase.isOpen) {
             foundCase.isOpen = true;
           }
+        } else {
+          reject(null);
         }
-        resolve(shapeObj);
       }, 200);
     });
   },

@@ -4,13 +4,7 @@ export class ShapeModel {
   id = 0;
   title = 'Задача 1';
   shapeType = 'rectangle'; /* rectangle | ellipse */
-  params = {
-    borderColor: '#00a6ed',
-    cornerStrokeColor: '#00a6ed',
-    cornerColor: 'white',
-    cornerSize: 6,
-    transparentCorners: false
-  };
+  params = {};
 
   isSelected = false;
 
@@ -19,21 +13,16 @@ export class ShapeModel {
     this.title = title ? title : this.fillTitle(shapeType);
     this.shapeType = shapeType;
     if (shapeType === 'rectangle') {
-      this.params = Object.assign(this.params, {
-        left: 0,
-        top: 0,
+      this.params = Object.assign(ShapeModel.commonParams(), {
         fill: 'transparent',
         strokeWidth: 2,
         width: 0,
         height: 0,
-        lockRotation: true,
         // lockScalingX: true,
         // lockUniScaling: true,
       });
     } else if (shapeType === 'ellipse') {
-      this.params = Object.assign(this.params, {
-        left: 0,
-        top: 0,
+      this.params = Object.assign(ShapeModel.commonParams(), {
         fill: 'transparent',
         strokeWidth: 2,
         radius: 0,
@@ -42,13 +31,13 @@ export class ShapeModel {
         rx: 0,
         ry: 0,
         angle: 0,
-        lockRotation: true,
       });
     } else if (shapeType === 'marker') {
-      this.params = {
-        left: 0,
-        top: 0,
-      };
+      this.params = Object.assign(ShapeModel.commonParams(), {
+        width: 0,
+        height: 0,
+        hasControls: false,
+      });
     }
     if (params.stroke) {
       params.stroke = getRealColor(params.stroke);
@@ -58,13 +47,26 @@ export class ShapeModel {
 
   fillTitle(shapeType) {
     if (shapeType === 'rectangle') {
-      return 'Rectangle 1';
+      return 'Rectangle';
     } else if (shapeType === 'ellipse') {
-      return 'Ellipse 1';
+      return 'Ellipse';
     } else if (shapeType === 'marker') {
-      return 'Marker 1';
+      return 'Marker';
     } else {
-      return 'Rectangle 1';
+      return 'Rectangle';
     }
+  }
+
+  static commonParams() {
+    return {
+      left: 0,
+      top: 0,
+      borderColor: '#00a6ed',
+      cornerStrokeColor: '#00a6ed',
+      cornerColor: 'white',
+      cornerSize: 6,
+      transparentCorners: false,
+      lockRotation: true,
+    };
   }
 }
