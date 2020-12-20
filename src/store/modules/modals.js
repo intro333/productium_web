@@ -8,6 +8,7 @@ const state = {
   centralModal: new CentralModalModel(),
   tooltip: new TooltipModel(),
   simpleNotifyInside: new SimpleNotifyInsideModel(),
+  isLoading: false,
 };
 
 const getters = {
@@ -15,6 +16,7 @@ const getters = {
   getCentralModal: state => state.centralModal,
   getTooltip: state => state.tooltip,
   getSimpleNotifyInside: state => state.simpleNotifyInside,
+  getIsLoading: state => state.isLoading,
 };
 
 const actions = {
@@ -30,6 +32,9 @@ const actions = {
   setSimpleNotifyInside({commit}, notify) {
     commit('SET_SIMPLE_NOTIFY_INSIDE', notify);
   },
+  setIsLoading({commit}, status) {
+    commit('SET_IS_LOADING', status);
+  },
 };
 
 const mutations = {
@@ -37,6 +42,9 @@ const mutations = {
   SET_CENTRAL_MODAL(state, modal) { state.centralModal = modal; },
   SET_TOOLTIP(state, tooltip) { state.tooltip = tooltip; },
   SET_SIMPLE_NOTIFY_INSIDE(state, notify) { state.simpleNotifyInside = notify; },
+  SET_IS_LOADING(state, isLoading) {
+    state.isLoading = isLoading;
+  },
 };
 
   export default {

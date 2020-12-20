@@ -38,7 +38,7 @@ const actions = {
                     });
                 }, 100);
                 resolve(data);
-            }, 200);
+            }, 300);
         });
     },
     /* PROJECTS */

@@ -131,7 +131,17 @@ const actions = {
   },
   /* LOCAL ACTIONS */
   selectFoundSlideFromSlides({dispatch}, slides) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
+      const setFirstSlide = () => {
+        if (slides[0]) {
+          dispatch('selectCaseListAndCaseOfActiveSlide', {
+            slide: slides[0],
+            isFirstLoad: true
+          });
+          dispatch('setIsLoading');
+          resolve(slides[0]);
+        }
+      };
       const query = router.currentRoute.query;
       if (query && query.slideId) {
         const _slideId = parseInt(query.slideId);
@@ -141,10 +151,13 @@ const actions = {
             slide: foundSlide,
             isFirstLoad: true
           });
+          dispatch('setIsLoading');
           resolve(foundSlide);
         } else {
-          reject(false);
+          setFirstSlide(slides);
         }
+      } else { /* Если в параметрах url не указан слайд */
+        setFirstSlide(slides);
       }
     });
   },
@@ -152,74 +165,75 @@ const actions = {
     const _slide = payload.slide;
     const query = router.currentRoute.query;
     const _cases = getters.getCases;
-    const _slideId = parseInt(query.slideId);
-    const slideIdNotEqual = _slideId !== _slide.id;
+    let slideIdNotEqual = true;
     if (query && query.slideId) {
-      if (payload.isNew || payload.isFirstLoad || payload.isRepaint || slideIdNotEqual) {
-        commit('SELECT_SLIDE', _slide);
-        setTimeout(() => {
-          const _slideList = state.slideLists
-            .find(_sl => _sl.slideId === _slide.id);
-          if (_slideList) {
-            commit('SELECT_SLIDE_LIST', _slideList);
-            const slideListId = _slideList.id;
-            const _case = _cases.find(_c => (_c.slideListId === slideListId) &&
-              _c.caseStatus !== 'archived');
-            if (_case) {
-              if (state.activeTool === 'superTool') {
-                commit('SET_ACTIVE_TOOL', 'moveTool');
-              }
-              setTimeout(() => {
-                if (slideIdNotEqual) {
-                  router.push({
-                    path: '/case-tracker',
-                    query: Object.assign({}, query, {
-                      slideId: _slide.id,
-                      slideListId: _slideList.id,
-                      caseId: _case.id,
-                    })
-                  });
-                }
-                if (!payload.isFirstLoad) {
-                  setTimeout(() => {
-                    commit('SELECT_CASE', {
-                      case: _case,
-                      reloadWithSlide: false
-                    });
-                  }, 200)
-                }
-              }, 20)
-            } else { /* Нет ни одного кейса */
-              setTimeout(() => {
-                if (slideIdNotEqual) {
-                  router.push({
-                    path: '/case-tracker',
-                    query: Object.assign({}, query, {
-                      slideId: _slide.id,
-                      slideListId: _slideList.id,
-                      caseId: 0,
-                    })
-                  });
-                }
-                if (!payload.isFirstLoad) {
-                  setTimeout(() => {
-                    if (_slide.img) { /* Переключаемся на суперТул только, если добавлено изобр-е */
-                      commit('SET_ACTIVE_SHAPE_TOOL', 'rectangleTool');
-                      commit('SET_ACTIVE_TOOL', 'superTool');
-                    } else { /* Если нет изобр-я, то перекинуть на moveTool */
-                      commit('SET_ACTIVE_TOOL', 'moveTool');
-                    }
-                    commit('SELECT_CASE', {
-                      case: null,
-                      reloadWithSlide: false
-                    });
-                  }, 200);
-                }
-              }, 20)
+      const _slideId = parseInt(query.slideId);
+      slideIdNotEqual = _slideId !== _slide.id;
+    }
+    if (payload.isNew || payload.isFirstLoad || payload.isRepaint || slideIdNotEqual) {
+      commit('SELECT_SLIDE', _slide);
+      setTimeout(() => {
+        const _slideList = state.slideLists
+          .find(_sl => _sl.slideId === _slide.id);
+        if (_slideList) {
+          commit('SELECT_SLIDE_LIST', _slideList);
+          const slideListId = _slideList.id;
+          const _case = _cases.find(_c => (_c.slideListId === slideListId) &&
+            _c.caseStatus !== 'archived');
+          if (_case) {
+            if (state.activeTool === 'superTool') {
+              commit('SET_ACTIVE_TOOL', 'moveTool');
             }
+            setTimeout(() => {
+              if (slideIdNotEqual) {
+                router.push({
+                  path: '/case-tracker',
+                  query: Object.assign({}, query, {
+                    slideId: _slide.id,
+                    slideListId: _slideList.id,
+                    caseId: _case.id,
+                  })
+                });
+              }
+              if (!payload.isFirstLoad) {
+                setTimeout(() => {
+                  commit('SELECT_CASE', {
+                    case: _case,
+                    reloadWithSlide: false
+                  });
+                }, 200)
+              }
+            }, 20)
+          } else { /* Нет ни одного кейса */
+            setTimeout(() => {
+              if (slideIdNotEqual) {
+                router.push({
+                  path: '/case-tracker',
+                  query: Object.assign({}, query, {
+                    slideId: _slide.id,
+                    slideListId: _slideList.id,
+                    caseId: 0,
+                  })
+                });
+              }
+              if (!payload.isFirstLoad) {
+                setTimeout(() => {
+                  if (_slide.img) { /* Переключаемся на суперТул только, если добавлено изобр-е */
+                    commit('SET_ACTIVE_SHAPE_TOOL', 'rectangleTool');
+                    commit('SET_ACTIVE_TOOL', 'superTool');
+                  } else { /* Если нет изобр-я, то перекинуть на moveTool */
+                    commit('SET_ACTIVE_TOOL', 'moveTool');
+                  }
+                  commit('SELECT_CASE', {
+                    case: null,
+                    reloadWithSlide: false
+                  });
+                }, 200);
+              }
+            }, 20)
           }
-        }, 20);
-      }
+        }
+      }, 20);
     }
   },
   changeSlideZoom({commit}, payload) {

@@ -16,6 +16,7 @@
                      :contextMenu="getCentralModal" />
     <Tooltip v-if="getTooltip().state"
                      :tooltip="getTooltip" />
+    <Loading v-if="getIsLoading()" />
   </div>
 </template>
 
@@ -30,6 +31,7 @@ import {mapActions, mapGetters} from "vuex";
 import Tooltip from "@/components/modals/Tooltip";
 import CentralModal from "@/components/modals/central/CentralModal";
 import router from "@/router";
+import Loading from "@/components/common/Loading";
 
 export default {
   name: "CaseTracker",
@@ -42,8 +44,10 @@ export default {
     CaseDiscusBlock,
     ContextMenuBase,
     CentralModal,
+    Loading,
   },
   created() {
+    this.setIsLoading(true);
     this.fetchInitData();
     // this.fetchProjects();
     // this.fetchSlides();
@@ -57,8 +61,8 @@ export default {
   },
   methods: {
     ...mapActions(['fetchProjects', 'fetchSlides', 'fetchSlideLists', 'fetchCases', 'fetchCaseComments',
-      'openCommentsModalByCommentId', 'fetchInitData']),
-    ...mapGetters(['getContextMenuBase', 'getCentralModal', 'getTooltip']),
+      'openCommentsModalByCommentId', 'fetchInitData', 'setIsLoading']),
+    ...mapGetters(['getContextMenuBase', 'getCentralModal', 'getTooltip', 'getIsLoading']),
   },
 }
 </script>

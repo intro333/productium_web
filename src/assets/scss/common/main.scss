@@ -378,6 +378,9 @@ p {
       }
     }
   }
+  &-loading {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
 }
 .p-tooltip {
   z-index: 15;
@@ -679,4 +682,7 @@ p {
     align-content: center;
     height: 100%;
   }
+}
+.loading-icon {
+  width: 250px;
 }
