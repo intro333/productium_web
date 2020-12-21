@@ -1,7 +1,8 @@
 <template>
   <div class="toolbar-panel">
     <div class="tp-block tp-left">
-      <div @mouseenter="showTooltip($event, 'logoRef','Перейти к проектам')"
+      <div @click="goToProjects()"
+           @mouseenter="showTooltip($event, 'logoRef','Перейти к проектам')"
            @mouseleave="hideToolTip"
            ref="logoRef"
            class="tp-icon-box">
@@ -239,6 +240,9 @@ export default {
     shapeSvg() {
       return require('@/assets/img/case-tracker/toolbar_panel/shapes/' + this.activeShapeTool
           .replace(/Tool/g, '') + '.svg');
+    },
+    goToProjects() {
+      this.$router.push('/'); // TODO Редиректить к списку проектов
     },
   }
 }

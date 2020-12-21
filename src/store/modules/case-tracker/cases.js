@@ -111,19 +111,12 @@ const actions = {
     }
     dispatch('openCommentsModalByCommentId', notify.id);
   },
-  selectFoundCaseFromCases({dispatch}) {
-    const query = router.currentRoute.query;
-    if (query && query.caseId) {
-      const _caseId = parseInt(query.caseId);
-      const foundCase = state.cases.find(_s => _s.id === _caseId);
-      if (foundCase) {
-        dispatch('goToSelectedCase', {
-          case: foundCase,
-          reloadWithSlide: false,
-          isFirstLoad: true
-        });
-      }
-    }
+  selectFoundCaseFromCases({dispatch}, _case) {
+    dispatch('goToSelectedCase', {
+      case: _case,
+      reloadWithSlide: false,
+      isFirstLoad: true
+    });
   },
   goToSelectedCase({commit, dispatch}, payload) {
     const _case = payload.case;
@@ -289,8 +282,6 @@ const mutations = {
           _c.children.forEach(_ch => {
             const childOldLeft = getObjectOffsetByZoom(z, _ch.params.left);
             const childOldTop = getObjectOffsetByZoom(z, _ch.params.top);
-            // console.log(1, childOldLeft)
-            // console.log(3, payload.offsetLeft)
             _ch.params.left = payload.isLeftDirection ? getOffsetByZoom(z, childOldLeft - payload.offsetLeft) : getOffsetByZoom(z, childOldLeft + payload.offsetLeft);
             _ch.params.top = payload.isTopDirection ? getOffsetByZoom(z, childOldTop - payload.offsetTop) : getOffsetByZoom(z, childOldTop + payload.offsetTop);
             console.log('-----------------------')

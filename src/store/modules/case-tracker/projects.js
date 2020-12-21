@@ -13,7 +13,7 @@ const getters = {
 
 const actions = {
     /* INIT */
-    fetchInitData({commit, dispatch, getters}) {
+    fetchInitData({commit, dispatch}) {
         return new Promise((resolve) => {
             setTimeout(() => { // TODO Имитация задержки с сервера (УБРАТЬ!)
                 const data = {
@@ -29,14 +29,24 @@ const actions = {
                 commit('SET_SLIDE_LISTS', data.slidesList);
                 commit('SET_CASES', data.cases);
                 commit('SET_CASES_COMMENTS', data.caseComments);
-                /* Доп. настройки компонентов */
-                setTimeout(() => {
-                    dispatch('selectFoundSlideFromSlides', getters.getSlides).then(() => {
+                const query = router.currentRoute.query;
+                if (query && query.projectId) {
+                    const project = state.projects.find(_p => _p.id === parseInt(query.projectId));
+                    if (project) {
+                        /* Доп. настройки компонентов */
                         setTimeout(() => {
-                            dispatch('selectFoundCaseFromCases');
-                        }, 400);
-                    });
-                }, 100);
+                            dispatch('selectFoundSlideFromSlides', query).then(_case => {
+                                setTimeout(() => {
+                                    dispatch('selectFoundCaseFromCases', _case);
+                                }, 400);
+                            });
+                        }, 100);
+                    } else {
+                        router.push('/');
+                    }
+                } else {
+                    router.push('/');
+                }
                 resolve(data);
             }, 300);
         });
