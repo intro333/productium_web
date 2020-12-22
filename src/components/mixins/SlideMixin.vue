@@ -255,6 +255,7 @@ export default {
                       });
                     }
                   }
+                  console.log(1, fields)
                   _this.changeCaseElemFields(fields);
                 }
               };
@@ -585,6 +586,7 @@ export default {
         if (slide.canvas) {
           if (_case) {
             _case.children.forEach(_child => {
+              console.log(123, _child)
               const shape = this.createShapeObjByCaseChild(_child);
               if (slide.canvas && shape) {
                 slide.canvas.add(shape);
@@ -649,7 +651,7 @@ export default {
     drawingModeState(slide, state) {
       if (state) {
         slide.canvas.isDrawingMode = true;
-        slide.canvas.freeDrawingBrush.width = 2;
+        slide.canvas.freeDrawingBrush.width = 4;
         slide.canvas.freeDrawingBrush.color = getRealColor(this.activeColor);
       } else {
         slide.canvas.isDrawingMode = false;

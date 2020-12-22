@@ -15,7 +15,7 @@ export class ShapeModel {
     if (shapeType === 'rectangle') {
       this.params = Object.assign(ShapeModel.commonParams(), {
         fill: 'transparent',
-        strokeWidth: 2,
+        strokeWidth: 3,
         width: 0,
         height: 0,
         // lockScalingX: true,
@@ -24,7 +24,7 @@ export class ShapeModel {
     } else if (shapeType === 'ellipse') {
       this.params = Object.assign(ShapeModel.commonParams(), {
         fill: 'transparent',
-        strokeWidth: 2,
+        strokeWidth: 3,
         radius: 0,
         originX: 'left',
         originY: 'top',
