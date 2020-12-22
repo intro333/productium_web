@@ -165,9 +165,11 @@ const actions = {
               parent: payload.parentKey ? payload.parentKey : null,
               message: payload.commentMessage,
               user: currentUser,
-              images: [],
+              images: payload.images,
               updatedAt: '2020-10-30 11:46:15', // TODO Дата придёт с сервера
-              notifyInfo: null, // Моё сообщение, оно не будет мне показано в оповещении
+              notifyInfo: {
+                status: 'fromCurrentUser',
+              }, // Моё сообщение, оно не будет мне показано в оповещении
               userLink: payload.isUserLink ? {
                 replyUser: payload.replyUser, // TODO по идее при отправке коммента на бэк отправляем лишь id юзера, а при получении данных мы по нему берём нужные данные, ибо они могут поменяться
                 replyCommentId: payload.comment.id
@@ -178,6 +180,9 @@ const actions = {
           }
         }, 200);
     });
+  },
+  removeCaseComment({commit}, commentObj) {
+    commit('REMOVE_CASES_COMMENT', commentObj);
   },
   openCommentsModalByCommentId({dispatch}, commentId) {
     dispatch('setCentralModal',
@@ -307,6 +312,14 @@ const mutations = {
   ADD_CASES_COMMENT(state, commentObj) {
     state.casesComments.push(new CaseCommentModel(commentObj));
 
+  },
+  REMOVE_CASES_COMMENT(state, commentObj) {
+    state.casesComments = state.casesComments.map(_c => {
+      if (_c.id === commentObj.id || _c.parent === commentObj.id) { /* Удаляем и дочерние (если они есть) */
+        _c.notifyInfo.status = 'archived';
+      }
+      return _c;
+    });
   },
   CHANGE_CASES_PARAMS_BY_OFFSET(state, payload) {
     const z = payload.z;

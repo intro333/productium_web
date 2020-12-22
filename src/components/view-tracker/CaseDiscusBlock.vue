@@ -70,12 +70,10 @@ export default {
           _c.caseId === this.selectedCase.id);
     },
     readCasesComments() {
-      return this.casesComments.filter(_c => _c.notifyInfo &&
-          _c.notifyInfo.status === 'read');
+      return this.casesComments.filter(_c => _c.notifyInfo.status === 'read');
     },
     notReadCasesComments() {
-      return this.casesComments.filter(_c => _c.notifyInfo &&
-          _c.notifyInfo.status === 'notRead');
+      return this.casesComments.filter(_c => _c.notifyInfo.status === 'notRead');
     },
   },
   methods: {

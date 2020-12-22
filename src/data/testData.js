@@ -322,7 +322,7 @@ export const mockCaseComments = [
     images: [],
     updatedAt: '2020-10-27 18:24:45',
     notifyInfo: { // join tables, если в таблице case_comment_notification есть запись для текущего юзера, то вывести её, если нет то null поставить
-      status: 'read', // notRead | read | archived
+      status: 'read', // notRead | read | fromCurrentUser | archived
     }
   },
   {
@@ -362,7 +362,9 @@ export const mockCaseComments = [
       },
     ],
     updatedAt: '2020-10-28 19:13:45',
-    notifyInfo: null // Моё сообщение, оно не будет мне показано в оповещении
+    notifyInfo: {
+      status: 'fromCurrentUser',
+    } // Моё сообщение, оно не будет мне показано в оповещении
   },
   {
     id: 4,
@@ -390,7 +392,9 @@ export const mockCaseComments = [
     user: new CurrentUserModel(1, 'Dmitriy D', 'DD', '#7c4a4a'),
     images: [],
     updatedAt: '2020-10-29 01:46:15',
-    notifyInfo: null,
+    notifyInfo: {
+      status: 'fromCurrentUser',
+    },
     userLink: {
       replyUser: new CurrentUserModel(2, 'Dmitriy M', 'DM', '#F30C0C'),
       replyCommentId: 4
@@ -467,7 +471,9 @@ export const mockCaseComments = [
     user: new CurrentUserModel(1, 'Dmitriy D', 'DD', '#7c4a4a'),
     images: [],
     updatedAt: '2020-11-03 14:02:49',
-    notifyInfo: null
+    notifyInfo: {
+      status: 'fromCurrentUser',
+    }
   },
   {
     id: 11,

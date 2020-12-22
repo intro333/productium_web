@@ -56,8 +56,7 @@ export default {
           _c.slideId === this.slide.id);
     },
     isNotify() {
-      const result = this.casesComments.find(_c =>
-          _c.notifyInfo && _c.notifyInfo.status === 'notRead');
+      const result = this.casesComments.find(_c => _c.notifyInfo.status === 'notRead');
       return !!result;
     },
     slideCases() {

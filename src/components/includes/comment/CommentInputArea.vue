@@ -46,6 +46,7 @@
                     :parentKey="i"
                     :key="i"
                     :removeImageFunc="() => removeImage(i)"
+                    :imgForPreview="false"
                     :img="_img"
       />
     </div>
@@ -59,6 +60,7 @@
 import {mapActions, mapGetters} from "vuex";
 import ModalsMixin from "@/components/mixins/ModalsMixin";
 import CommentImage from "@/components/includes/comment/CommentImage";
+import {getRandomInt, imageSize} from "@/functions/calculations";
 
 export default {
   name: "CommentInputArea",
@@ -105,18 +107,15 @@ export default {
       const _this = this;
       const files = $event.target.files;
       if (files && files[0]) {
-        var _URL = window.URL || window.webkitURL;
-        const img = new Image();
-        var objectUrl = _URL.createObjectURL(files[0]);
-        img.onload = function () {
-          _URL.revokeObjectURL(objectUrl);
-          img.orientation = _this.getOrientation(this.width, this.height);
+        const img = files[0];
+        imageSize(img).then(_imgRes => {
           _this.images.push({
-            src: objectUrl,
-            orientation: _this.getOrientation(this.width, this.height)
+            id: getRandomInt(10, 1000),
+            src: null,
+            imgBase64: _imgRes.src,
+            orientation: _this.getOrientation(_imgRes.width, _imgRes.height)
           });
-        };
-        img.src = objectUrl;
+        });
         this.checkPCommentsBlockHeight();
         this.inputFocus();
       }
@@ -140,15 +139,17 @@ export default {
     sendMessage(e) {
       const _val = e.target.value;
       if (e.shiftKey) return; /* Если нажали Shift+Enter, не отправляем сообщение, а только переносим строку */
-      if (_val === '') return;
-      if (_val !== '') {
+      if (_val === '' && !this.images.length) return;
+      if (_val !== '' || this.images.length) {
         this.addCaseComment({
           parentKey: this.parentKey,
           replyUser: this.replyUser,
           isUserLink: this.isUserLink,
           comment: this.comment,
           commentMessage: _val.replace(/^\s+|\s+$/g, ''),
+          images: this.images
         }).then(() => {
+          this.images = [];
           setTimeout(() => {
             if (!this.parentKey) {
               const _ref = this.$parent.$refs['pCommentsListRef'];

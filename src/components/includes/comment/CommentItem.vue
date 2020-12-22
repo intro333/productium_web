@@ -17,6 +17,15 @@
             <span>{{comment.message}}</span>
           </div>
         </div>
+        <div v-if="comment.images.length"
+             class="pc-preview pc-preview-for-preview scroll-x-container">
+          <CommentImage v-for="(_img, i) in comment.images"
+                        :parentKey="i"
+                        :key="i"
+                        :img="_img"
+                        :imgForPreview="true"
+          />
+        </div>
         <div class="pc-comment-item-body-bottom">
           <span class="pc-comment-item-body-date">{{getDateTime()}}</span>
           <span @click="reply"
@@ -30,6 +39,7 @@
                        :parent="comment"
                        :focusInputAreaOfParentFunc="focusInputAreaOfParent"
                        :isChild="true"
+                       :contextMenu="contextMenu"
                        :key="_child.id" :cKey="_child.id" />
         </div>
         <div v-if="isReply"
@@ -41,20 +51,14 @@
                             ref="commentInputAreaRef" />
         </div>
       </div>
-      <div class="pc-comment-item-body-img-box">
+      <div @click="openCommentOptionsMenu(150, 'commentOptionsRef_' + cKey,
+              commentRef(comment, cKey), comment, '_comment', 'up', false, false, cKey)"
+           :ref="'commentOptionsRef_' + cKey"
+           class="pc-comment-item-body-img-box">
         <img src="@/assets/img/common/selectArrowGrey.svg"
              class="pc-comment-item-body-img"
              alt="">
       </div>
-    </div>
-    <div v-if="comment.images.length"
-         class="pc-preview scroll-x-container">
-      <CommentImage v-for="(_img, i) in comment.images"
-                    :parentKey="i"
-                    :key="i"
-                    :removeImageFunc="() => {}"
-                    :img="_img"
-      />
     </div>
   </div>
 </template>
@@ -63,6 +67,9 @@
 import {getNearestWeekdayWithTime} from "@/functions/date";
 import CommentInputArea from "@/components/includes/comment/CommentInputArea";
 import CommentImage from "@/components/includes/comment/CommentImage";
+import {getModalPositionFunc} from "@/functions/calculations";
+import {ContextMenuBaseModel} from "@/models/modals/ContextMenuBaseModel";
+import {mapActions} from "vuex";
 
 export default {
   name: "CommentItem",
@@ -72,7 +79,8 @@ export default {
     selectedCommentId: Number,
     isChild: Boolean,
     parent: Object,
-    focusInputAreaOfParentFunc: Function
+    focusInputAreaOfParentFunc: Function,
+    contextMenu: Object
   },
   components: {
     CommentItem: this,
@@ -82,7 +90,8 @@ export default {
   data: () => ({
     isReply: false,
     commentToInput: null,
-    isSelectableComment: false
+    isSelectableComment: false,
+    isShowCommentOptions: false,
   }),
   computed: {
     userLink() {
@@ -120,6 +129,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['setContextMenuBase', 'removeCaseComment']),
     getDateTime() {
       return getNearestWeekdayWithTime(this.comment.updatedAt)
     },
@@ -160,6 +170,61 @@ export default {
           }
         }, 20);
       }
+    },
+    openCommentOptionsMenu(width,
+                           _refOptionsStr,
+                           _refCommentStr,
+                           _comment,
+                           _obj,
+                           triangle,
+                           isRight,
+                           isMultiple=false,
+                           i=0) {
+      let _ref = this.$refs[_refOptionsStr];
+      if (isMultiple) {
+        _ref = _ref[0] ? _ref[0] : null;
+      }
+      if (_ref && _ref.getBoundingClientRect()) {
+        const modalPosition = getModalPositionFunc(_ref, isRight, width);
+        this.setContextMenuBase(new ContextMenuBaseModel()
+            .set(true,
+                'SelectPopup',
+                width,
+                modalPosition.top,
+                modalPosition.left,
+                triangle,
+                {
+                  selectOptions: [
+                    {
+                      isItemOfMenu: true,
+                      title: 'Удалить',
+                      action: () => {
+                        this.removeCaseComment(_comment);
+                      },
+                    },
+                    {
+                      isItemOfMenu: true,
+                      title: 'Скопировать',
+                      action: () => {
+                        console.log('Скопировать сообщение.')
+                      },
+                    },
+                  ],
+                  subject: _obj
+                },
+                i)
+            .more({
+              isRight,
+              zIndex: 8
+            })
+        );
+      }
+    },
+    commentRef(_comment, i) {
+      return 'commentRef_' + i;
+    },
+    showCommentOptions(_state) {
+      this.isShowCommentOptions = _state;
     },
   },
 }
