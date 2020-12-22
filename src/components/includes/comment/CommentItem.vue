@@ -70,6 +70,7 @@ import CommentImage from "@/components/includes/comment/CommentImage";
 import {getModalPositionFunc} from "@/functions/calculations";
 import {ContextMenuBaseModel} from "@/models/modals/ContextMenuBaseModel";
 import {mapActions} from "vuex";
+import {SimpleNotifyInsideModel} from "@/models/modals/SimpleNotifyInsideModel";
 
 export default {
   name: "CommentItem",
@@ -129,7 +130,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['setContextMenuBase', 'removeCaseComment']),
+    ...mapActions(['setContextMenuBase', 'removeCaseComment', 'setSimpleNotifyInside']),
     getDateTime() {
       return getNearestWeekdayWithTime(this.comment.updatedAt)
     },
@@ -206,7 +207,11 @@ export default {
                       isItemOfMenu: true,
                       title: 'Скопировать',
                       action: () => {
-                        console.log('Скопировать сообщение.')
+                        let url = window.location.host;
+                        url += this.$route.fullPath;
+                        url += '&commentId=' + _comment.id;
+                        this.$clipboard(url);
+                        this.copyLinkToClipboard();
                       },
                     },
                   ],
@@ -225,6 +230,14 @@ export default {
     },
     showCommentOptions(_state) {
       this.isShowCommentOptions = _state;
+    },
+    copyLinkToClipboard() {
+      this.setSimpleNotifyInside(
+          new SimpleNotifyInsideModel()
+              .set(true,
+                  260,
+                  'Ссылка скопирована в буфер обмена')
+      )
     },
   },
 }

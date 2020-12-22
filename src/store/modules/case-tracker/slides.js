@@ -180,7 +180,7 @@ const actions = {
         commit('SELECT_SLIDE', _slide);
         setTimeout(() => {
           let _slideList = null;
-          if (payload.isFirstLoad) {
+          if (payload.isFirstLoad || payload.isRepaint) {
             if (query && query.slideListId) {
               const querySlideListId = parseInt(query.slideListId);
               _slideList = slideLists
@@ -199,7 +199,7 @@ const actions = {
               commit('SELECT_SLIDE_LIST', _slideList);
               const slideListId = _slideList.id;
               let _case = null;
-              if (payload.isFirstLoad) {
+              if (payload.isFirstLoad || payload.isRepaint) {
                 if (query && query.caseId) {
                   const caseId = parseInt(query.caseId);
                   _case = _cases
