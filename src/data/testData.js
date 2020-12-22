@@ -352,9 +352,14 @@ export const mockCaseComments = [
     images: [
       {
         id: 15,
-        src: '',
+        src: '/test-img/no-env.png',
         orientation: 'portrait'
-      }
+      },
+      {
+        id: 16,
+        src: '/test-img/android-sdk.png',
+        orientation: 'landscape'
+      },
     ],
     updatedAt: '2020-10-28 19:13:45',
     notifyInfo: null // Моё сообщение, оно не будет мне показано в оповещении

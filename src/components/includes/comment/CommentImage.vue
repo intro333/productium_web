@@ -1,7 +1,8 @@
 <template>
   <div class="pc-preview-item"
        :class="['pc-preview-item-' + img.orientation]"> <!-- portrait | landscape -->
-    <img :src="img.src" alt="">
+    <img :src="img.src" alt=""
+         class="pc-preview-item-img">
     <div @click="removeImage()"
          class="p-btn-preview pc-preview-item-close">
       <img src="@/assets/img/common/buttons/closeWhite.svg"

@@ -11,7 +11,6 @@
              :class="{'rgb-base-10': isSelectableComment}">
           <span class="pc-comment-item-body-name">{{comment.user.fullName}}</span>
           <div class="pc-comment-item-body-message">
-            {{'commentItemBoxRef_' + cKey}}
             <span v-if="userLink.isUserLink"
                   @click="userLink.action()"
                   class="pc-comment-item-body-message-user-link text-ellipsis">{{userLink.name}}</span>
@@ -48,12 +47,22 @@
              alt="">
       </div>
     </div>
+    <div v-if="comment.images.length"
+         class="pc-preview scroll-x-container">
+      <CommentImage v-for="(_img, i) in comment.images"
+                    :parentKey="i"
+                    :key="i"
+                    :removeImageFunc="() => {}"
+                    :img="_img"
+      />
+    </div>
   </div>
 </template>
 
 <script>
 import {getNearestWeekdayWithTime} from "@/functions/date";
 import CommentInputArea from "@/components/includes/comment/CommentInputArea";
+import CommentImage from "@/components/includes/comment/CommentImage";
 
 export default {
   name: "CommentItem",
@@ -67,7 +76,8 @@ export default {
   },
   components: {
     CommentItem: this,
-    CommentInputArea
+    CommentInputArea,
+    CommentImage
   },
   data: () => ({
     isReply: false,
@@ -82,9 +92,6 @@ export default {
           isUserLink: true,
           name: ul.replyUser.fullName + ', ',
           action: () => {
-            console.log(1, this.$parent.$refs)
-            console.log(2, this.$refs)
-            console.log(3, ul.replyCommentId)
           }
         };
       }
