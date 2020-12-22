@@ -9,7 +9,7 @@
                    :selectedCommentId="cm.commentId"
                    :cKey="_item.id" />
     </div>
-    <CommentInputArea :cKey="0"
+    <CommentInputArea :parentKey="0"
                       :checkPCommentsBlockHeightFunc="checkPCommentsBlockHeight" />
   </div>
 </template>

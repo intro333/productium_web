@@ -4,6 +4,7 @@ import {getObjectOffsetByZoom, getOffsetByZoom, getRandomInt} from "@/functions/
 import {CentralModalModel} from "@/models/modals/CentralModalModel";
 import {mockCases, mockCaseComments} from "@/data/testData";
 import {shapeTitleAutoIncrement} from "@/functions/case-tracker/projectsF";
+import {CaseCommentModel} from "@/models/case-tracker/CaseCommentModel";
 
 const state = {
   cases: [],
@@ -148,6 +149,36 @@ const actions = {
   fetchCaseComments({commit}) {
     commit('SET_CASES_COMMENTS', mockCaseComments);
   },
+  addCaseComment({commit, getters}, payload) {
+    return new Promise((resolve) => {
+        setTimeout(() => { // TODO Имитация задержки с сервера (УБРАТЬ!)
+          const query = router.currentRoute.query;
+          const currentUser = getters.getCurrentUser;
+          if (query && query.caseId) {
+            const commentId = getRandomInt(10, 1000); // TODO MOCK
+            const newComment = { // TODO Этот объект придёт с сервера
+              id: commentId,
+              projectId: parseInt(query.projectId),
+              slideId: parseInt(query.slideId),
+              slideListId: parseInt(query.slideListId),
+              caseId: parseInt(query.caseId),
+              parent: payload.parentKey ? payload.parentKey : null,
+              message: payload.commentMessage,
+              user: currentUser,
+              images: [],
+              updatedAt: '2020-10-30 11:46:15', // TODO Дата придёт с сервера
+              notifyInfo: null, // Моё сообщение, оно не будет мне показано в оповещении
+              userLink: payload.isUserLink ? {
+                replyUser: payload.replyUser, // TODO по идее при отправке коммента на бэк отправляем лишь id юзера, а при получении данных мы по нему берём нужные данные, ибо они могут поменяться
+                replyCommentId: payload.comment.id
+              } : null,
+            };
+            commit('ADD_CASES_COMMENT', newComment);
+            resolve(newComment);
+          }
+        }, 200);
+    });
+  },
   openCommentsModalByCommentId({dispatch}, commentId) {
     dispatch('setCentralModal',
       new CentralModalModel()
@@ -251,7 +282,7 @@ const mutations = {
     // Можно оставить так и после перезагрузки страницы их не будет, а до этого они будут со статусом archived
     state.casesComments.forEach(_c => {
       if (_c.caseId === _case.id) {
-        _c.notifyInfo = 'archived';
+        _c.notifyInfo.status = 'archived';
       }
     })
   },
@@ -272,6 +303,10 @@ const mutations = {
   /* CASE COMMENTS */
   SET_CASES_COMMENTS(state, comments) {
     state.casesComments = comments;
+  },
+  ADD_CASES_COMMENT(state, commentObj) {
+    state.casesComments.push(new CaseCommentModel(commentObj));
+
   },
   CHANGE_CASES_PARAMS_BY_OFFSET(state, payload) {
     const z = payload.z;

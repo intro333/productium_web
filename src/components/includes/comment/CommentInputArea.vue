@@ -7,21 +7,21 @@
       >{{user.shortName}}</div>
       <div class="pc-input-area-block">
         <div class="pc-input-area-text-box"
-             :class="{'pc-input-area-text-box-edited': (!textIsEmpty() || isUserLink()),
-              'pc-input-area-text-box-edited-with-link': isUserLink()}">
-          <input v-if="isUserLink()"
+             :class="{'pc-input-area-text-box-edited': (!textIsEmpty || isUserLink),
+              'pc-input-area-text-box-edited-with-link': isUserLink}">
+          <input v-if="isUserLink"
+                 @click="goToUserProfile()"
                  class="pc-input-area-user-link text-ellipsis"
                  :value="userLink + ', '"
                  readonly
           >
-          <textarea :ref="'commentInputAreaRef_' + cKey"
-                    @keyup.enter="sendMessage()"
+          <textarea :ref="'commentInputAreaRef_' + parentKey"
+                    @keyup.enter="sendMessage"
                     @keyup.esc="escTextareaFunc()"
                     @input="enteringMessage"
-                    :value="text"
                     class="pc-input-area-text p-textarea-custom scroll-textarea"
-                    :class="{'pc-input-area-text-empty': textIsEmpty(),
-                      'pc-input-area-text-with-link': isUserLink()}"
+                    :class="{'pc-input-area-text-empty': textIsEmpty,
+                      'pc-input-area-text-with-link': isUserLink}"
                     :placeholder="!userLink ? 'Напишите комментарий...' : ''"></textarea>
         </div>
         <div v-if="imagesIsCanUpload"
@@ -43,7 +43,7 @@
     <div v-if="images.length"
          class="pc-preview scroll-x-container">
       <CommentImage v-for="(_img, i) in images"
-                    :cKey="i"
+                    :parentKey="i"
                     :key="i"
                     :removeImageFunc="() => removeImage(i)"
                     :img="_img"
@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import {mapGetters} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 import ModalsMixin from "@/components/mixins/ModalsMixin";
 import CommentImage from "@/components/includes/comment/CommentImage";
 
@@ -66,17 +66,15 @@ export default {
     CommentImage
   },
   props: {
-    cKey: Number,
+    parentKey: Number,
     comment: Object,
-    userLink: String,
+    replyUser: Object,
     checkPCommentsBlockHeightFunc: Function,
     escTextareaFunc: Function,
   },
   mixins: [ModalsMixin],
   data: () => ({
-    text: '',
-    textSpaces: '',
-    linkLength: 0,
+    textIsEmpty: true,
     images: [] /* { src: '', orientation: '' } */
   }),
   computed: {
@@ -86,18 +84,23 @@ export default {
     user() {
       return this.getCurrentUser();
     },
-  },
-  mounted() {
-    this.inputFocus(true);
-  },
-  methods: {
-    ...mapGetters(['getCurrentUser']),
-    textIsEmpty() {
-      return this.text === '';
+    userLink() { /* Если отвечаем на конкретное сообщение юзера, а не на родительское */
+      return (this.replyUser && (this.comment && this.comment.parent)) ? this.replyUser.fullName : null;
+    },
+    commentInputAreaRef() {
+      return this.$refs['commentInputAreaRef_' + this.parentKey];
     },
     isUserLink() {
       return this.userLink && this.userLink !== '';
     },
+  },
+  mounted() {
+    this.inputFocus(true);
+    // console.log(1, this.parentKey);
+  },
+  methods: {
+    ...mapActions(['addCaseComment']),
+    ...mapGetters(['getCurrentUser']),
     uploadImageToMessage($event) {
       const _this = this;
       const files = $event.target.files;
@@ -118,15 +121,13 @@ export default {
         this.inputFocus();
       }
       setTimeout(() => {
-        const commentItemBoxRef = this.$parent.$refs['commentItemBoxRef_' + this.cKey];
-          if (commentItemBoxRef) {
-            setTimeout(() => {
-              commentItemBoxRef.scrollIntoView({
-                block: 'end',
-                inline: 'nearest'
-              });
-            });
-          }
+        const commentItemBoxRef = this.$parent.$refs['commentItemBoxRef_' + this.parentKey];
+        if (commentItemBoxRef) {
+          commentItemBoxRef.scrollIntoView({
+            block: 'end',
+            inline: 'nearest'
+          });
+        }
       }, 20)
     },
     removeImage(i) {
@@ -136,12 +137,55 @@ export default {
     getOrientation(width, height) {
       return (width > height) ? 'landscape' : 'portrait';
     },
-    sendMessage() {
-      
+    sendMessage(e) {
+      const _val = e.target.value;
+      if (e.shiftKey) return; /* Если нажали Shift+Enter, не отправляем сообщение, а только переносим строку */
+      if (_val === '') return;
+      if (_val !== '') {
+        this.addCaseComment({
+          parentKey: this.parentKey,
+          replyUser: this.replyUser,
+          isUserLink: this.isUserLink,
+          comment: this.comment,
+          commentMessage: _val.replace(/^\s+|\s+$/g, ''),
+        }).then(() => {
+          setTimeout(() => {
+            if (!this.parentKey) {
+              const _ref = this.$parent.$refs['pCommentsListRef'];
+              if (_ref) {
+                _ref.scrollTop = _ref.scrollHeight;
+              }
+            } else {
+              const commentItemBoxRef = this.$parent.$refs['commentItemBoxRef_' + this.parentKey];
+              if (commentItemBoxRef) {
+                commentItemBoxRef.scrollIntoView({
+                  block: 'end',
+                  inline: 'nearest'
+                });
+              }
+            }
+          }, 20);
+        });
+        if (this.parentKey) { /* Current user message */
+          this.escTextareaFunc();
+        } else { /* Reply message */
+          this.commentInputAreaRef.value = '';
+          this.textIsEmpty = true;
+        }
+      }
     },
     enteringMessage($event) {
-      this.text = $event.target.value;
-      this.checkPCommentsBlockHeight();
+      const _val = $event.target.value;
+      const breakLines = (_val.match(/\n/g)||[]).length;
+      const totalChars =(_val).length; /* Символы, включая переносы строк */
+      if ((breakLines === 1 && totalChars === 1) || ((breakLines === 0 && totalChars === 0))) {
+        this.commentInputAreaRef.value = '';
+        this.textIsEmpty = true;
+      } else {
+        this.textIsEmpty = false;
+        this.commentInputAreaRef.value = _val;
+        this.checkPCommentsBlockHeight();
+      }
     },
     checkPCommentsBlockHeight() {
       setTimeout(() => {
@@ -151,9 +195,9 @@ export default {
       }, 10)
     },
     inputFocus(isReply=false) {
-      if (this.cKey || (this.cKey === 0)) {
+      if (this.parentKey || (this.parentKey === 0)) {
         setTimeout(() => {
-          const commentInputAreaRef = this.$refs['commentInputAreaRef_' + this.cKey];
+          const commentInputAreaRef = this.commentInputAreaRef;
           if (commentInputAreaRef) {
             commentInputAreaRef.focus();
             if (isReply && this.comment) {
@@ -163,6 +207,9 @@ export default {
           }
         }, 20);
       }
+    },
+    goToUserProfile() {
+      // this.escTextareaFunc();
     },
   },
   watch: {

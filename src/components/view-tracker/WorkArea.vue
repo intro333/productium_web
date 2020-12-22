@@ -43,13 +43,12 @@
 <script>
 import {mapActions, mapGetters} from "vuex";
 import SlideMixin from "@/components/mixins/SlideMixin";
-import CommonMixin from "@/components/mixins/CommonMixin";
 // import {fabric} from "fabric";
 // import {pickerColors} from "@/data/consts";
 
 export default {
   name: "WorkArea",
-  mixins: [SlideMixin, CommonMixin],
+  mixins: [SlideMixin],
   data: () => ({
     fileIsDragOver: false,
     // For resize

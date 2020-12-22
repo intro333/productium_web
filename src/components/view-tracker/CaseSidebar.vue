@@ -123,7 +123,7 @@ export default {
             this.getCasesComments()
                 .filter(_c =>
                     (_c.projectId === parseInt(query.projectId)) &&
-                    (_c.notifyInfo && _c.notifyInfo !== 'archived')));
+                    (_c.notifyInfo && _c.notifyInfo.status !== 'archived')));
         return  filteredComments.reverse();
       } else {
         return [];

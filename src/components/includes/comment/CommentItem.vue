@@ -10,7 +10,13 @@
         <div class="pc-comment-item-message-box"
              :class="{'rgb-base-10': isSelectableComment}">
           <span class="pc-comment-item-body-name">{{comment.user.fullName}}</span>
-          <span class="pc-comment-item-body-message">{{comment.message}}</span>
+          <div class="pc-comment-item-body-message">
+            {{'commentItemBoxRef_' + cKey}}
+            <span v-if="userLink.isUserLink"
+                  @click="userLink.action()"
+                  class="pc-comment-item-body-message-user-link text-ellipsis">{{userLink.name}}</span>
+            <span>{{comment.message}}</span>
+          </div>
         </div>
         <div class="pc-comment-item-body-bottom">
           <span class="pc-comment-item-body-date">{{getDateTime()}}</span>
@@ -29,9 +35,9 @@
         </div>
         <div v-if="isReply"
              class="pc-comment-item-reply">
-          <CommentInputArea :cKey="cKey"
+          <CommentInputArea :parentKey="cKey"
                             :comment="commentToInput"
-                            :userLink="commentToInput.user.fullName"
+                            :replyUser="commentToInput.user"
                             :escTextareaFunc="escTextarea"
                             ref="commentInputAreaRef" />
         </div>
@@ -68,6 +74,27 @@ export default {
     commentToInput: null,
     isSelectableComment: false
   }),
+  computed: {
+    userLink() {
+      if (this.comment.userLink) {
+        const ul = this.comment.userLink;
+        return {
+          isUserLink: true,
+          name: ul.replyUser.fullName + ', ',
+          action: () => {
+            console.log(1, this.$parent.$refs)
+            console.log(2, this.$refs)
+            console.log(3, ul.replyCommentId)
+          }
+        };
+      }
+      return {
+        isUserLink: false,
+        name: '',
+        action: () => {}
+      };
+    }
+  },
   mounted() {
     if (this.cKey === this.selectedCommentId) {
       this.isSelectableComment = true;
@@ -101,7 +128,7 @@ export default {
           const commentInputAreaRef = ciaRefs['commentInputAreaRef_' + this.cKey];
           if (commentInputAreaRef) {
             commentInputAreaRef.focus();
-            // commentInputAreaRef.value = formUserLink(comment.user.fullName, commentInputAreaRef.value);
+            // commentInputAreaRef.value = formreplyUser(comment.user.fullName, commentInputAreaRef.value);
             // commentInputAreaRef.value = `${comment.user.fullName}, `
           }
         }

@@ -4,6 +4,7 @@ import {SlideList} from "@/models/case-tracker/SlideList";
 import {CaseModel} from "@/models/case-tracker/CaseModel";
 import {ShapeModel} from "@/models/case-tracker/ShapeModel";
 import {pickerColors} from "@/data/consts";
+import {CurrentUserModel} from "@/models/CurrentUserModel";
 
 export const mockProjects = [
   new ProjectModel({
@@ -317,14 +318,10 @@ export const mockCaseComments = [
     caseId: 1,
     parent: null,
     message: 'Привет. Здесь надо поменять скругление и может вообще убрать stroke.',
-    user: {
-      fullName: 'Dmitry Kolunov',
-      shortName: 'DK',
-      color: '#FF2727',
-    },
+    user: new CurrentUserModel(2, 'Dmitriy M', 'DM', '#F30C0C'),
     images: [],
     updatedAt: '2020-10-27 18:24:45',
-    notifyInfo: { // join tables, если в таблице case_comment_notification есть запись для текущего юзера, то выести её, если нет то null поставить
+    notifyInfo: { // join tables, если в таблице case_comment_notification есть запись для текущего юзера, то вывести её, если нет то null поставить
       status: 'read', // notRead | read | archived
     }
   },
@@ -336,11 +333,7 @@ export const mockCaseComments = [
     caseId: 1,
     parent: 1,
     message: 'И тебе привет. Я думаю можно сделать как здесь тогда https://ru.wikipedia.org/wiki/Google_%D0%9F%D0%B5%D1%80%D0%B5%D0%B2%D0%BE%D0%B4%D1%87%D0%B8%D0%BA',
-    user: {
-      fullName: 'Genom 89',
-      shortName: '',
-      color: '#b2b2b2',
-    },
+    user: new CurrentUserModel(3, 'Alex G', 'AG', '#466a96'),
     images: [],
     updatedAt: '2020-10-27 18:30:45',
     notifyInfo: {
@@ -354,12 +347,8 @@ export const mockCaseComments = [
     slideListId: 1,
     caseId: 1,
     parent: null,
-    message: 'Привет. Здесь надо поменять скругление и может вообще убрать stroke.',
-    user: {
-      fullName: 'Dmitry Kolunov',
-      shortName: 'DK',
-      color: '#FF2727',
-    },
+    message: 'Когда на слайде пусто, то нет проблем. А когда фигуры есть, то получается наложение. Дело в том, как это выглядит. И сбивает с толку.',
+    user: new CurrentUserModel(1, 'Dmitriy D', 'DD', '#7c4a4a'),
     images: [
       {
         id: 15,
@@ -368,9 +357,7 @@ export const mockCaseComments = [
       }
     ],
     updatedAt: '2020-10-28 19:13:45',
-    notifyInfo: {
-      status: 'read',
-    }
+    notifyInfo: null // Моё сообщение, оно не будет мне показано в оповещении
   },
   {
     id: 4,
@@ -379,12 +366,8 @@ export const mockCaseComments = [
     slideListId: 1,
     caseId: 1,
     parent: 3,
-    message: 'Привет. Здесь надо поменять.',
-    user: {
-      fullName: 'Dmitry Kolunov',
-      shortName: 'DK',
-      color: '#FF2727',
-    },
+    message: 'Если ты выбираешь супертул - значит это новый кейс, а внутри него создается  другие элементы.',
+    user: new CurrentUserModel(2, 'Dmitriy M', 'DM', '#F30C0C'),
     images: [],
     updatedAt: '2020-10-29 01:36:15',
     notifyInfo: {
@@ -398,16 +381,14 @@ export const mockCaseComments = [
     slideListId: 1,
     caseId: 1,
     parent: 3,
-    message: 'Привет. Здесь надо .',
-    user: {
-      fullName: 'Genom 89',
-      shortName: 'DK',
-      color: '#b2b2b2',
-    },
+    message: 'надо проговорить эту логику, в гугл мите с рашаренным экраном.',
+    user: new CurrentUserModel(1, 'Dmitriy D', 'DD', '#7c4a4a'),
     images: [],
     updatedAt: '2020-10-29 01:46:15',
-    notifyInfo: {
-      status: 'notRead',
+    notifyInfo: null,
+    userLink: {
+      replyUser: new CurrentUserModel(2, 'Dmitriy M', 'DM', '#F30C0C'),
+      replyCommentId: 4
     }
   },
   {
@@ -417,14 +398,85 @@ export const mockCaseComments = [
     slideListId: 1,
     caseId: 1,
     parent: null,
-    message: 'Моё сообщение',
-    user: {
-      fullName: 'Derzhaev D',
-      shortName: 'DD',
-      color: '#7c4a4a',
-    },
+    message: 'Привет, сегодня в 12 созвон?',
+    user: new CurrentUserModel(3, 'Alex G', 'AG', '#466a96'),
     images: [],
     updatedAt: '2020-10-30 11:46:15',
-    notifyInfo: null // Моё сообщение, оно не будет мне показано в оповещении
+    notifyInfo: {
+      status: 'notRead',
+    }
+  },
+  { /* SLIDE 2, CASE 2 */
+    id: 7,
+    projectId: 1,
+    slideId: 2,
+    slideListId: 1,
+    caseId: 5,
+    parent: null,
+    message: 'В каналах привлечение (курсы) я отобрал 7 основных, так как их очень много. или надо больше?',
+    user: new CurrentUserModel(3, 'Alex G', 'AG', '#466a96'),
+    images: [],
+    updatedAt: '2020-11-02 11:47:15',
+    notifyInfo: {
+      status: 'read',
+    }
+  },
+  {
+    id: 8,
+    projectId: 1,
+    slideId: 2,
+    slideListId: 1,
+    caseId: 5,
+    parent: 7,
+    message: 'На первом этапе можно ими ограничиться, но если это наша ЦА, то нужно все, дописывай их по ходу пьесы.',
+    user: new CurrentUserModel(2, 'Dmitriy M', 'DM', '#F30C0C'),
+    images: [],
+    updatedAt: '2020-11-02 11:50:25',
+    notifyInfo: {
+      status: 'read',
+    }
+  },
+  {
+    id: 9,
+    projectId: 1,
+    slideId: 2,
+    slideListId: 1,
+    caseId: 5,
+    parent: 7,
+    message: 'на самом деле сейчас сотни курсов, надо тогда границы какие-то',
+    user: new CurrentUserModel(3, 'Alex G', 'AG', '#466a96'),
+    images: [],
+    updatedAt: '2020-11-02 12:01:07',
+    notifyInfo: {
+      status: 'read',
+    }
+  },
+  {
+    id: 10,
+    projectId: 1,
+    slideId: 2,
+    slideListId: 1,
+    caseId: 5,
+    parent: 7,
+    message: 'Я начинал с крупных, где учат не только дизайну, но и разработке и тд, т.е. аудитория наша потенциальная с большим охватом, чем просто дизайнеры. Тут и продакты, и дизы, и разрабы))',
+    user: new CurrentUserModel(1, 'Dmitriy D', 'DD', '#7c4a4a'),
+    images: [],
+    updatedAt: '2020-11-03 14:02:49',
+    notifyInfo: null
+  },
+  {
+    id: 11,
+    projectId: 1,
+    slideId: 2,
+    slideListId: 1,
+    caseId: 5,
+    parent: null,
+    message: 'Парни, на завтра созвон в первую половину дня?',
+    user: new CurrentUserModel(2, 'Dmitriy M', 'DM', '#F30C0C'),
+    images: [],
+    updatedAt: '2020-11-03 15:20:25',
+    notifyInfo: {
+      status: 'notRead',
+    }
   },
 ];

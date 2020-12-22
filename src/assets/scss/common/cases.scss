@@ -200,6 +200,13 @@
           margin-top: 4px;
           padding-right: 17px;
           overflow-wrap: break-word;
+          white-space: pre-wrap;
+          &-user-link {
+            overflow:hidden;
+            font-size: 12px;
+            cursor: pointer;
+            color: $color-base;
+          }
         }
         &-bottom {
           margin-top: 4px;

@@ -44,7 +44,6 @@ export default {
             isItemOfMenu: true,
             title: 'Переименовать',
             action: () => {
-              console.log('ACTION Переименовать');
               this.changeProjectNameEditable(true);
             }
           },
