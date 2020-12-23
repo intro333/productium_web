@@ -122,23 +122,33 @@ const actions = {
   goToSelectedCase({commit, dispatch}, payload) {
     const _case = payload.case;
     const query = router.currentRoute.query;
-    if (query && query.caseId) {
-      const caseId = parseInt(query.caseId);
-      if (payload.isFirstLoad) {
-        commit('SELECT_CASE', payload);
-      }
-      if (caseId !== _case.id) {
-        commit('SELECT_CASE', payload);
-        if (payload.closeCommentsModal && query.commentId) {
-          delete query.commentId;
-          dispatch('setCentralModal', new CentralModalModel());
+    if (_case) {
+      if (query && query.caseId) {
+        const caseId = parseInt(query.caseId);
+        if (payload.isFirstLoad && _case) {
+          commit('SELECT_CASE', payload);
+        } else if (caseId !== _case.id) {
+          commit('SELECT_CASE', payload);
+          if (payload.closeCommentsModal && query.commentId) {
+            delete query.commentId;
+            dispatch('setCentralModal', new CentralModalModel());
+          }
+          setTimeout(() => {
+            router.push({
+              path: '/case-tracker',
+              query: Object.assign({}, query, {caseId: _case.id})
+            });
+          }, 20);
         }
-        setTimeout(() => {
-          router.push({
-            path: '/case-tracker',
-            query: Object.assign({}, query, {caseId: _case.id})
-          });
-        }, 20);
+      }
+    } else {
+      commit('SET_ACTIVE_SHAPE_TOOL', 'rectangleTool');
+      commit('SET_ACTIVE_TOOL', 'superTool');
+      if (payload.isFirstLoad && query.caseId !== '0') {
+        router.push({
+          path: '/case-tracker',
+          query: Object.assign({}, query, {caseId: 0})
+        });
       }
     }
   },

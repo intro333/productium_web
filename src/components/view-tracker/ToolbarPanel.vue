@@ -217,15 +217,21 @@ export default {
       );
     },
     selectActiveTool(tool) {
-      if (tool === 'superTool') {
-        this.setActiveShapeTool('rectangleTool');
-      }
-      this.setActiveTool(tool);
-      setTimeout(() => {
-        if (this.activeSlide && this.activeSlide.canvas) {
-          this.panningHandler(this.activeSlide);
+      const _slide = this.activeSlide;
+      if (_slide) {
+        if (tool === 'superTool') {
+          this.setActiveShapeTool('rectangleTool');
         }
-      }, 50);
+        if (_slide.img && (this.selectedCase || (tool === 'handTool')
+            || (tool === 'superTool'))) { /* Если нет изобюражения и кейса, то рисовать нельзя */
+          this.setActiveTool(tool);
+          setTimeout(() => {
+            if (_slide.canvas) {
+              this.panningHandler(_slide);
+            }
+          }, 50);
+        }
+      }
     },
     shapeActiveToolTitle() {
       switch (this.activeShapeTool) {

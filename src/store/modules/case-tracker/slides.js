@@ -200,7 +200,7 @@ const actions = {
               const slideListId = _slideList.id;
               let _case = null;
               if (payload.isFirstLoad || payload.isRepaint) {
-                if (query && query.caseId) {
+                if (query && query.caseId && parseInt(query.caseId)) {
                   const caseId = parseInt(query.caseId);
                   _case = _cases
                     .find(_c => (_c.id === caseId) && (_c.slideListId === slideListId));
@@ -208,6 +208,9 @@ const actions = {
                     _case = _cases.find(_c => (_c.slideListId === slideListId) &&
                       _c.caseStatus !== 'archived');
                   }
+                } else {
+                  _case = _cases.find(_c => (_c.slideListId === slideListId) &&
+                    _c.caseStatus !== 'archived');
                 }
               } else {
                 _case = _cases.find(_c => (_c.slideListId === slideListId) &&
@@ -273,7 +276,7 @@ const actions = {
                       });
                     }, 200);
                   }
-                  resolve(true);
+                  resolve(null);
                 }
               }, 20);
             } else {

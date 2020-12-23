@@ -34,5 +34,8 @@ export class SlideModel {
     this.imgUrl = _slide.imgUrl;
     this.imgLeft = _slide.imgLeft;
     this.imgTop = _slide.imgTop;
+    this.zoom = _slide.zoom;
+    this.lastClientX = _slide.lastClientX;
+    this.lastClientY = _slide.lastClientY;
   }
 }

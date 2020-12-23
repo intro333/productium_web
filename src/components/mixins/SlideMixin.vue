@@ -145,6 +145,7 @@ export default {
           slide.canvas.freeDrawingBrush.color = getRealColor(_this.activeColor);
           if (slide.zoom && slide.zoom.z) {
             // slide.canvas.zoomToPoint({x: slide.zoom.offsetX, y: slide.zoom.offsetY}, slide.zoom.z);
+            // console.log(1, slide)
             slide.canvas.zoomToPoint({x: slide.canvasWidth / 2, y: slide.canvasHeight / 2}, slide.zoom.z);
             let delta = new fabric.Point(slide.lastClientX, slide.lastClientY);
             slide.canvas.relativePan(delta);
@@ -255,7 +256,6 @@ export default {
                       });
                     }
                   }
-                  console.log(1, fields)
                   _this.changeCaseElemFields(fields);
                 }
               };
@@ -586,7 +586,6 @@ export default {
         if (slide.canvas) {
           if (_case) {
             _case.children.forEach(_child => {
-              console.log(123, _child)
               const shape = this.createShapeObjByCaseChild(_child);
               if (slide.canvas && shape) {
                 slide.canvas.add(shape);
@@ -715,13 +714,15 @@ export default {
       };
     },
     selectActiveToolWithShape(shapeTool) {
-      this.setActiveTool('shapeTool');
-      this.setActiveShapeTool(shapeTool);
-      setTimeout(() => {
-        if (this.activeSlide && this.activeSlide.canvas) {
-          this.panningHandler(this.activeSlide);
-        }
-      }, 50);
+      if (this.selectedCase) {
+        this.setActiveTool('shapeTool');
+        this.setActiveShapeTool(shapeTool);
+        setTimeout(() => {
+          if (this.activeSlide && this.activeSlide.canvas) {
+            this.panningHandler(this.activeSlide);
+          }
+        }, 50);
+      }
     },
 
   },

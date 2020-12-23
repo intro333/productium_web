@@ -22,7 +22,7 @@
                   @keyup.esc="changeCaseDiscusTextareaEdited(false)"
                   @blur="changeCaseDiscusTextareaEdited(false)"
                   @input="changeCaseDiscusTextareaText"
-                  :value="selectedCase[discusBlockActivityState]"
+                  :value="selectedCase[selectedCase.discusBlockActivityState]"
                   class="cd-b-edit-area-text p-textarea-custom scroll-textarea"
                   :readonly="!selectedCase.isDiscusEdited"
                   :class="{'ea-readonly': !selectedCase.isDiscusEdited}"
@@ -52,7 +52,6 @@ export default {
   components: {CaseNameWithStatusAndOptions},
   mixins: [CaseMixin],
   data: () => ({
-    discusBlockActivityState: 'discus',
     discusBlockButtons: [
       {
         title: 'обсуждение',
@@ -70,7 +69,8 @@ export default {
           _c.caseId === this.selectedCase.id);
     },
     readCasesComments() {
-      return this.casesComments.filter(_c => _c.notifyInfo.status === 'read');
+      return this.casesComments.filter(_c => _c.notifyInfo.status === 'read' ||
+          _c.notifyInfo.status === 'fromCurrentUser');
     },
     notReadCasesComments() {
       return this.casesComments.filter(_c => _c.notifyInfo.status === 'notRead');
@@ -84,7 +84,6 @@ export default {
     },
     selectDiscusBlockActivity(_state) {
       this.selectedCase.discusBlockActivityState = _state;
-      this.discusBlockActivityState = _state;
     },
     changeCaseDiscusTextareaEdited(_state) {
       this.selectedCase.isDiscusEdited = _state;
