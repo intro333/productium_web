@@ -125,7 +125,7 @@ export const mockCases = [
     slideListId: 1,
     title: 'Задача 1',
     caseStatus: 'done',
-    isOpen: false,
+    isOpen: true,
     discus: 'Разделы меню по логике должны быть на разных уровнях, но предлагается их поставить на один. Текст про T-mobile нужно подкорректировать.',
     resolut: 'Разделы меню теперь на одном уровне. Текст поправлен.',
     children: [

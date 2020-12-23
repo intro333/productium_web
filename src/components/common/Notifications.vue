@@ -7,10 +7,10 @@
                      :notify="_notify"
       />
     </div>
-    <div v-if="notifications.length"
-         class="p-notifications-more-box box-hover">
-      <p class="p-notifications-more rgb-black-50">загрузить еще</p>
-    </div>
+<!--    <div v-if="notifications.length"-->
+<!--         class="p-notifications-more-box box-hover">-->
+<!--      <p class="p-notifications-more rgb-black-50">загрузить еще</p>-->
+<!--    </div>-->
     <div v-if="!notifications.length"
          class="p-notifications-more-box">
       <p class="p-notifications-more rgb-black-50">У вас нет оповещений</p>

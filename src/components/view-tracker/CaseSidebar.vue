@@ -64,6 +64,7 @@ import ModalsMixin from "@/components/mixins/ModalsMixin";
 import Notifications from "@/components/common/Notifications";
 import CaseMixin from "@/components/mixins/CaseMixin";
 import CaseSidebarItem from "@/components/view-tracker/part/CaseSidebarItem";
+import {sortCasesComments} from "@/functions/conversation";
 
 export default {
   name: "CaseSidebar",
@@ -125,7 +126,9 @@ export default {
                     (_c.projectId === parseInt(query.projectId)) &&
                     (_c.notifyInfo.status !== 'archived') &&
                     _c.notifyInfo.status !== 'fromCurrentUser'));
-        return  filteredComments.reverse();
+        return  filteredComments
+            .reverse()
+            .sort(sortCasesComments);
       } else {
         return [];
       }

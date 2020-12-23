@@ -30,3 +30,12 @@ export function generateColorFromPicker() {
   return pickerColors.black;
 }
 
+export function sortCasesComments(a, b) {
+  if (a.notifyInfo.status !== 'notRead' && b.notifyInfo.status === 'notRead') {
+    return 1;
+  }
+  if (b.notifyInfo.status !== 'notRead' && a.notifyInfo.status === 'notRead') {
+    return -1;
+  }
+  return 0;
+}

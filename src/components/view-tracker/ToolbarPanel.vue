@@ -223,7 +223,7 @@ export default {
           this.setActiveShapeTool('rectangleTool');
         }
         if (_slide.img && (this.selectedCase || (tool === 'handTool')
-            || (tool === 'superTool'))) { /* Если нет изобюражения и кейса, то рисовать нельзя */
+            || (tool === 'superTool'))) { /* Если нет изображения и кейса, то рисовать нельзя */
           this.setActiveTool(tool);
           setTimeout(() => {
             if (_slide.canvas) {

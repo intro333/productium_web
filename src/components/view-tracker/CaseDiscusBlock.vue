@@ -31,8 +31,10 @@
       <div class="cd-b-comments">
         <div v-if="selectedCase"
              class="cd-b-comments-box">
-          <span class="cd-b-comments-text">{{readCasesComments.length}}<span class="cd-b-comments-text-link"
-          >+{{notReadCasesComments.length}}</span></span>
+          <span class="cd-b-comments-text">{{readCasesComments.length}}<span v-if="notReadCasesComments.length"
+                                                                             class="cd-b-comments-text-link"
+          >+{{notReadCasesComments.length}}</span>
+          </span>
           <span @click="openCommentModal()"
                 class="cd-b-comments-text cd-b-comments-text-clickable">comments</span>
         </div>
