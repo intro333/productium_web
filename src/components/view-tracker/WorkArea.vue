@@ -97,7 +97,8 @@ export default {
         const activeSlide = this.activeSlide;
         if (activeSlide && activeSlide.canvas && _case) {
           if (mutation.payload.reloadWithSlide) {
-            this.setCanvasWithClear(activeSlide);
+            // TODO Не помню зачем это делал, но без него работает и не мерцает
+            // this.setCanvasWithClear(activeSlide);
           }
           setTimeout(() => {
             this.clearCaseChildrenFromCanvas(activeSlide);
@@ -106,10 +107,13 @@ export default {
                 this.setCaseChildrenOnCanvas(activeSlide, _case);
               }, 50);
             }
+            this.setIsLoading(false);
           }, 150);
           if (this.activeTool === 'markerTool') {
             this.setActiveTool('moveTool');
           }
+        } else {
+          this.setIsLoading(false);
         }
       } else if (mutation.type === 'SELECT_CASE_CHILD') {
         if (this.activeSlide && this.activeSlide.canvas) {
@@ -220,7 +224,7 @@ export default {
 
   },
   methods: {
-    ...mapActions(['setSlideImg']),
+    ...mapActions(['setSlideImg', 'setIsLoading']),
     ...mapGetters([]),
     uploadImageToCanvasBg($event) {
       const files = $event.target.files;

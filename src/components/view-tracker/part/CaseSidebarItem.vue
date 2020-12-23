@@ -15,7 +15,7 @@
         </div>
         <div v-if="!_case.children.length"
              class="csb-cases-item-triangle"></div>
-        <div @click="selectCase({ _case })"
+        <div @click="selectCaseL({ _case })"
              class="csb-cases-item-text-box">
           <div class="case-status-main csb-cases-item-status"
                :class="{commented: _case.haveNewComments, [_case.caseStatus]: true}">
@@ -47,7 +47,7 @@
       </div>
     </div>
     <div v-if="_case.children.length && _case.isOpen"
-         @click="selectCase({_case, isSelectedChild: true})"
+         @click="selectCaseL({_case, isSelectedChild: true})"
          class="csb-cases-item-children"
          :class="{'rgb-base-10': caseActiveAndSelected}">
       <CaseChildItem v-for="(_child, k) in _case.children"
@@ -92,7 +92,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['selectCase']),
+    ...mapActions(['selectCase', 'setIsLoading']),
     caseRef(_case, i) {
       return 'caseNameInputRef_' + i;
     },
@@ -101,6 +101,10 @@ export default {
     },
     showCaseOptions(_state) {
       this.isShowCaseOptions = _state;
+    },
+    selectCaseL(payload) {
+      this.selectCase(payload);
+      // this.setIsLoading(true);
     },
   },
 }

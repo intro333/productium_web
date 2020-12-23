@@ -101,6 +101,7 @@ const actions = {
     }
   },
   selectSlide({dispatch}, _slide) {
+    dispatch('setIsLoading', true);
     dispatch('selectCaseListAndCaseOfActiveSlide', {
       slide: _slide,
     });
@@ -165,7 +166,7 @@ const actions = {
       }
     });
   },
-  selectCaseListAndCaseOfActiveSlide({commit, getters}, payload) {
+  selectCaseListAndCaseOfActiveSlide({commit, getters, dispatch}, payload) {
     return new Promise((resolve) => {
       const _slide = payload.slide;
       const query = router.currentRoute.query;
@@ -276,14 +277,18 @@ const actions = {
                       });
                     }, 200);
                   }
+                  dispatch('setIsLoading', false);
                   resolve(null);
                 }
               }, 20);
             } else {
+              dispatch('setIsLoading', false);
               router.push('/');
             }
           }, 20);
         }, 20);
+      } else {
+        dispatch('setIsLoading', false);
       }
     });
   },
