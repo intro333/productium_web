@@ -4,6 +4,7 @@
     width: 100%;
     height: calc(100% - 128px);
     background-color: $color-block;
+    outline: none !important;
     .wa {
       &-empty {
         box-sizing: border-box;

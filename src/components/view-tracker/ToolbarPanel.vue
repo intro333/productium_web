@@ -28,7 +28,7 @@
              @click="selectActiveTool('moveTool')"
              ref="controlRef"
              class="tp-icon-box tp-icon-box-2"
-             :class="{active: activeTool === 'moveTool'}">
+             :class="{active: activeTool === 'moveTool' || activeTool === 'hiddenHandTool'}">
           <img src="@/assets/img/case-tracker/toolbar_panel/control.svg"
                class="tp-icon-item tp-icon-img"
                alt="">

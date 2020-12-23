@@ -1,5 +1,6 @@
 <template>
   <div class="work-area"
+       id="workAreaId"
        ref="workAreaRef">
     <div v-if="!activeSlide">
       <p>Нет слайда</p>
@@ -43,8 +44,6 @@
 <script>
 import {mapActions, mapGetters} from "vuex";
 import SlideMixin from "@/components/mixins/SlideMixin";
-// import {fabric} from "fabric";
-// import {pickerColors} from "@/data/consts";
 
 export default {
   name: "WorkArea",
@@ -55,18 +54,28 @@ export default {
     rTime: 0,
     timeout: false,
     delta: 50,
+    EListenerSpaceDown: null,
+    EListenerSpaceDownIsStart: false,
+    EListenerSpaceUp: null,
   }),
   mounted() {
-    // this.keyUpCtrlEvent(() => {
-    //   if (this.zoomOffsetX !== undefined) {
-    //     this.changeSlideZoom({
-    //       offsetX: this.zoomOffsetX,
-    //       offsetY: this.zoomOffsetY,
-    //       z: this.zoomZ,
-    //       updateCanvas: false
-    //     });
-    //   }
-    // });
+    setTimeout(() => {
+      window.addEventListener('resize', this.browserResize);
+      const EListenerSpaceDown = this.EListenerSpaceDown = (event) => {
+        if (!this.EListenerSpaceDownIsStart && event.code === 'Space' && this.selectedCase) {
+          this.setActiveTool('hiddenHandTool');
+          this.EListenerSpaceDownIsStart = true;
+        }
+      };
+      document.addEventListener('keydown', EListenerSpaceDown, true);
+      const EListenerSpaceUp = this.EListenerSpaceUp = (event) => {
+        if (event.code === 'Space' && this.selectedCase) {
+          this.setActiveTool('moveTool');
+          this.EListenerSpaceDownIsStart = false;
+        }
+      };
+      document.addEventListener('keyup', EListenerSpaceUp, true);
+    }, 50);
     this.selectSlideUnsubscribe = this.$store.subscribe((mutation) => {
       if (mutation.type === 'SELECT_SLIDE') {
         if (mutation.payload) {
@@ -183,6 +192,7 @@ export default {
       } else if (mutation.type === 'SET_ACTIVE_TOOL') {
         if (this.activeSlide && this.activeSlide.canvas) {
           this.panningHandler(this.activeSlide);
+          this.activeSlide.canvas.renderAll();
         }
       }
     });
@@ -194,7 +204,6 @@ export default {
         });
       }
     }, 1000);
-    window.addEventListener('resize', this.browserResize)
   },
   beforeDestroy() {
     if (this.selectSlideUnsubscribe) {
@@ -202,7 +211,10 @@ export default {
     }
     window.removeEventListener('drop', this.uploadImageToCanvasBg);
     window.removeEventListener('resize', this.browserResize);
-    // this.keyUpEnterEscEventRemove();
+    document.removeEventListener('keydown', this.EListenerSpaceDown, true);
+    this.EListenerSpaceDown = null;
+    document.removeEventListener('keyup', this.EListenerSpaceUp, true);
+    this.EListenerSpaceUp = null;
   },
   computed: {
 

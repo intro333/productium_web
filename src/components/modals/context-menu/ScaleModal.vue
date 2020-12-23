@@ -1,8 +1,8 @@
 <template>
   <div class="p-scale">
     <div class="p-scale-input-box">
-      <the-mask :mask="['###%', '##%', '#%']"
-                id="authLoginPhone"
+      <the-mask id="scaleInputId"
+                :mask="['###%', '##%', '#%']"
                 class="p-scale-input"
                 :value="scalePercent"
                 @input="changeScalePercent($event)" />
@@ -19,26 +19,41 @@
 import ContextMenuItem from "@/components/includes/ContextMenuItem";
 import {mapActions, mapGetters} from "vuex";
 import {zoomConst} from "@/data/consts";
-import CommonMixin from "@/components/mixins/CommonMixin";
+// import CommonMixin from "@/components/mixins/CommonMixin";
 
 export default {
   name: "ScaleModal",
-  mixins: [CommonMixin],
+  // mixins: [CommonMixin],
   props: ['contextMenu'],
   data: () => ({
     scalePercent: 100,
     doActionBeforeDestroy: true,
+    EListenerEnterScalePercent: null
   }),
   mounted() {
     this.scalePercent = (this.activeSlideZoom && this.activeSlideZoom.z) ?
         Math.round(this.activeSlideZoom.z * 100) : 100;
-    this.keyUpEnterEscEvent(() => { this.enterScalePercent() }, () => {  });
+    setTimeout(() => {
+      const scaleInputId = document.getElementById('scaleInputId');
+      if (scaleInputId) {
+        const EListenerEnterScalePercent = this.EListenerEnterScalePercent = (event) => {
+          if (event.code === 'Enter' || event.code === 'NumpadEnter') {
+            this.enterScalePercent();
+          }
+        };
+        scaleInputId.addEventListener('keyup', EListenerEnterScalePercent, true);
+      }
+    }, 50);
   },
   beforeDestroy() {
     if (this.doActionBeforeDestroy) {
       this.enterScalePercent();
     }
-    this.keyUpEnterEscEventRemove();
+    const scaleInputId = document.getElementById('scaleInputId');
+    if (scaleInputId) {
+      scaleInputId.removeEventListener('keyup', this.EListenerEnterScalePercent, true);
+      this.EListenerEnterScalePercent = null;
+    }
   },
   components: {
     ContextMenuItem

@@ -5,9 +5,6 @@ import {fabric} from "fabric";
 import CanvasMixin from "@/components/mixins/CanvasMixin";
 import {ShapeModel} from "@/models/case-tracker/ShapeModel";
 import {zoomConst} from "@/data/consts";
-// import {getObjectOffsetByZoom, getOffsetByZoom} from "@/functions/calculations";
-// import {getOffsetByZoom} from "@/functions/calculations";
-// import {pickerColors} from "@/data/consts";
 
 const STATE_IDLE = 'idle';
 const STATE_PANNING = 'panning';
@@ -61,7 +58,7 @@ export default {
       return this.getActiveShapeTool();
     },
     dragMode() {
-      return this.activeTool === 'handTool';
+      return this.activeTool === 'handTool' || this.activeTool === 'hiddenHandTool';
     },
     moveMode() {
       return this.activeTool === 'moveTool';
@@ -663,6 +660,8 @@ export default {
         case 'markerTool':
           return 'alias';
         case 'handTool':
+          return 'pointer';
+        case 'hiddenHandTool':
           return 'pointer';
         case 'shapeTool':
           return 'crosshair';
