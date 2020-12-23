@@ -18,7 +18,6 @@ export default {
     ...mapActions(['setContextMenuBase', 'setTooltip']),
     ...mapGetters(['getContextMenuBase', 'getTooltip']),
     showTooltip($event, _refStr, title, isRefOfItem = false) {
-
       this.isItemMenuHovered = true;
       const timeout = this.tp.state ? 0 : 1000;
       this.showTooltipTimeout = setTimeout(() => {

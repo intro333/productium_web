@@ -3,9 +3,16 @@ import App from './App.vue';
 import router from './router';
 import store from './store';
 import device from "vue-device-detector";
+import { fabric } from 'fabric';
+import VueTheMask from 'vue-the-mask';
+import Clipboard from 'v-clipboard';
 
 Vue.config.productionTip = false;
+Vue.use(VueTheMask);
 Vue.use(device);
+Vue.use(fabric);
+Vue.use(Clipboard);
+
 import "./assets/scss/app.scss";
 import middlewarePipeline from "./router/middleware/middlewarePipeline";
 

@@ -1,13 +1,14 @@
 <template>
   <div class="case-discus">
     <div class="case-discus-header">
-      <CaseNameWithStatusAndOptions :selectedCase="selectedCase" />
+      <CaseNameWithStatusAndOptions />
       <div class="cd-h-right">
         <div v-for="(_item, i) in discusBlockButtons"
              :key="i"
              @click="selectDiscusBlockActivity(_item.discusBlockActivityState)"
              class="p-text-box">
-          <span class="cd-h-right-item"
+          <span v-if="selectedCase"
+                class="cd-h-right-item"
                 :class="{active: isActiveDiscusBlockActivityState(_item.discusBlockActivityState)}"
           >{{_item.title}}</span>
         </div>
@@ -15,21 +16,25 @@
     </div>
     <div class="case-discus-body">
       <div class="cd-b-edit-area">
-        <textarea ref="caseDiscusTextareaRef"
+        <textarea v-if="selectedCase"
+                  ref="caseDiscusTextareaRef"
                   @click="changeCaseDiscusTextareaEdited(true)"
                   @keyup.esc="changeCaseDiscusTextareaEdited(false)"
                   @blur="changeCaseDiscusTextareaEdited(false)"
                   @input="changeCaseDiscusTextareaText"
-                  :value="selectedCase[discusBlockActivityState]"
+                  :value="selectedCase[selectedCase.discusBlockActivityState]"
                   class="cd-b-edit-area-text p-textarea-custom scroll-textarea"
                   :readonly="!selectedCase.isDiscusEdited"
                   :class="{'ea-readonly': !selectedCase.isDiscusEdited}"
                   :placeholder="`Опишите ${(selectedCase.discusBlockActivityState === 'discus') ? 'задачу' : 'решение'}...`"></textarea>
       </div>
       <div class="cd-b-comments">
-        <div class="cd-b-comments-box">
-          <span class="cd-b-comments-text">{{readCasesComments.length}}<span class="cd-b-comments-text-link"
-          >+{{notReadCasesComments.length}}</span></span>
+        <div v-if="selectedCase"
+             class="cd-b-comments-box">
+          <span class="cd-b-comments-text">{{readCasesComments.length}}<span v-if="notReadCasesComments.length"
+                                                                             class="cd-b-comments-text-link"
+          >+{{notReadCasesComments.length}}</span>
+          </span>
           <span @click="openCommentModal()"
                 class="cd-b-comments-text cd-b-comments-text-clickable">comments</span>
         </div>
@@ -49,7 +54,6 @@ export default {
   components: {CaseNameWithStatusAndOptions},
   mixins: [CaseMixin],
   data: () => ({
-    discusBlockActivityState: 'discus',
     discusBlockButtons: [
       {
         title: 'обсуждение',
@@ -62,28 +66,16 @@ export default {
     ]
   }),
   computed: {
-    selectedCase() {
-      const query = this.$route.query;
-      if (query && query.caseId) {
-        const foundCase = this.getCases()
-            .find(_c => _c.id === parseInt(query.caseId));
-        if (foundCase) {
-          return foundCase;
-        }
-      }
-      return null;
-    },
     casesComments() {
       return this.getCasesComments().filter(_c =>
           _c.caseId === this.selectedCase.id);
     },
     readCasesComments() {
-      return this.casesComments.filter(_c => _c.notifyInfo &&
-          _c.notifyInfo.status === 'read');
+      return this.casesComments.filter(_c => _c.notifyInfo.status === 'read' ||
+          _c.notifyInfo.status === 'fromCurrentUser');
     },
     notReadCasesComments() {
-      return this.casesComments.filter(_c => _c.notifyInfo &&
-          _c.notifyInfo.status === 'notRead');
+      return this.casesComments.filter(_c => _c.notifyInfo.status === 'notRead');
     },
   },
   methods: {
@@ -94,7 +86,6 @@ export default {
     },
     selectDiscusBlockActivity(_state) {
       this.selectedCase.discusBlockActivityState = _state;
-      this.discusBlockActivityState = _state;
     },
     changeCaseDiscusTextareaEdited(_state) {
       this.selectedCase.isDiscusEdited = _state;

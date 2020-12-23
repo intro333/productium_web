@@ -4,6 +4,7 @@
     width: 100%;
     height: calc(100% - 128px);
     background-color: $color-block;
+    outline: none !important;
     .wa {
       &-empty {
         box-sizing: border-box;
@@ -18,6 +19,10 @@
             position: relative;
             display: flex;
             flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 400px;
+            height: 200px;
           }
           text-align: center;
           font-size: 14px;
@@ -36,14 +41,19 @@
             position: absolute;
             opacity: 0;
             overflow: hidden;
+            top: 0;
             right: 0;
             width: 105px;
           }
         }
         &-is-dropped {
-          //border: 2px dashed rgb(0, 0, 0, .3);
           background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' stroke='%230000004D' stroke-width='4' stroke-dasharray='20%2c 20' stroke-dashoffset='50' stroke-linecap='butt'/%3e%3c/svg%3e");
+          //border: 2px dashed rgb(0, 0, 0, .3);
         }
+      }
+      &-canvas-box {
+        width: 100%;
+        height: 100%;
       }
     }
   }

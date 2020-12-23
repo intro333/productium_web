@@ -1,5 +1,6 @@
 <template>
-  <div class="case-info">
+  <div v-if="selectedCase"
+       class="case-info">
     <div class="case-info-case-status"
          :class="{[selectedCase.caseStatus]: true}"></div>
     <div v-if="!selectedCase.isEdited"
@@ -20,12 +21,15 @@
            :class="{'case-info-case-title-black': isBlack}">
     <img v-if="!selectedCase.isEdited"
          @click="openCaseOptionsMenu(167, 'caseNameOptionsRef', 'caseNameInputRef',
-               selectedCase, 'down', false)"
+               selectedCase, '_case','down', false)"
          ref="caseNameOptionsRef"
          :src="arrowImg()"
          class="case-info-case-arrow select-arrow"
          :style="{opacity: isBlack ? 1 : .7}"
          alt="">
+  </div>
+  <div v-else>
+    <span style="color: white; font-size: 14px;">Case not selected</span>
   </div>
 </template>
 
@@ -34,11 +38,10 @@ import CaseMixin from "@/components/mixins/CaseMixin";
 
 export default {
   name: "CaseNameWithStatusAndOptions",
-  props: ['selectedCase', 'isBlack'],
+  props: {
+    isBlack: Boolean
+  },
   mixins: [CaseMixin],
-  data: () => ({
-    
-  }),
   methods: {
     arrowImg() {
       const img = this.isBlack ? 'selectArrowGrey' : 'selectArrow';

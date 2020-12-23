@@ -7,9 +7,10 @@
                    :comment="_item"
                    :key="_item.id"
                    :selectedCommentId="cm.commentId"
+                   :contextMenu="cm"
                    :cKey="_item.id" />
     </div>
-    <CommentInputArea :cKey="0"
+    <CommentInputArea :parentKey="0"
                       :checkPCommentsBlockHeightFunc="checkPCommentsBlockHeight" />
   </div>
 </template>
@@ -39,7 +40,8 @@ export default {
       const query = this.$route.query;
       if (query && query.caseId) {
         const filteredComments = this.getCasesComments()
-            .filter(_c => _c.caseId === parseInt(query.caseId));
+            .filter(_c => (_c.caseId === parseInt(query.caseId)) &&
+                _c.notifyInfo.status !== 'archived');
         return fillCasesCommentsTree(filteredComments);
       }
       return [];

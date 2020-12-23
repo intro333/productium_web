@@ -1,8 +1,11 @@
 <template>
   <div class="pc-preview-item"
        :class="['pc-preview-item-' + img.orientation]"> <!-- portrait | landscape -->
-    <img :src="img.src" alt="">
-    <div @click="removeImage()"
+    <img :src="img.src ? img.src : img.imgBase64" alt=""
+         class="pc-preview-item-img"
+         :class="'pc-preview-item-img-' + img.orientation">
+    <div v-if="removeImageFunc"
+         @click="removeImage()"
          class="p-btn-preview pc-preview-item-close">
       <img src="@/assets/img/common/buttons/closeWhite.svg"
            alt=""
@@ -17,7 +20,8 @@ export default {
   props: {
     img: Object,
     removeImageFunc: Function,
-    cKey: Number
+    cKey: Number,
+    imgForPreview: Boolean
   },
   methods: {
     removeImage() {

@@ -12,7 +12,6 @@
           <span class="share-first-name">CaseMaker</span>
         </div>
         <CaseNameWithStatusAndOptions v-if="selectedCase && cm.type === 'CommentsModal'"
-                                      :selectedCase="selectedCase"
                                       :isBlack="true" />
         <div @click="close"
              class="mc-header-close">

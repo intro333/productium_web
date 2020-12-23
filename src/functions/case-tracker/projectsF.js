@@ -1,3 +1,5 @@
+import {generateColorFromPicker} from "@/functions/conversation";
+
 export function slidesOfProjectFilterWithSelect(_slides, projectId, slideId) {
   return _slides.filter(_s => {
     if (_s.slideState !== 'archived' && _s.projectId === projectId) {
@@ -26,4 +28,31 @@ export function fillCasesCommentsTree(comments) {
       }
     });
   return result;
+}
+
+export function getRealColor(stroke) {
+  return (stroke === 'auto') ? `#${generateColorFromPicker()}` :
+    `#${stroke.replace(/#/g, '')}`;
+}
+
+/* Автоинкремент для названия элемента кейса */
+export function shapeTitleAutoIncrement(shapeObj, objsByType) {
+  let title = shapeObj.title;
+  const nums = [];
+  objsByType.forEach(_o2 => {
+    const titleNoChars = _o2.title.replace( /^\D+/g, '');
+    if (titleNoChars !== '') {
+      nums.push(parseInt(titleNoChars));
+    }
+  }); /* Оставить только цифры */
+  if (nums.length) {
+    const maxNum =  Math.max.apply(null, nums);
+    if (maxNum) {
+      title += ' ' + (maxNum+1);
+    }
+  } else {
+    title += ' 1';
+  }
+
+  return title;
 }

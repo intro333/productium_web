@@ -3,12 +3,19 @@
        :key="i"
        @mouseenter="hoverMenuItem"
        @click="clickItem"
-       class="cm-list-item">
-    <span class="cm-list-item-text">{{item.title}}</span>
+       class="cm-list-item"
+       :class="{'is-disable': item.isDisable}">
+    <span class="cm-list-item-text"
+          :class="{'is-disable': item.isDisable}">{{item.title}}</span>
     <img v-if="item.subMenu && item.subMenu.length"
          src="@/assets/img/common/context-menu-arrow.svg"
          class="cm-list-item-arrow"
          alt="">
+    <input v-if="item.isFileInput && !item.isDisable"
+           accept="image/png,image/jpeg,image/jpg,image/svg"
+           @change="item.fileAction"
+           type="file"
+           class="cm-list-item-input">
   </div>
   <div v-else class="cm-divider"> </div>
 </template>

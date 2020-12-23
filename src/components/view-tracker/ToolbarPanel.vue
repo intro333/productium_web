@@ -1,7 +1,8 @@
 <template>
   <div class="toolbar-panel">
     <div class="tp-block tp-left">
-      <div @mouseenter="showTooltip($event, 'logoRef','Перейти к проектам')"
+      <div @click="goToProjects()"
+           @mouseenter="showTooltip($event, 'logoRef','Перейти к проектам')"
            @mouseleave="hideToolTip"
            ref="logoRef"
            class="tp-icon-box">
@@ -24,31 +25,46 @@
       <div class="tp-right-first">
         <div @mouseenter="showTooltip($event, 'controlRef','Перемещать')"
              @mouseleave="hideToolTip"
+             @click="selectActiveTool('moveTool')"
              ref="controlRef"
-             class="tp-icon-box tp-icon-box-2">
+             class="tp-icon-box tp-icon-box-2"
+             :class="{active: activeTool === 'moveTool' || activeTool === 'hiddenHandTool'}">
           <img src="@/assets/img/case-tracker/toolbar_panel/control.svg"
                class="tp-icon-item tp-icon-img"
                alt="">
         </div>
-        <div @mouseenter="showTooltip($event, 'textRef','Текст')"
+<!--        <div @mouseenter="showTooltip($event, 'textRef','Текст')"-->
+<!--             @mouseleave="hideToolTip"-->
+<!--             ref="textRef"-->
+<!--             class="tp-icon-box tp-icon-box-2"-->
+<!--             :class="{active: activeTool === 'textTool'}">-->
+<!--          <img src="@/assets/img/case-tracker/toolbar_panel/text.svg"-->
+<!--               class="tp-icon-item tp-icon-img"-->
+<!--               alt="">-->
+<!--        </div>-->
+        <div @mouseenter="showTooltip($event, 'markerRef','Маркер')"
              @mouseleave="hideToolTip"
-             ref="textRef"
-             class="tp-icon-box tp-icon-box-2">
-          <img src="@/assets/img/case-tracker/toolbar_panel/text.svg"
+             @click="selectActiveTool('markerTool')"
+             ref="markerRef"
+             class="tp-icon-box tp-icon-box-2"
+             :class="{active: activeTool === 'markerTool'}">
+          <img src="@/assets/img/case-tracker/toolbar_panel/marker.svg"
                class="tp-icon-item tp-icon-img"
                alt="">
         </div>
         <div ref="shapeRef"
              class="tp-icon-box tp-icon-box-5"
-             :class="{hovered: (contextMenu.state && contextMenu.type === 'ShapesModal')}">
-          <div @mouseenter="showTooltip($event, 'shapeRef','Прямоугольник')"
+             :class="{hovered: (contextMenu.state && contextMenu.type === 'ShapesModal'),
+                active: activeTool === 'shapeTool'}">
+          <div @mouseenter="showTooltip($event, 'shapeRef', shapeActiveToolTitle())"
                @mouseleave="hideToolTip"
+               @click="selectActiveTool('shapeTool')"
                class="tp-icon-item-box">
-            <img src="@/assets/img/case-tracker/toolbar_panel/rectangle.svg"
+            <img :src="shapeSvg()"
                  class="tp-icon-item tp-icon-img tp-icon-img-rect"
                  alt="">
           </div>
-          <img @click="openContextMenu('ShapesModal', 165, 'shapeRef')"
+          <img @click="openContextMenu('ShapesModal', 165, 'shapeRef', false, shapesModalBody())"
                @mouseenter="showTooltip($event, 'shapeRef','Инструменты')"
                @mouseleave="hideToolTip"
                src="@/assets/img/common/selectArrow.svg"
@@ -68,9 +84,21 @@
         </div>
         <div @mouseenter="showTooltip($event, 'superToolRef','СуперТул')"
              @mouseleave="hideToolTip"
+             @click="selectActiveTool('superTool')"
              ref="superToolRef"
-             class="tp-icon-box tp-icon-box-4 active">
-          <img src="@/assets/img/case-tracker/toolbar_panel/superTool.svg"
+             class="tp-icon-box tp-icon-box-4"
+             :class="{active: activeTool === 'superTool'}">
+          <img class="tp-icon-item tp-icon-img tp-icon-img-into-content"
+               :class="{active: activeTool === 'superTool', 'not-active': activeTool !== 'superTool'}"
+               alt="">
+        </div>
+        <div @mouseenter="showTooltip($event, 'handToolRef','Hand Tool')"
+             @mouseleave="hideToolTip"
+             @click="selectActiveTool('handTool')"
+             ref="handToolRef"
+             class="tp-icon-box tp-icon-box-4"
+             :class="{active: activeTool === 'handTool'}">
+          <img src="@/assets/img/case-tracker/toolbar_panel/handTool.svg"
                class="tp-icon-item tp-icon-img"
                alt="">
         </div>
@@ -98,7 +126,7 @@
         <div @click="openContextMenu('ScaleModal', 208, 'scaleRef', true)"
              ref="scaleRef"
              class="tp-icon-box tp-icon-box-2-2">
-          <p class="tp-icon-item tp-text">100%</p>
+          <p class="tp-icon-item tp-text">{{zoomPercent}}%</p>
           <img src="@/assets/img/common/selectArrow.svg"
                class="tp-icon-item select-arrow"
                alt="">
@@ -138,20 +166,21 @@ import ModalsMixin from "@/components/mixins/ModalsMixin";
 import {getModalPositionFunc} from "@/functions/calculations";
 import {CentralModalModel} from "@/models/modals/CentralModalModel";
 import ProjectMixin from "@/components/mixins/ProjectMixin";
+import SlideMixin from "@/components/mixins/SlideMixin";
 
 export default {
   name: "ToolbarPanel",
-  mixins: [ModalsMixin, ProjectMixin],
-  data: () => ({
-
-  }),
+  mixins: [ModalsMixin, ProjectMixin, SlideMixin],
   computed: {
     contextMenu() {
       return this.getContextMenuBase();
     },
-  },
-  created() {
-
+    zoomPercent() {
+      if (this.activeSlide && this.activeSlide.zoom) {
+        return Math.round(this.activeSlide.zoom.z * 100);
+      }
+      return 100;
+    }
   },
   methods: {
     ...mapActions(['setContextMenuBase', 'setCentralModal']),
@@ -186,6 +215,40 @@ export default {
               'ShareModal',
               500,)
       );
+    },
+    selectActiveTool(tool) {
+      const _slide = this.activeSlide;
+      if (_slide) {
+        if (tool === 'superTool') {
+          this.setActiveShapeTool('rectangleTool');
+        }
+        if (_slide.img && (this.selectedCase || (tool === 'handTool')
+            || (tool === 'superTool'))) { /* Если нет изображения и кейса, то рисовать нельзя */
+          this.setActiveTool(tool);
+          setTimeout(() => {
+            if (_slide.canvas) {
+              this.panningHandler(_slide);
+            }
+          }, 50);
+        }
+      }
+    },
+    shapeActiveToolTitle() {
+      switch (this.activeShapeTool) {
+        case 'rectangleTool':
+          return 'Прямоугольник';
+        case 'ellipseTool':
+          return 'Эллипс';
+        default:
+          return 'Прямоугольник';
+      }
+    },
+    shapeSvg() {
+      return require('@/assets/img/case-tracker/toolbar_panel/shapes/' + this.activeShapeTool
+          .replace(/Tool/g, '') + '.svg');
+    },
+    goToProjects() {
+      this.$router.push('/'); // TODO Редиректить к списку проектов
     },
   }
 }

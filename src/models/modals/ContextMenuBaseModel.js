@@ -7,12 +7,13 @@ export class ContextMenuBaseModel {
   left = 0;
   triangle = null; // up | down | null
   body = null;
+  cKey = null;
 
   /* MORE FIELDS (optional) */
   position = 'fixed';
   zIndex = 5;
 
-  set(state, type, width, top, left, triangle, body= null) {
+  set(state, type, width, top, left, triangle, body= null, cKey = null) {
     this.state = state;
     this.type = type;
     this.width = width;
@@ -20,6 +21,7 @@ export class ContextMenuBaseModel {
     this.left = left;
     this.triangle = triangle;
     this.body = body;
+    this.cKey = cKey;
 
     return this;
   }

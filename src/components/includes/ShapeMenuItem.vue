@@ -10,9 +10,11 @@
          class="cm-list-shape-selected"> </div>
     <img :src="getImageIcon()"
          class="cm-list-shape-icon"
-         :class="{'cm-list-shape-arrow': (this.item.type === 'arrow' || this.item.type === 'line')}"
+         :class="{'cm-list-shape-arrow': (this.item.type === 'arrow' || this.item.type === 'line'),
+            disabled: item.isDisabled}"
          alt="">
-    <span class="cm-list-shape-text">{{item.title}}</span>
+    <span class="cm-list-shape-text"
+          :class="{disabled: item.isDisabled}">{{item.title}}</span>
   </div>
 </template>
 
@@ -25,7 +27,7 @@ export default {
   props: {
     i: Number,
     item: Object,
-    isActive: Boolean
+    isActive: Boolean,
   },
   methods: {
     ...mapActions(['setContextMenuBase']),

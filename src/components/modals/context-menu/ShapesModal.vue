@@ -1,6 +1,6 @@
 <template>
   <div class="cm-list">
-    <ShapeMenuItem v-for="(item, i) in shapeList"
+    <ShapeMenuItem v-for="(item, i) in list"
                    :key="i"
                    :isActive="activeShape.type === item.type"
                    :item="item" />
@@ -17,43 +17,23 @@ export default {
     ShapeMenuItem
   },
   computed: {
+    cm() {
+      return this.contextMenu();
+    },
+    body() {
+      return this.cm.body ? this.cm.body : null;
+    },
+    list() {
+      return (this.body && this.body.list) ? this.body.list : [];
+    },
+    activeTool() {
+      return (this.body && this.body.activeTool) ? this.body.activeTool : null;
+    },
     activeShape() {
       return {
-        type: 'rectangle'
+        type: this.activeTool ? this.activeTool.replace(/Tool/g, '') : null
       }
     }
   },
-  data: () => ({
-    shapeList: [
-      {
-        title: 'Прямоугольник',
-        type: 'rectangle',
-        action: () => {
-          console.log('ACTION Прямоугольник')
-        }
-      },
-      {
-        title: 'Эллипс',
-        type: 'circle',
-        action: () => {
-          console.log('ACTION Эллипс')
-        }
-      },
-      {
-        title: 'Стрелка',
-        type: 'arrow',
-        action: () => {
-          console.log('ACTION Стрелка')
-        }
-      },
-      {
-        title: 'Линия',
-        type: 'line',
-        action: () => {
-          console.log('ACTION Линия')
-        }
-      },
-    ]
-  }),
 }
 </script>

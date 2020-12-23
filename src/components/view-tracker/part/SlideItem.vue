@@ -1,12 +1,19 @@
 <template>
-  <div class="sl-b-box">
+  <div @mouseover="showSlideOptions(true)"
+       @mouseleave="showSlideOptions(false)"
+       class="sl-b-box">
     <span class="sl-b-num">{{cKey+1}}</span>
     <div @click="selectSlide(slide)"
          class="sl-b-slide"
-         :class="['sl-b-slide-' + slide.slideState, slide.isSelected && 'sl-b-slide-active']">
+         :class="['sl-b-slide-' + slideState, slide.isSelected && 'sl-b-slide-active']">
       <div class="sl-b-slide-bg"
-           :class="['sl-b-slide-bg-' + slide.slideState]">
-        <img src="@/assets/img/case-tracker/slide-sidebar/noImage.svg"
+           :class="['sl-b-slide-bg-' + slideState]">
+        <img v-if="!slide.img"
+             src="@/assets/img/case-tracker/slide-sidebar/noImage.svg"
+             class="sl-b-slide-bg-no-img"
+             alt="">
+        <img v-if="slide.img"
+             :src="slide.imgUrl ? slide.imgUrl : slide.imgBase64"
              class="sl-b-slide-bg-img"
              alt="">
       </div>
@@ -14,7 +21,9 @@
            class="notify-circle sl-b-slide-notify"
            :class="{'of-selected': slide.isSelected}"></div>
     </div>
-    <img @click="openOptionsMenu(134, 'optionsRef')"
+    <img v-if="isShowSlideOptions || (contextMenu.state && contextMenu.cKey === cKey &&
+      (contextMenu.body) && contextMenu.body.subject === 'slide')"
+         @click="openOptionsMenu(134, 'optionsRef')"
          :ref="'optionsRef'"
          src="@/assets/img/common/options.svg"
          class="sl-b-options"
@@ -32,22 +41,43 @@ export default {
   props: {
     slide: Object,
     cKey: Number,
-    slidesLength: Number
+    slidesLength: Number,
+    cases: Array
   },
+  data: () => ({
+    isShowSlideOptions: false,
+  }),
   computed: {
+    contextMenu() {
+      return this.getContextMenuBase();
+    },
     casesComments() {
       return this.getCasesComments().filter(_c =>
           _c.slideId === this.slide.id);
     },
     isNotify() {
-      const result = this.casesComments.find(_c =>
-          _c.notifyInfo && _c.notifyInfo.status === 'notRead');
+      const result = this.casesComments.find(_c => _c.notifyInfo.status === 'notRead');
       return !!result;
-    }
+    },
+    slideCases() {
+      return this.cases.filter(_c => _c.slideId === this.slide.id);
+    },
+    slideIsWork() {
+      return this.slideCases.filter(_c =>
+          _c.caseStatus === 'in-work')
+          .length;
+    },
+    slideState() {
+      if (this.slideCases.length) {
+        return this.slideIsWork ? 'in-work' : 'done';
+      } else {
+        return 'empty';
+      }
+    },
   },
   methods: {
     ...mapActions(['setContextMenuBase', 'removeSlide', 'selectSlide']),
-    ...mapGetters(['getCasesComments']),
+    ...mapGetters(['getCasesComments', 'getContextMenuBase']),
     openOptionsMenu(width, _refStr) {
       const _ref = this.$refs[_refStr];
       if (_ref && _ref.getBoundingClientRect()) {
@@ -80,11 +110,16 @@ export default {
 
                       }
                     }
-                  ]
-                })
+                  ],
+                  subject: 'slide'
+                },
+                this.cKey)
         );
       }
     },
+    showSlideOptions(_state) {
+      this.isShowSlideOptions = _state;
+    }
   }
 }
 </script>

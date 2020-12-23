@@ -1,5 +1,5 @@
 <script>
-import {ProjectModel} from "@/models/modals/case-tracker/ProjectModel";
+import {ProjectModel} from "@/models/case-tracker/ProjectModel";
 import {mapGetters} from "vuex";
 
 export default {
@@ -44,7 +44,6 @@ export default {
             isItemOfMenu: true,
             title: 'Переименовать',
             action: () => {
-              console.log('ACTION Переименовать');
               this.changeProjectNameEditable(true);
             }
           },
@@ -64,7 +63,7 @@ export default {
           },
         ]
       };
-    }
+    },
   },
 }
 </script>

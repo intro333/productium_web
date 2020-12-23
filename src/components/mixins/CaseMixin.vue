@@ -9,12 +9,13 @@ export default {
     cases: [],
   }),
   created() {
-    this.fetchCasesL();
     this.removeCaseUnsubscribe = this.$store.subscribe((mutation) => {
       if (mutation.type === 'REMOVE_CASE') {
         if (mutation.payload) {
           this.fetchCasesL();
         }
+      } else if (mutation.type === 'SET_CASES') {
+        this.fetchCasesL();
       }
     });
   },
@@ -23,9 +24,14 @@ export default {
       this.removeCaseUnsubscribe();
     }
   },
+  computed: {
+    selectedCase() {
+      return this.getSelectedCase();
+    },
+  },
   methods: {
-    ...mapActions(['setContextMenuBase', 'removeCase']),
-    ...mapGetters(['getCases']),
+    ...mapActions(['setContextMenuBase', 'removeCase', 'removeCaseChild', 'changeCaseStatus']),
+    ...mapGetters(['getCases', 'getSelectedCase']),
     fetchCasesL() {
       const query = this.$route.query;
       if (query && query.slideListId) {
@@ -53,6 +59,7 @@ export default {
         setTimeout(() => {
           if (state && _ref) {
             _ref.focus();
+            _ref.select();
           }
           if (!state && _case.title === '') {
             _case.title = 'Case ' + (i+1)
@@ -69,7 +76,8 @@ export default {
     openCaseOptionsMenu(width,
                         _refOptionsStr,
                         _refCaseStr,
-                        _case,
+                        _caseOrCaseChild,
+                        _obj,
                         triangle,
                         isRight,
                         isMultiple=false,
@@ -80,6 +88,60 @@ export default {
       }
       if (_ref && _ref.getBoundingClientRect()) {
         const modalPosition = getModalPositionFunc(_ref, isRight, width);
+        const selectOptions = {
+          _case: [
+            {
+              isItemOfMenu: true,
+              title: 'В работе',
+              isActive: _caseOrCaseChild.caseStatus === 'in-work',
+              action: () => {
+                this.changeCaseStatus({
+                  _case: _caseOrCaseChild,
+                  status: 'in-work'
+                });
+                // _caseOrCaseChild.caseStatus = 'in-work'
+              },
+            },
+            {
+              isItemOfMenu: true,
+              title: 'Готово',
+              isActive: _caseOrCaseChild.caseStatus === 'done',
+              action: () => {
+                this.changeCaseStatus({
+                  _case: _caseOrCaseChild,
+                  status: 'done'
+                });
+                // _caseOrCaseChild.caseStatus = 'done'
+              }
+            },
+            {
+              isItemOfMenu: false,
+            },
+            {
+              isItemOfMenu: true,
+              title: 'Переименовать',
+              action: () => {
+                this.changeCaseNameEditable(_caseOrCaseChild,  _refCaseStr, true, isMultiple, i);
+              }
+            },
+            {
+              isItemOfMenu: true,
+              title: 'Удалить',
+              action: () => {
+                this.removeCase(_caseOrCaseChild);
+              }
+            },
+          ],
+          _caseChild: [
+            {
+              isItemOfMenu: true,
+              title: 'Удалить',
+              action: () => {
+                this.removeCaseChild(_caseOrCaseChild);
+              }
+            },
+          ]
+        }
         this.setContextMenuBase(new ContextMenuBaseModel()
             .set(true,
                 'SelectPopup',
@@ -88,42 +150,10 @@ export default {
                 modalPosition.left,
                 triangle,
                 {
-                  selectOptions: [
-                    {
-                      isItemOfMenu: true,
-                      title: 'В работе',
-                      isActive: _case.caseStatus === 'in-work',
-                      action: () => {
-                        _case.caseStatus = 'in-work'
-                      },
-                    },
-                    {
-                      isItemOfMenu: true,
-                      title: 'Готово',
-                      isActive: _case.caseStatus === 'done',
-                      action: () => {
-                        _case.caseStatus = 'done'
-                      }
-                    },
-                    {
-                      isItemOfMenu: false,
-                    },
-                    {
-                      isItemOfMenu: true,
-                      title: 'Переименовать',
-                      action: () => {
-                        this.changeCaseNameEditable(_case,  _refCaseStr, true, isMultiple, i);
-                      }
-                    },
-                    {
-                      isItemOfMenu: true,
-                      title: 'Удалить',
-                      action: () => {
-                        this.removeCase(_case);
-                      }
-                    },
-                  ]
-                })
+                  selectOptions: selectOptions[_obj],
+                  subject: _obj
+                },
+                i)
             .more({
               isRight,
               zIndex: 8
