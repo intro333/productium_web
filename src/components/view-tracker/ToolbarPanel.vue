@@ -248,7 +248,7 @@ export default {
           .replace(/Tool/g, '') + '.svg');
     },
     goToProjects() {
-      this.$router.push('/'); // TODO Редиректить к списку проектов
+      this.$router.push('/case-tracker?projectId=1&slideId=1&slideListId=1&caseId=1'); // TODO Редиректить к списку проектов
     },
   }
 }

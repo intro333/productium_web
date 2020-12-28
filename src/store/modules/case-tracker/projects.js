@@ -42,10 +42,10 @@ const actions = {
                             });
                         }, 100);
                     } else {
-                        router.push('/');
+                        router.push('/case-tracker?projectId=1&slideId=1&slideListId=1&caseId=1');
                     }
                 } else {
-                    router.push('/');
+                    router.push('/case-tracker?projectId=1&slideId=1&slideListId=1&caseId=1');
                 }
                 resolve(data);
             }, 300);

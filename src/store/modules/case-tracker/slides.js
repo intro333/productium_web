@@ -144,7 +144,7 @@ const actions = {
             resolve(_case);
           });
         } else {
-          router.push('/');
+          router.push('/case-tracker?projectId=1&slideId=1&slideListId=1&caseId=1');
         }
       };
       if (query && query.slideId) {
@@ -283,7 +283,7 @@ const actions = {
               }, 20);
             } else {
               dispatch('setIsLoading', false);
-              router.push('/');
+              router.push('/case-tracker?projectId=1&slideId=1&slideListId=1&caseId=1');
             }
           }, 20);
         }, 20);

@@ -34,6 +34,9 @@ export default {
       document.removeEventListener('keyup', this.EventListenerCtrl, true);
       this.EventListenerCtrl = null;
     },
+    goToInit() {
+      this.$router.push('/case-tracker?projectId=1&slideId=1&slideListId=1&caseId=1');
+    }
   },
 }
 </script>
