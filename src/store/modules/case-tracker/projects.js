@@ -42,9 +42,11 @@ const actions = {
                             });
                         }, 100);
                     } else {
+                        dispatch('setIsLoading', false);
                         router.push('/case-tracker?projectId=1&slideId=1&slideListId=1&caseId=1');
                     }
                 } else {
+                    dispatch('setIsLoading', false);
                     router.push('/case-tracker?projectId=1&slideId=1&slideListId=1&caseId=1');
                 }
                 resolve(data);

@@ -140,7 +140,7 @@ const actions = {
             slide: slides[0],
             isFirstLoad: true
           }).then(_case => {
-            dispatch('setIsLoading');
+            dispatch('setIsLoading', false);
             resolve(_case);
           });
         } else {
@@ -155,7 +155,7 @@ const actions = {
             slide: foundSlide,
             isFirstLoad: true
           }).then(_case => {
-            dispatch('setIsLoading');
+            dispatch('setIsLoading', false);
             resolve(_case);
           });
         } else {
