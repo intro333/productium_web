@@ -67,7 +67,6 @@ export default {
         discusBlockActivityState: 'resolut'
       },
     ],
-    preText: ''
   }),
   computed: {
     casesComments() {
@@ -90,6 +89,7 @@ export default {
     },
     selectDiscusBlockActivity(_state) {
       this.selectedCase.discusBlockActivityState = _state;
+      this.preText = this.selectedCase[this.selectedCase.discusBlockActivityState];
     },
     changeCaseDiscusTextareaEdited($event, _state) {
       if ($event) {

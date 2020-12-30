@@ -7,6 +7,7 @@ export default {
   name: "CaseMixin",
   data: () => ({
     cases: [],
+    preText: ''
   }),
   created() {
     this.removeCaseUnsubscribe = this.$store.subscribe((mutation) => {
@@ -16,6 +17,11 @@ export default {
         }
       } else if (mutation.type === 'SET_CASES') {
         this.fetchCasesL();
+      } else if (mutation.type === 'SELECT_CASE') {
+        const _case = mutation.payload.case;
+        if (_case) {
+          this.preText = _case[_case.discusBlockActivityState];
+        }
       }
     });
   },
@@ -26,7 +32,7 @@ export default {
   },
   computed: {
     selectedCase() {
-      return this.getSelectedCase();
+      return  this.getSelectedCase();
     },
   },
   methods: {
