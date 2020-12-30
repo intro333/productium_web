@@ -78,7 +78,7 @@ export default {
       self.isScrolling = setTimeout(function() {
         if (document.body.className.indexOf('modal-open') === -1) { /* Если body разлочен */
           if (e.ctrlKey) {
-            у.preventDefault();
+            e.preventDefault();
           }
         }
       }, 66);
