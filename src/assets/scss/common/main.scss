@@ -586,6 +586,10 @@ p {
 .scroll-textarea {
   overflow-y: auto;
   @include scrollbarTextarea();
+  &-hide {
+    overflow:hidden;
+    resize:none;
+  }
 }
 .select-arrow {
   width: 7px;

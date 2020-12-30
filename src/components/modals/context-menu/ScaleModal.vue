@@ -128,7 +128,6 @@ export default {
       this.doActionBeforeDestroy = false;
       if (this.activeSlide && this.activeSlide.zoom) {
         const zoom = this.activeSlide.zoom;
-        console.log(7, zoom);
         const newZoom = zoom.z + step;
         if (newZoom <= zoomConst.maxZoomIn) {
           this.changeSlideZoom({

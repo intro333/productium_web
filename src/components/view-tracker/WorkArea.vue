@@ -72,6 +72,15 @@ export default {
         if (event.code === 'Space' && this.selectedCase) {
           this.setActiveTool('moveTool');
           this.EListenerSpaceDownIsStart = false;
+        } else if (event.code === 'Delete') {
+          if (this.activeSlide && this.activeSlide.canvas) {
+            const canvas = this.activeSlide.canvas;
+            if (canvas.getActiveObject()) {
+              const activeObj =  canvas.getActiveObject();
+              this.removeCaseChild(activeObj);
+            }
+            canvas.renderAll();
+          }
         }
       };
       document.addEventListener('keyup', EListenerSpaceUp, true);
@@ -224,7 +233,7 @@ export default {
 
   },
   methods: {
-    ...mapActions(['setSlideImg', 'setIsLoading']),
+    ...mapActions(['setSlideImg', 'setIsLoading', 'removeCaseChild']),
     ...mapGetters([]),
     uploadImageToCanvasBg($event) {
       const files = $event.target.files;

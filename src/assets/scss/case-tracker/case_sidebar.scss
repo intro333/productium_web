@@ -82,7 +82,8 @@
           &-child {
             display: flex;
             align-items: center;
-            padding: 6px 8px 6px 37px;
+            padding: 0 8px 0 37px;
+            height: 27px;
             &:hover {
               cursor: default;
             }

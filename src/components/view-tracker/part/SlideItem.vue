@@ -21,13 +21,15 @@
            class="notify-circle sl-b-slide-notify"
            :class="{'of-selected': slide.isSelected}"></div>
     </div>
-    <img v-if="isShowSlideOptions || (contextMenu.state && contextMenu.cKey === cKey &&
+    <div v-if="isShowSlideOptions || (contextMenu.state && contextMenu.cKey === cKey &&
       (contextMenu.body) && contextMenu.body.subject === 'slide')"
          @click="openOptionsMenu(134, 'optionsRef')"
-         :ref="'optionsRef'"
-         src="@/assets/img/common/options.svg"
-         class="sl-b-options"
-         alt="">
+         class="sl-b-options-box">
+      <img src="@/assets/img/common/options.svg"
+           :ref="'optionsRef'"
+           class="sl-b-options"
+           alt="">
+    </div>
   </div>
 </template>
 

@@ -40,65 +40,93 @@ const actions = {
     });
   },
   pushSlide({commit, getters, dispatch}) {
-    /* TODO Mock */
-    const projects = getters.getProjects;
-    const selectedProject = projects.find(_p => _p.isSelected);
-    const newSlide = new SlideModel({
-      id: getRandomInt(10, 1000),
-      slideState: 'in-work',
-      projectId: selectedProject.id,
-      order: 0,
-      img: null
-    });
-    const newSlideList = new SlideList({
-      id: getRandomInt(10, 1000),
-      slideId: newSlide.id,
-      name: 'Лист1'
-    });
-    // const caseId = getRandomInt(10, 1000);
-    // const newSCase = new CaseModel({
-    //   id: caseId,
-    //   slideListId: newSlideList.id,
-    //   title: 'Задача ' + caseId,
-    //   caseStatus: 'in-work',
-    //   isOpen: false,
-    //   discus: '',
-    //   resolut: '',
-    //   children: [],
-    //   order: 0
-    // });
-    commit('PUSH_SLIDE', newSlide);
-    commit('PUSH_SLIDE_LIST', newSlideList);
-    // commit('PUSH_CASE', newSCase);
-    setTimeout(() => {
-      dispatch('selectCaseListAndCaseOfActiveSlide', {
-        slide: newSlide,
-        isNew: true,
-      });
-    }, 20)
-  },
-  removeSlide({commit, dispatch}, payload) {
-    if (payload.slidesLength > 1) {
-      const slide = payload.slide;
-      commit('REMOVE_SLIDE', slide);
-      if (slide.isSelected) { /* Если удаляемый слайд был выбран, то выбираем последний слайд */
-        slide.isSelected = false;
+    dispatch('setIsLoading', true);
+    return new Promise((resolve) => {
+      setTimeout(() => { // TODO Имитация задержки с сервера (УБРАТЬ!)
+        /* TODO Mock */
+        const projects = getters.getProjects;
+        const selectedProject = projects.find(_p => _p.isSelected);
+        const newSlide = new SlideModel({
+          id: getRandomInt(10, 1000),
+          slideState: 'in-work',
+          projectId: selectedProject.id,
+          order: 0,
+          img: null
+        });
+        const newSlideList = new SlideList({
+          id: getRandomInt(10, 1000),
+          slideId: newSlide.id,
+          name: 'Лист1'
+        });
+        // const caseId = getRandomInt(10, 1000);
+        // const newSCase = new CaseModel({
+        //   id: caseId,
+        //   slideListId: newSlideList.id,
+        //   title: 'Задача ' + caseId,
+        //   caseStatus: 'in-work',
+        //   isOpen: false,
+        //   discus: '',
+        //   resolut: '',
+        //   children: [],
+        //   order: 0
+        // });
+        commit('PUSH_SLIDE', newSlide);
+        commit('PUSH_SLIDE_LIST', newSlideList);
+        // commit('PUSH_CASE', newSCase);
+        resolve(newSlide);
         setTimeout(() => {
-          const query = router.currentRoute.query;
-          if (query && query.projectId) {
-            const _projectId = parseInt(query.projectId);
-            const filteredSlides = state.slides.filter(_s => {
-              if (_s.slideState !== 'archived' && _s.projectId === _projectId) {
-                return _s;
-              }
-            });
-            dispatch('selectCaseListAndCaseOfActiveSlide', {
-              slide: filteredSlides[filteredSlides.length-1],
-            });
-          }
+          dispatch('selectCaseListAndCaseOfActiveSlide', {
+            slide: newSlide,
+            isNew: true,
+          });
         }, 20);
-      }
-    }
+      }, 200);
+    });
+  },
+  removeSlide({commit, getters, dispatch}, payload) {
+    dispatch('setIsLoading', true);
+    const slide = payload.slide;
+    const removeNotifys = () => {
+      const comments = getters.getCasesComments;
+      comments.forEach(_c => {
+        if (_c.slideId === slide.id) {
+          _c.notifyInfo.status = 'archived';
+        }
+      });
+    };
+    return new Promise((resolve) => {
+      setTimeout(() => { // TODO Имитация задержки с сервера (УБРАТЬ!)
+        if (payload.slidesLength > 1) {
+          commit('REMOVE_SLIDE', slide);
+          if (slide.isSelected) { /* Если удаляемый слайд был выбран, то выбираем последний слайд */
+            slide.isSelected = false;
+            setTimeout(() => {
+              const query = router.currentRoute.query;
+              if (query && query.projectId) {
+                const _projectId = parseInt(query.projectId);
+                const filteredSlides = state.slides.filter(_s => {
+                  if (_s.slideState !== 'archived' && _s.projectId === _projectId) {
+                    return _s;
+                  }
+                });
+                dispatch('selectCaseListAndCaseOfActiveSlide', {
+                  slide: filteredSlides[filteredSlides.length-1],
+                });
+                resolve();
+              }
+            }, 20);
+          } else {
+            dispatch('setIsLoading', false);
+          }
+        } else if (payload.slidesLength === 1) {
+          /* При удалении последнего слайда удалять картинку и кейсы и оставлять пустой слайд (начальное состояние) */
+          commit('REMOVE_SLIDE', slide);
+          dispatch('pushSlide');
+          resolve();
+        }
+        removeNotifys();
+      }, 200);
+    });
   },
   selectSlide({dispatch}, _slide) {
     dispatch('setIsLoading', true);

@@ -46,6 +46,9 @@ export default {
     CentralModal,
     Loading,
   },
+  data: () => ({
+    isScrolling: false
+  }),
   created() {
     this.setIsLoading(true);
     this.fetchInitData();
@@ -59,10 +62,27 @@ export default {
       this.openCommentsModalByCommentId(parseInt(query.commentId));
     }
   },
+  mounted() {
+    window.addEventListener('wheel', this.handleScroll);
+  },
+  beforeDestroy() {
+    window.removeEventListener('wheel', this.handleScroll);
+  },
   methods: {
     ...mapActions(['fetchProjects', 'fetchSlides', 'fetchSlideLists', 'fetchCases', 'fetchCaseComments',
       'openCommentsModalByCommentId', 'fetchInitData', 'setIsLoading']),
     ...mapGetters(['getContextMenuBase', 'getCentralModal', 'getTooltip', 'getIsLoading']),
+    handleScroll(e) {
+      const self = this;
+      window.clearTimeout( this.isScrolling );
+      self.isScrolling = setTimeout(function() {
+        if (document.body.className.indexOf('modal-open') === -1) { /* Если body разлочен */
+          if (e.ctrlKey) {
+            у.preventDefault();
+          }
+        }
+      }, 66);
+    }
   },
 }
 </script>

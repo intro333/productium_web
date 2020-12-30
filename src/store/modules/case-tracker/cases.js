@@ -92,25 +92,25 @@ const actions = {
     }
   },
   goToSlideAndCase({dispatch, getters}, notify) {
-    router.push({
-      path: '/case-tracker',
-      query: {
-        projectId: notify.projectId,
-        slideId: notify.slideId,
-        slideListId: notify.slideListId,
-        caseId: notify.caseId,
-        commentId: notify.id
-      }
-    });
     const _slideId = parseInt(notify.slideId);
     const foundSlide = getters.getSlides.find(_s => _s.id === _slideId);
     if (foundSlide) {
+      router.push({
+        path: '/case-tracker',
+        query: {
+          projectId: notify.projectId,
+          slideId: notify.slideId,
+          slideListId: notify.slideListId,
+          caseId: notify.caseId,
+          commentId: notify.id
+        }
+      });
       dispatch('selectCaseListAndCaseOfActiveSlide', {
         slide: foundSlide,
         isRepaint: true
       });
+      dispatch('openCommentsModalByCommentId', notify.id);
     }
-    dispatch('openCommentsModalByCommentId', notify.id);
   },
   selectFoundCaseFromCases({dispatch}, _case) {
     dispatch('goToSelectedCase', {

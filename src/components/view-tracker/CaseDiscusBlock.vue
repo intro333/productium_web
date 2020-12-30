@@ -18,25 +18,28 @@
       <div class="cd-b-edit-area">
         <textarea v-if="selectedCase"
                   ref="caseDiscusTextareaRef"
-                  @click="changeCaseDiscusTextareaEdited(true)"
-                  @keyup.esc="changeCaseDiscusTextareaEdited(false)"
-                  @blur="changeCaseDiscusTextareaEdited(false)"
+                  @click="changeCaseDiscusTextareaEdited($event, true)"
+                  @keyup.enter="changeCaseDiscusTextareaEdited($event, false)"
+                  @keyup.esc="changeCaseDiscusTextareaEdited($event, false)"
+                  @blur="changeCaseDiscusTextareaEdited($event, false)"
                   @input="changeCaseDiscusTextareaText"
                   :value="selectedCase[selectedCase.discusBlockActivityState]"
                   class="cd-b-edit-area-text p-textarea-custom scroll-textarea"
                   :readonly="!selectedCase.isDiscusEdited"
-                  :class="{'ea-readonly': !selectedCase.isDiscusEdited}"
+                  :class="{'ea-readonly': !selectedCase.isDiscusEdited,
+                           'ea-edited': selectedCase.isDiscusEdited,
+                  }"
                   :placeholder="`Опишите ${(selectedCase.discusBlockActivityState === 'discus') ? 'задачу' : 'решение'}...`"></textarea>
       </div>
       <div class="cd-b-comments">
         <div v-if="selectedCase"
+             @click="openCommentModal()"
              class="cd-b-comments-box">
           <span class="cd-b-comments-text">{{readCasesComments.length}}<span v-if="notReadCasesComments.length"
                                                                              class="cd-b-comments-text-link"
           >+{{notReadCasesComments.length}}</span>
           </span>
-          <span @click="openCommentModal()"
-                class="cd-b-comments-text cd-b-comments-text-clickable">comments</span>
+          <span class="cd-b-comments-text">comments</span>
         </div>
       </div>
     </div>
@@ -63,7 +66,8 @@ export default {
         title: 'решение',
         discusBlockActivityState: 'resolut'
       },
-    ]
+    ],
+    preText: ''
   }),
   computed: {
     casesComments() {
@@ -87,12 +91,39 @@ export default {
     selectDiscusBlockActivity(_state) {
       this.selectedCase.discusBlockActivityState = _state;
     },
-    changeCaseDiscusTextareaEdited(_state) {
-      this.selectedCase.isDiscusEdited = _state;
+    changeCaseDiscusTextareaEdited($event, _state) {
+      if ($event) {
+        const eType = $event.type;
+        if (eType === 'keyup') { /* Нажали на клавишу */
+          const eCode = $event.code;
+          if (eCode === 'Enter' || eCode === 'NumpadEnter') {
+            if (!$event.shiftKey) {
+              this.selectedCase.isDiscusEdited = _state;
+              this.saveDiscuseText(true);
+            }
+          } else if (eCode === 'Escape') {
+            this.selectedCase.isDiscusEdited = _state;
+          }
+        } else if (eType === 'blur' && this.selectedCase.isDiscusEdited) { /* Ушли из поля (щёлкнув мышкой вне поля) */
+          this.selectedCase.isDiscusEdited = _state;
+          this.saveDiscuseText();
+        } else if (eType === 'click') {
+          this.selectedCase.isDiscusEdited = _state;
+        }
+      }
     },
     changeCaseDiscusTextareaText($event) {
-      const text = $event.target.value;
-      this.selectedCase[this.discusBlockActivityState] = text;
+      this.preText = $event.target.value;
+    },
+    saveDiscuseText(isEnter=false) {
+      if (isEnter) { /* Удалить перенос строки */
+        this.preText = this.preText.substring(0, this.preText.lastIndexOf("\n"));
+      }
+      const textarea = this.$refs.caseDiscusTextareaRef;
+      if (textarea) { /* Проскроллить textarea вверх */
+        textarea.scrollTop = 0;
+      }
+      this.selectedCase[this.selectedCase.discusBlockActivityState] = this.preText;
     },
     openCommentModal() {
       this.setCentralModal(

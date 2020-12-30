@@ -48,13 +48,16 @@
             width: 100%;
             height: 56px;
             padding: 8px;
-            &.ea-editable {
-
+            &.ea-edited {
+              background-color: rgb(0, 0, 0, .09);
             }
             &.ea-readonly {
               &:hover {
                 cursor: default;
               }
+            }
+            &:hover {
+              background-color: rgb(0, 0, 0, .09);
             }
           }
         }
@@ -62,22 +65,21 @@
           display: flex;
           align-items: center;
           justify-content: flex-end;
-          padding-right: 24px;
+          padding-right: 19px;
           height: 32px;
           &-box {
             display: flex;
             align-items: center;
+            height: 100%;
+            padding: 0 5px;
+            &:hover {
+              cursor: pointer;
+            }
           }
           &-text {
             font-size: 14px;
             &:not(:last-child) {
               margin-right: 8px;
-            }
-            &:hover {
-              cursor: default;
-            }
-            &-clickable {
-              cursor: pointer !important;
             }
             &-link {
               color: $color-base;

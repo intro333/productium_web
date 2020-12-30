@@ -276,8 +276,8 @@ export const mockCases = [
     title: 'Задача 3',
     caseStatus: 'done',
     isOpen: true,
-    discus: 'Дельфин слишком прилегает к тексту. В подвале картинки слишком близко друг к другу стоят.',
-    resolut: 'Дельфина перенесли левее, отступы между картинками увеличили.',
+    discus: 'Кит слишком прилегает к тексту. В подвале картинки слишком близко друг к другу стоят.',
+    resolut: 'Кита перенесли левее, отступы между картинками увеличили.',
     children: [
       new ShapeModel( 3, 'Marker', 'marker', {
         stroke: pickerColors.blue,
@@ -613,7 +613,7 @@ export const mockCaseComments = [
     slideListId: 2,
     caseId: 5,
     parent: null,
-    message: 'Перенести дельфинчика левее (отступ слева 40) и увеличить отступ картинок в подвале в 2 раза.',
+    message: 'Перенести кита левее (отступ слева 40) и увеличить отступ картинок в подвале в 2 раза.',
     user: new CurrentUserModel(3, 'Alex G', 'AG', '#466a96'),
     images: [],
     updatedAt: '2020-11-03 15:20:25',
@@ -628,7 +628,7 @@ export const mockCaseComments = [
     slideListId: 2,
     caseId: 5,
     parent: 24,
-    message: 'Дельфина перенёс, отступ в подвале увеличил.',
+    message: 'Кита перенёс, отступ в подвале увеличил.',
     user: new CurrentUserModel(1, 'Dmitriy D', 'DD', '#7c4a4a'),
     images: [],
     updatedAt: '2020-11-03 17:22:29',
