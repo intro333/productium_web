@@ -9,6 +9,7 @@ const state = {
   tooltip: new TooltipModel(),
   simpleNotifyInside: new SimpleNotifyInsideModel(),
   isLoading: false,
+  isNotAvailableForMobile: false,
 };
 
 const getters = {
@@ -17,6 +18,7 @@ const getters = {
   getTooltip: state => state.tooltip,
   getSimpleNotifyInside: state => state.simpleNotifyInside,
   getIsLoading: state => state.isLoading,
+  getNotAvailableForMobile: state => state.isNotAvailableForMobile,
 };
 
 const actions = {
@@ -35,6 +37,9 @@ const actions = {
   setIsLoading({commit}, status) {
     commit('SET_IS_LOADING', status);
   },
+  setIsNotAvailableForMobile({commit}, status) {
+    commit('SET_IS_NOT_AVAILABLE_FOR_MOBILE', status);
+  },
 };
 
 const mutations = {
@@ -42,9 +47,8 @@ const mutations = {
   SET_CENTRAL_MODAL(state, modal) { state.centralModal = modal; },
   SET_TOOLTIP(state, tooltip) { state.tooltip = tooltip; },
   SET_SIMPLE_NOTIFY_INSIDE(state, notify) { state.simpleNotifyInside = notify; },
-  SET_IS_LOADING(state, isLoading) {
-    state.isLoading = isLoading;
-  },
+  SET_IS_LOADING(state, isLoading) { state.isLoading = isLoading; },
+  SET_IS_NOT_AVAILABLE_FOR_MOBILE(state, status) { state.isNotAvailableForMobile = status; },
 };
 
   export default {

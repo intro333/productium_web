@@ -381,6 +381,82 @@ p {
   &-loading {
     background-color: rgba(0, 0, 0, 0.1);
   }
+  &-only-desktop {
+    box-sizing: border-box;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 32px 0 60px 0;
+    .na {
+      &-logo {
+        &-box {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 37.29px;
+        }
+        &-text {
+          font-size: 23.97px;
+          color: black;
+          &-box {
+            background-color: $color-base;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            margin-left: 2px;
+          }
+          &-white {
+            color: white !important;
+            padding: 0 4px;
+          }
+        }
+      }
+      &-button {
+        width: 248px !important;
+        height: 49px !important;
+        .p-button-text {
+          font-size: 14px !important;
+          font-weight: 600;
+        }
+      }
+      &-center {
+        &-box {
+          height: 120px;
+          background-color: $color-base;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          &-text {
+            font-size: 20px;
+            font-weight: 500;
+            color: white;
+            text-align: center;
+          }
+        }
+        &-text {
+          font-size: 24px;
+          font-weight: 300;
+          color: black;
+          &-left {
+            margin-left: 16px;
+          }
+          &-right {
+            margin-right: 16px;
+            text-align: right;
+          }
+        }
+      }
+    }
+  }
 }
 .p-tooltip {
   z-index: 15;
@@ -563,6 +639,32 @@ p {
   }
 }
 
+/* BOX */
+.p-box {
+  &-flex {
+    &-center {
+      &-a {
+        display: flex;
+        align-items: center;
+      }
+      &-aj {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+    &-column {
+      display: flex;
+      flex-direction: column;
+      &-jsb {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+    }
+  }
+}
+
 /* ANIMATIONS */
 /* https://ru.vuejs.org/v2/guide/transitions.html */
 
@@ -689,4 +791,79 @@ p {
 }
 .loading-icon {
   width: 250px;
+}
+
+/* Community styles */
+.p-community {
+  .p-button {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    &-rounded {
+      border-radius: 30px;
+      &:hover {
+        cursor: pointer;
+      }
+    }
+    &-text {
+      font-weight: 500;
+    }
+    &-rounded1 {
+      border-width: 1px;
+      border-style: solid;
+      border-color: $color-base;
+      width: 190px;
+      height: 40px;
+      .p-button-text {
+        font-size: 14px;
+        color: $color-base;
+      }
+      &:hover {
+        border-color: $color-head;
+        .p-button-text {
+          color: $color-head;
+        }
+      }
+    }
+    &-rounded2 {
+      border-width: 2px;
+    }
+    &-fill {
+      &1 {
+        background-color: white;
+        .p-button-text {
+          color: $color-base;
+        }
+      }
+      &2 {
+        background-color: $color-base;
+        .p-button-text {
+          color: white;
+        }
+      }
+      &:hover {
+        background-color: $color-head;
+        .p-button-text {
+          color: white;
+        }
+      }
+      &-disabled {
+        background-color: rgb(0, 0, 0, .1) !important;
+        .p-button-text {
+          color: white !important;
+        }
+        &:hover {
+          cursor: default;
+        }
+      }
+    }
+    &-loader {
+      position: absolute;
+      right: 10px;
+      width: 30px;
+      height: 30px;
+    }
+  }
 }

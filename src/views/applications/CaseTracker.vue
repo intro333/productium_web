@@ -17,6 +17,7 @@
     <Tooltip v-if="getTooltip().state"
                      :tooltip="getTooltip" />
     <Loading v-if="getIsLoading()" />
+    <NotAvailableForMobile v-if="getNotAvailableForMobile()" />
   </div>
 </template>
 
@@ -32,6 +33,7 @@ import Tooltip from "@/components/modals/Tooltip";
 import CentralModal from "@/components/modals/central/CentralModal";
 import router from "@/router";
 import Loading from "@/components/common/Loading";
+import NotAvailableForMobile from "@/components/modals/NotAvailableForMobile";
 
 export default {
   name: "CaseTracker",
@@ -45,21 +47,22 @@ export default {
     ContextMenuBase,
     CentralModal,
     Loading,
+    NotAvailableForMobile
   },
   data: () => ({
     isScrolling: false
   }),
   created() {
-    this.setIsLoading(true);
-    this.fetchInitData();
-    // this.fetchProjects();
-    // this.fetchSlides();
-    // this.fetchSlideLists();
-    // this.fetchCases();
-    // this.fetchCaseComments();
-    const query = router.currentRoute.query;
-    if (query && query.commentId) {
-      this.openCommentsModalByCommentId(parseInt(query.commentId));
+    if (this.$device.mobile || this.$device.ipad) {
+      this.setIsNotAvailableForMobile(true);
+      // return false;
+    } else {
+      this.setIsLoading(true);
+      this.fetchInitData();
+      const query = router.currentRoute.query;
+      if (query && query.commentId) {
+        this.openCommentsModalByCommentId(parseInt(query.commentId));
+      }
     }
   },
   mounted() {
@@ -70,8 +73,8 @@ export default {
   },
   methods: {
     ...mapActions(['fetchProjects', 'fetchSlides', 'fetchSlideLists', 'fetchCases', 'fetchCaseComments',
-      'openCommentsModalByCommentId', 'fetchInitData', 'setIsLoading']),
-    ...mapGetters(['getContextMenuBase', 'getCentralModal', 'getTooltip', 'getIsLoading']),
+      'openCommentsModalByCommentId', 'fetchInitData', 'setIsLoading', 'setIsNotAvailableForMobile']),
+    ...mapGetters(['getContextMenuBase', 'getCentralModal', 'getTooltip', 'getIsLoading', 'getNotAvailableForMobile']),
     handleScroll(e) {
       const self = this;
       window.clearTimeout( this.isScrolling );
