@@ -530,6 +530,27 @@ p {
   }
 }
 
+.c-loader {
+  &-popup {
+    width: 200px;
+    height: 100px;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    .lb-item {
+      width: 16px;
+      height: 16px;
+      background-color: white;
+      border-radius: 8px;
+      &:not(:last-child) {
+        margin-right: 16px;
+      }
+    }
+  }
+}
+
 /* CONTROLS */
 .c-agreement {
 
