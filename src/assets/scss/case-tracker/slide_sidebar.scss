@@ -1,13 +1,25 @@
 @mixin slide_sidebar_mixin() {
   .slide-sidebar {
+    &-container {
+      position: absolute;
+      top: 40px;
+      left: 0;
+      box-sizing: border-box;
+      width: 216px;
+      height: calc(100% - 40px);
+      padding: 8px;
+      background-color: transparent;
+    }
     box-sizing: border-box;
-    width: 200px;
-    //height: 100vh;
+    width: 100%;
+    height: 100%;
     background-color: #ffffff;
-    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid $color-head20;
+    border-radius: 4px;
     padding: 24px 0;
     overflow-y: auto;
     @include scrollbarSlideBar();
+    filter: drop-shadow(4px 4px 16px rgba(0, 0, 0, 0.24));
     .sl-b {
       &-box {
         display: grid;

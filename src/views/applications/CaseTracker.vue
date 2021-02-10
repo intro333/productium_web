@@ -1,14 +1,27 @@
 <template>
   <div class="case-tracker">
-    <ToolbarPanel />
+    <!-- OLD STYLE   -->
+<!--    <ToolbarPanel />-->
+<!--    <div class="case-tracker-body">-->
+<!--      <SlideSidebar />-->
+<!--      <div class="center-content">-->
+<!--        <WorkArea />-->
+<!--        <CaseDiscusBlock />-->
+<!--      </div>-->
+<!--      <CaseSidebar />-->
+<!--    </div>-->
+
+    <!-- NEW STYLE   -->
+    <WorkArea />
     <div class="case-tracker-body">
-      <SlideSidebar />
+      <ToolbarPanel />
       <div class="center-content">
-        <WorkArea />
+        <SlideSidebar />
+        <CaseSidebar />
         <CaseDiscusBlock />
       </div>
-      <CaseSidebar />
     </div>
+
     <!-- MODALS -->
     <ContextMenuBase v-if="getContextMenuBase().state"
                      :contextMenu="getContextMenuBase" />
@@ -22,9 +35,9 @@
 </template>
 
 <script>
-import ToolbarPanel from "@/components/view-tracker/ToolbarPanel";
-import SlideSidebar from "@/components/view-tracker/SlideSidebar";
 import WorkArea from "@/components/view-tracker/WorkArea";
+import SlideSidebar from "@/components/view-tracker/SlideSidebar";
+import ToolbarPanel from "@/components/view-tracker/ToolbarPanel";
 import CaseSidebar from "@/components/view-tracker/CaseSidebar";
 import CaseDiscusBlock from "@/components/view-tracker/CaseDiscusBlock";
 import ContextMenuBase from "@/components/modals/context-menu/ContextMenuBase";
@@ -38,16 +51,16 @@ import NotAvailableForMobile from "@/components/modals/NotAvailableForMobile";
 export default {
   name: "CaseTracker",
   components: {
-    Tooltip,
-    ToolbarPanel,
-    SlideSidebar,
     WorkArea,
+    SlideSidebar,
+    ToolbarPanel,
     CaseSidebar,
     CaseDiscusBlock,
     ContextMenuBase,
     CentralModal,
     Loading,
-    NotAvailableForMobile
+    Tooltip,
+    NotAvailableForMobile,
   },
   data: () => ({
     isScrolling: false

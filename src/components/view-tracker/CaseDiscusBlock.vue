@@ -1,21 +1,22 @@
 <template>
-  <div class="case-discus">
-    <div class="case-discus-header">
-      <CaseNameWithStatusAndOptions />
-      <div class="cd-h-right">
-        <div v-for="(_item, i) in discusBlockButtons"
-             :key="i"
-             @click="selectDiscusBlockActivity(_item.discusBlockActivityState)"
-             class="p-text-box">
+  <div class="case-discus-container">
+    <div class="case-discus">
+      <div class="case-discus-header">
+        <CaseNameWithStatusAndOptions />
+        <div class="cd-h-right">
+          <div v-for="(_item, i) in discusBlockButtons"
+               :key="i"
+               @click="selectDiscusBlockActivity(_item.discusBlockActivityState)"
+               class="p-text-box">
           <span v-if="selectedCase"
                 class="cd-h-right-item"
                 :class="{active: isActiveDiscusBlockActivityState(_item.discusBlockActivityState)}"
           >{{_item.title}}</span>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="case-discus-body">
-      <div class="cd-b-edit-area">
+      <div class="case-discus-body">
+        <div class="cd-b-edit-area">
         <textarea v-if="selectedCase"
                   ref="caseDiscusTextareaRef"
                   @click="changeCaseDiscusTextareaEdited($event, true)"
@@ -30,16 +31,17 @@
                            'ea-edited': selectedCase.isDiscusEdited,
                   }"
                   :placeholder="`Опишите ${(selectedCase.discusBlockActivityState === 'discus') ? 'задачу' : 'решение'}...`"></textarea>
-      </div>
-      <div class="cd-b-comments">
-        <div v-if="selectedCase"
-             @click="openCommentModal()"
-             class="cd-b-comments-box">
+        </div>
+        <div class="cd-b-comments">
+          <div v-if="selectedCase"
+               @click="openCommentModal()"
+               class="cd-b-comments-box">
           <span class="cd-b-comments-text">{{readCasesComments.length}}<span v-if="notReadCasesComments.length"
                                                                              class="cd-b-comments-text-link"
           >+{{notReadCasesComments.length}}</span>
           </span>
-          <span class="cd-b-comments-text">comments</span>
+            <span class="cd-b-comments-text">comments</span>
+          </div>
         </div>
       </div>
     </div>
