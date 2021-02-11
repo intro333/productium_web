@@ -3,7 +3,7 @@
     <div @mouseover="showCaseOptions(true)"
          @mouseleave="showCaseOptions(false)"
          class="csb-cases-item"
-         :class="{'rgb-base-20': caseActiveAndSelected, 'rgb-base-10': this.caseChildIsSelected}">
+         :class="{'rgb-base-20': caseActiveAndSelected, 'rgb-base-10': _case.isSelected && this.caseChildIsSelected}">
       <div class="csb-cases-item-left">
         <div v-if="_case.children.length"
              @click="showOrHideCaseChildren(_case)"
@@ -49,7 +49,7 @@
     <div v-if="_case.children.length && _case.isOpen"
          @click="selectCaseL({_case, isSelectedChild: true})"
          class="csb-cases-item-children"
-         :class="{'rgb-base-10': caseActiveAndSelected || this.caseChildIsSelected}">
+         :class="{'rgb-base-10': _case.isSelected}">
       <CaseChildItem v-for="(_child, k) in _case.children"
                      :contextMenu="contextMenu"
                      :_case="_case"

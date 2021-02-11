@@ -64,6 +64,12 @@ export default {
         ]
       };
     },
+    changeProjectNameText($event) {
+      const name = $event.target.value;
+      if (name.length <= 40) {
+        this.project.name = name;
+      }
+    },
   },
 }
 </script>

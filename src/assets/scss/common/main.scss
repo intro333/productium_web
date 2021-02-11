@@ -78,7 +78,8 @@ p {
     position: absolute;
     border-radius: 2px;
     background-color: $color-head;
-    @include context-menu-shadow(1);
+    filter: drop-shadow(4px 4px 16px rgba(0, 0, 0, 0.24));
+    //@include context-menu-shadow(1);
     .cm-list {
       position: relative;
       display: flex;
@@ -178,7 +179,7 @@ p {
           top: 99%;
           border-color: transparent transparent $color-head $color-head;
           transform: rotate(-45deg);
-          @include triangle-shadow();
+          //@include triangle-shadow();
         }
       }
       &-up {
@@ -187,7 +188,16 @@ p {
           left: 32px;
           border-color: transparent transparent $color-head $color-head;
           transform: rotate(135deg);
-          @include triangle-shadow();
+          //@include triangle-shadow();
+        }
+      }
+      &-left {
+        &:after {
+          top: 8px;
+          left: 1px;
+          border-color: transparent transparent $color-head $color-head;
+          transform: rotate(45deg);
+          //@include triangle-shadow();
         }
       }
       &-right {
@@ -463,7 +473,8 @@ p {
   position: absolute;
   border-radius: 2px;
   background-color: $color-head;
-  @include context-menu-shadow(1);
+  filter: drop-shadow(4px 4px 16px rgba(0, 0, 0, 0.24));
+  //@include context-menu-shadow(1);
   padding: 8px 16px;
   &-text {
     font-size: 14px;
@@ -489,7 +500,16 @@ p {
         left: 32px;
         border-color: transparent transparent $color-head $color-head;
         transform: rotate(135deg);
-        @include triangle-shadow();
+        //@include triangle-shadow();
+      }
+    }
+    &-left {
+      &:after {
+        top: 8px;
+        left: 1px;
+        border-color: transparent transparent $color-head $color-head;
+        transform: rotate(45deg);
+        //@include triangle-shadow();
       }
     }
   }
@@ -718,6 +738,9 @@ p {
   width: 7px;
   height: 100%;
   padding-left: 4px;
+  &-right {
+    width: 4px;
+  }
 }
 .text-ellipsis {
   overflow: hidden;

@@ -1,7 +1,7 @@
 <script>
 import {TooltipModel} from "@/models/modals/TooltipModel";
 import {mapActions, mapGetters} from "vuex";
-import {getModalPositionFunc} from "@/functions/calculations";
+import {getHorizModalPositionFunc, getModalPositionFunc} from "@/functions/calculations";
 
 export default {
   name: "ModalsMixin",
@@ -17,7 +17,7 @@ export default {
   methods: {
     ...mapActions(['setContextMenuBase', 'setTooltip']),
     ...mapGetters(['getContextMenuBase', 'getTooltip']),
-    showTooltip($event, _refStr, title, isRefOfItem = false) {
+    showTooltip($event, _refStr, title, isRefOfItem = false, isHoriz) {
       this.isItemMenuHovered = true;
       const timeout = this.tp.state ? 0 : 1000;
       this.showTooltipTimeout = setTimeout(() => {
@@ -29,12 +29,17 @@ export default {
             _ref = this.$refs[_refStr];
           }
           if (this.isItemMenuHovered && _ref.getBoundingClientRect()) {
-            const modalPosition = getModalPositionFunc(_ref);
+            let modalPosition = getModalPositionFunc(_ref);
+            let trianglePosition = 'up';
+            if (isHoriz) {
+              modalPosition = getHorizModalPositionFunc(_ref);
+              trianglePosition = 'left';
+            }
             this.setTooltip(new TooltipModel()
                 .set(true,
                     modalPosition.top,
                     modalPosition.left,
-                    title)
+                    title, trianglePosition)
             );
           }
         }

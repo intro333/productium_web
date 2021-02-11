@@ -6,7 +6,7 @@
          @click="close"></div>
     <div class="p-modal-context-menu"
          :class="{'p-triangle': cm.triangle, 'p-triangle-up': (cm.triangle === 'up'),
-            'p-triangle-down': (cm.triangle === 'down'), 'p-triangle-right' : cm.isRight}"
+            'p-triangle-down': (cm.triangle === 'down'), 'p-triangle-left': (cm.triangle === 'left'), 'p-triangle-right' : cm.isRight}"
          :style="{'width': `${cm.width}px`, top: `${topCalc}px`, left: `${cm.left}px`, 'z-index': cm.zIndex+2}">
       <HeaderMenu v-if="cm.type === 'HeaderMenu'"
                   :contextMenu="contextMenu" />

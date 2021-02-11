@@ -1,29 +1,52 @@
 <template>
   <div class="case-tracker">
-    <!-- OLD STYLE   -->
-<!--    <ToolbarPanel />-->
-<!--    <div class="case-tracker-body">-->
-<!--      <SlideSidebar />-->
-<!--      <div class="center-content">-->
-<!--        <WorkArea />-->
-<!--        <CaseDiscusBlock />-->
-<!--      </div>-->
-<!--      <CaseSidebar />-->
-<!--    </div>-->
-
-    <!-- NEW STYLE   -->
     <WorkArea />
-    <div class="case-tracker-body">
-      <ToolbarPanel />
-      <div class="center-content">
-        <SlideSidebar />
-        <CaseSidebar />
-        <CaseDiscusBlock />
+    <!-- TOOLBAR PANEL -->
+    <div class="t-pan-logo-menu">
+      <img @click="goToProjects()"
+           ref="logoRef"
+           src="@/assets/img/case-tracker/toolbar_panel/logo.svg"
+           class="t-pan-logo-menu-img__logo"
+           alt="">
+      <div @click="openContextMenu('HeaderMenu', 210, 'menuRef')"
+           ref="menuRef"
+           class="tp-icon-box"
+           :class="{active: (contextMenu.state && contextMenu.type === 'HeaderMenu')}">
+        <img src="@/assets/img/case-tracker/toolbar_panel/menu.svg"
+             class="tp-icon-item tp-icon-img"
+             alt="">
       </div>
     </div>
+    <div class="t-pan-proj-name">
+      <input v-if="project.nameIsEdited"
+             ref="projectNameInputRef"
+             @input="changeProjectNameText"
+             @blur="changeProjectNameEditable(false)"
+             @keyup.enter="changeProjectNameEditable(false)"
+             :value="project.name"
+             class="tp-text tp-text-input text-ellipsis">
+      <div v-if="!project.nameIsEdited"
+           @click="changeProjectNameEditable(true)"
+           class="tp-icon-item-box tp-icon-item-box-2">
+        <span class="tp-text tp-text-input-readonly text-ellipsis">{{project.name}}</span>
+      </div>
+      <img v-if="!project.nameIsEdited"
+           @click="openContextMenu('ProjectNameModal', 134, 'projectNameArrowRef', false, projectNameModalBody())"
+           ref="projectNameArrowRef"
+           src="@/assets/img/common/selectArrow.svg"
+           class="tp-icon-item select-arrow"
+           alt="">
+      <div v-if="project.nameIsEdited"
+           class="tp-icon-item select-arrow"></div>
+    </div>
+    <!-- COMPONENTS -->
+    <SlideSidebar />
+    <CaseSidebar />
+    <CaseDiscusBlock />
+    <WorkAreaTools />
 
     <!-- MODALS -->
-    <ContextMenuBase v-if="getContextMenuBase().state"
+    <ContextMenuBase v-if="contextMenu.state"
                      :contextMenu="getContextMenuBase" />
     <CentralModal v-if="getCentralModal().state"
                      :contextMenu="getCentralModal" />
@@ -37,7 +60,6 @@
 <script>
 import WorkArea from "@/components/view-tracker/WorkArea";
 import SlideSidebar from "@/components/view-tracker/SlideSidebar";
-import ToolbarPanel from "@/components/view-tracker/ToolbarPanel";
 import CaseSidebar from "@/components/view-tracker/CaseSidebar";
 import CaseDiscusBlock from "@/components/view-tracker/CaseDiscusBlock";
 import ContextMenuBase from "@/components/modals/context-menu/ContextMenuBase";
@@ -47,15 +69,21 @@ import CentralModal from "@/components/modals/central/CentralModal";
 import router from "@/router";
 import Loading from "@/components/common/Loading";
 import NotAvailableForMobile from "@/components/modals/NotAvailableForMobile";
+import WorkAreaTools from "@/components/view-tracker/WorkAreaTools";
+import ModalsMixin from "@/components/mixins/ModalsMixin";
+import {getModalPositionFunc} from "@/functions/calculations";
+import {ContextMenuBaseModel} from "@/models/modals/ContextMenuBaseModel";
+import ProjectMixin from "@/components/mixins/ProjectMixin";
 
 export default {
   name: "CaseTracker",
+  mixins: [ModalsMixin, ProjectMixin],
   components: {
     WorkArea,
     SlideSidebar,
-    ToolbarPanel,
     CaseSidebar,
     CaseDiscusBlock,
+    WorkAreaTools,
     ContextMenuBase,
     CentralModal,
     Loading,
@@ -84,9 +112,14 @@ export default {
   beforeDestroy() {
     window.removeEventListener('wheel', this.handleScroll);
   },
+  computed: {
+    contextMenu() {
+      return this.getContextMenuBase();
+    },
+  },
   methods: {
     ...mapActions(['fetchProjects', 'fetchSlides', 'fetchSlideLists', 'fetchCases', 'fetchCaseComments',
-      'openCommentsModalByCommentId', 'fetchInitData', 'setIsLoading', 'setIsNotAvailableForMobile']),
+      'openCommentsModalByCommentId', 'fetchInitData', 'setIsLoading', 'setIsNotAvailableForMobile', 'setContextMenuBase']),
     ...mapGetters(['getContextMenuBase', 'getCentralModal', 'getTooltip', 'getIsLoading', 'getNotAvailableForMobile']),
     handleScroll(e) {
       const self = this;
@@ -98,7 +131,27 @@ export default {
           }
         }
       }, 66);
-    }
+    },
+    goToProjects() {
+      // this.$router.push('/case-tracker?projectId=1&slideId=1&slideListId=1&caseId=1'); // TODO Редиректить к списку проектов
+    },
+    openContextMenu(type, width, _refStr, isRight = null, _body = null) {
+      if (this.$refs[_refStr] && this.$refs[_refStr].getBoundingClientRect()) {
+        const modalPosition = getModalPositionFunc(this.$refs[_refStr], isRight, width);
+        this.setContextMenuBase(new ContextMenuBaseModel()
+            .set(true,
+                type,
+                width,
+                modalPosition.top,
+                modalPosition.left,
+                'up',
+                _body)
+            .more({
+              isRight
+            })
+        );
+      }
+    },
   },
 }
 </script>

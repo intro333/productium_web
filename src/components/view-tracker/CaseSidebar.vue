@@ -1,60 +1,58 @@
 <template>
-  <div class="case-sidebar-container">
-    <div class="case-sidebar">
-      <div class="csb-header csb-container">
-        <div class="csb-header-tabs scroll-x-container">
-          <div @click="selectTab('cases')"
-               class="csb-header-tabs-item"
-               :class="{'rgb-black-30': !isTabSelected('cases')}">
-            <span>Кейсы </span>
-            <span>
+  <div class="case-sidebar">
+    <div class="csb-header csb-container">
+      <div class="csb-header-tabs scroll-x-container">
+        <div @click="selectTab('cases')"
+             class="csb-header-tabs-item"
+             :class="{'rgb-black-30': !isTabSelected('cases')}">
+          <span>Кейсы </span>
+          <span>
             <span>{{numOfInWorkCases}}</span>
             <span class="rgb-black-30">/{{numOfDoneCases}}</span>
           </span>
-          </div>
-          <!--        <span @click="selectTab('notes')"-->
-          <!--              class="csb-header-tabs-item"-->
-          <!--              :class="{'rgb-black-30': !isTabSelected('notes')}">Заметки</span>-->
-          <!--        <span @click="selectTab('wiki')"-->
-          <!--              class="csb-header-tabs-item"-->
-          <!--              :class="{'rgb-black-30': !isTabSelected('wiki')}">Вики</span>-->
         </div>
-        <div @click="selectTab('notify')"
-             class="csb-header-img-box">
-          <img src="@/assets/img/common/notifyIcon.svg"
-               class="csb-header-img"
-               :class="{'not-selected': !isTabSelected('notify')}"
-               alt="">
-          <div v-if="isNotReadNotifications"
-               class="notify-circle csb-header-img-notify"></div>
-        </div>
+        <!--        <span @click="selectTab('notes')"-->
+        <!--              class="csb-header-tabs-item"-->
+        <!--              :class="{'rgb-black-30': !isTabSelected('notes')}">Заметки</span>-->
+        <!--        <span @click="selectTab('wiki')"-->
+        <!--              class="csb-header-tabs-item"-->
+        <!--              :class="{'rgb-black-30': !isTabSelected('wiki')}">Вики</span>-->
       </div>
-      <div v-if="selectedTab === 'cases'"
-           class="csb-cases">
-        <div class="csb-cases-filter csb-container">
-          <div @click="openCasesFilter(176, 'casesFilterRef')"
-               ref="casesFilterRef"
-               class="csb-cases-filter-box">
-            <span class="csb-cases-filter-text rgb-black-30">{{caseFilters[caseFilterSelected].title}} </span>
-            <img src="@/assets/img/common/selectArrowGrey.svg"
-                 class="csb-cases-filter-arrow"
-                 alt="">
-          </div>
-        </div>
-        <div class="csb-cases-list">
-          <CaseSidebarItem v-for="(_case, i) in casesFiltered"
-                           :key="i"
-                           :cKey="i"
-                           :_case="_case"
-                           :contextMenu="getContextMenuBase()" />
-        </div>
+      <div @click="selectTab('notify')"
+           class="csb-header-img-box">
+        <img src="@/assets/img/common/notifyIcon.svg"
+             class="csb-header-img"
+             :class="{'not-selected': !isTabSelected('notify')}"
+             alt="">
+        <div v-if="isNotReadNotifications"
+             class="notify-circle csb-header-img-notify"></div>
       </div>
-      <div class="csb-notify">
-        <Notifications v-if="selectedTab === 'notify'"
-                       :notifications="notifications" />
-      </div>
-      <!-- TODO helpIcon.svg   -->
     </div>
+    <div v-if="selectedTab === 'cases'"
+         class="csb-cases">
+      <div class="csb-cases-filter csb-container">
+        <div @click="openCasesFilter(176, 'casesFilterRef')"
+             ref="casesFilterRef"
+             class="csb-cases-filter-box">
+          <span class="csb-cases-filter-text rgb-black-30">{{caseFilters[caseFilterSelected].title}} </span>
+          <img src="@/assets/img/common/selectArrowGrey.svg"
+               class="csb-cases-filter-arrow"
+               alt="">
+        </div>
+      </div>
+      <div class="csb-cases-list">
+        <CaseSidebarItem v-for="(_case, i) in casesFiltered"
+                         :key="i"
+                         :cKey="i"
+                         :_case="_case"
+                         :contextMenu="getContextMenuBase()" />
+      </div>
+    </div>
+    <div class="csb-notify">
+      <Notifications v-if="selectedTab === 'notify'"
+                     :notifications="notifications" />
+    </div>
+    <!-- TODO helpIcon.svg   -->
   </div>
 </template>
 

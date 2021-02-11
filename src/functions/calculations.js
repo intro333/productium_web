@@ -1,6 +1,18 @@
+export function getHorizModalPositionFunc(refObj, isRight = null, modalWidth=0) {
+  const bClient = refObj.getBoundingClientRect();
+  const top = (bClient.top + refObj.clientHeight / 2) - 15;
+  let left = 0;
+  if (isRight) {
+    left = bClient.left - modalWidth + refObj.clientWidth;
+  } else {
+    left = bClient.left + refObj.clientWidth + 10;
+  }
+
+  return { top, left };
+}
 export function getModalPositionFunc(refObj, isRight = null, modalWidth=0) {
   const bClient = refObj.getBoundingClientRect();
-  const top = bClient.top + refObj.clientHeight + 10;
+  const top = bClient.top + refObj.clientHeight + 15;
   let left = 0;
   if (isRight) {
     left = bClient.left - modalWidth + refObj.clientWidth;

@@ -1,141 +1,165 @@
 @mixin toolbar_panel_mixin() {
-  .toolbar-panel {
-    //overflow: hidden;
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: flex;
-    align-items: center;
-    height: 40px;
-    width: 100%;
-    background-color: $color-head;
-    .tp {
-      &-block {
-        box-sizing: border-box;
+  .tp {
+    &-block {
+      box-sizing: border-box;
+      display: flex;
+      height: 100%;
+    }
+    &-left {
+      padding-left: 20px;
+      width: 200px;
+    }
+    &-right {
+      justify-content: space-between;
+      width: calc(100% - 200px);
+      &-first {
         display: flex;
-        height: 100%;
       }
-      &-left {
-        padding-left: 20px;
-        width: 200px;
+      &-second {
+        display: flex;
+        justify-content: flex-end;
+        padding-right: 16px;
       }
-      &-right {
-        justify-content: space-between;
-        width: calc(100% - 200px);
-        &-first {
-          display: flex;
+    }
+    &-icon {
+      &-box {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        //height: 100%;
+        padding: 0 4px;
+        &-2 {
+          padding: 0 12px;
         }
-        &-second {
-          display: flex;
-          justify-content: flex-end;
-          padding-right: 16px;
+        &-2-2 {
+          padding: 0 0 0 12px;
+        }
+        &-3 {
+          padding: 0 4px;
+        }
+        &-4 {
+          padding: 0 8px;
+        }
+        &-5 {
+          padding: 0;
+        }
+        &:hover, &.hovered {
+          //background-color: $color-hover-box1;
+          cursor: default;
+          .tp-icon-item {
+            opacity: 1;
+          }
+        }
+        &.no-hover {
+          background-color: $color-head;
+        }
+        &.active {
+          //background-color: $color-base;
+          .tp-icon-item {
+            opacity: 1;
+          }
+        }
+        &-center-a {
+          position: absolute;
+          left: 50%;
+          transform: translate(-50%, 0);
+        }
+        .select-arrow {
+          height: 100%;
+          padding-right: 12px;
         }
       }
-      &-icon {
+      &-item {
+        opacity: .7;
         &-box {
           display: flex;
           justify-content: center;
           align-items: center;
-          //height: 100%;
-          padding: 0 4px;
-          &-2 {
-            padding: 0 12px;
-          }
-          &-2-2 {
-            padding: 0 0 0 12px;
-          }
-          &-3 {
-            padding: 0 4px;
-          }
-          &-4 {
-            padding: 0 8px;
-          }
-          &-5 {
-            padding: 0;
-          }
-          &:hover, &.hovered {
-            background-color: $color-hover-box1;
-            cursor: default;
-            .tp-icon-item {
-              opacity: 1;
-            }
-          }
-          &.no-hover {
-            background-color: $color-head;
-          }
-          &.active {
-            background-color: $color-base;
-            .tp-icon-item {
-              opacity: 1;
-            }
-          }
-          &-center-a {
-            position: absolute;
-            left: 50%;
-            transform: translate(-50%, 0);
-          }
-          .select-arrow {
-            height: 100%;
-            padding-right: 12px;
-          }
-        }
-        &-item {
-          opacity: .7;
-          &-box {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            padding-left: 12px;
-            &-2 {
-              padding-left: 0;
-            }
-          }
-        }
-        &-img {
-          width: 24px;
-          height: 24px;
-          &-rect {
-            width: 16px;
-            height: 16px;
-          }
-          &-first {
-            margin-right: 4px;
-          }
-          &-into-content {
-            &.active {
-              content: url(../img/case-tracker/toolbar_panel/superTool.svg);
-            }
-            &.not-active {
-              opacity: 1 !important;
-              content: url(../img/case-tracker/toolbar_panel/superToolNotActive.svg);
-            }
-          }
-        }
-        &-user-i {
-          @include w-icon-user();
-        }
-      }
-      &-text {
-        font-size: 14px;
-        color: white;
-        &-input {
-          outline: none;
-          border: none;
-          background-color: transparent;
           height: 100%;
-          max-width: 150px;
-          text-align: center;
-          padding-bottom: 1px;
-          &:hover {
-            cursor: default;
-          }
-          &-readonly {
-            max-width: 150px;
-            text-align: center;
+          padding-left: 12px;
+          &-2 {
+            padding-left: 0;
           }
         }
       }
+      &-img {
+        width: 24px;
+        height: 24px;
+        &-rect {
+          width: 16px;
+          height: 16px;
+        }
+        &-first {
+          margin-right: 4px;
+        }
+        &-into-content {
+          &.active {
+            content: url(../img/case-tracker/toolbar_panel/superTool.svg);
+          }
+          &.not-active {
+            opacity: 1 !important;
+            content: url(../img/case-tracker/toolbar_panel/superToolNotActive.svg);
+          }
+        }
+      }
+      &-user-i {
+        @include w-icon-user();
+      }
+    }
+    &-text {
+      font-size: 14px;
+      color: white;
+      &-input {
+        outline: none;
+        border: none;
+        background-color: transparent;
+        height: 100%;
+        max-width: 105px;
+        text-align: center;
+        padding-bottom: 1px;
+        &:hover {
+          cursor: default;
+        }
+        &-readonly {
+          max-width: 105px;
+          text-align: center;
+        }
+      }
+    }
+  }
+  .t-pan {
+    &-logo-menu {
+      position: absolute;
+      left: 8px;
+      top: 8px;
+      box-sizing: border-box;
+      background: #051923;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.24);
+      border-radius: 4px;
+      width: 59px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      padding: 0 8px 0 4px;
+      &-img__logo {
+        width: 20px;
+        height: 24px;
+      }
+    }
+    &-proj-name {
+      position: absolute;
+      left: 75px;
+      top: 8px;
+      box-sizing: border-box;
+      width: 133px;
+      height: 40px;
+      background: #051923;
+      box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.24);
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
   }
 }

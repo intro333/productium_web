@@ -5,7 +5,7 @@ export class ContextMenuBaseModel {
   width = 0;
   top = 0;
   left = 0;
-  triangle = null; // up | down | null
+  triangle = null; // up | down | left | null
   body = null;
   cKey = null;
 

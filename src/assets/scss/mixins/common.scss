@@ -2,14 +2,14 @@
 
 /* SHADOW */
 @mixin context-menu-shadow($opacity) {
-  --webkit-box-shadow: 0 0 1px 1px rgba(5, 25, 35, $opacity);
-  -moz-box-shadow: 0 0 1px 1px rgba(5, 25, 35, $opacity);
-  box-shadow: 0 0 1px 1px rgba(5, 25, 35, $opacity);
+  --webkit-box-shadow: 0 0 1px 1px rgba(5, 25, 35, 1);
+  -moz-box-shadow: 0 0 1px 1px rgba(5, 25, 35, 1);
+  box-shadow: 0 0 1px 1px rgba(5, 25, 35, 1);
 }
 @mixin central-modal-shadow($opacity) {
-  --webkit-box-shadow: 0 0 10px 0px rgba(0, 0, 0, $opacity);
-  -moz-box-shadow: 0 0 10px 0px rgba(0, 0, 0, $opacity);
-  box-shadow: 0 0 10px 0px rgba(0, 0, 0, $opacity);
+  --webkit-box-shadow: 0 0 10px 0px rgba(0, 0, 0, 1);
+  -moz-box-shadow: 0 0 10px 0px rgba(0, 0, 0, 1);
+  box-shadow: 0 0 10px 0px rgba(0, 0, 0, 1);
 }
 @mixin triangle-shadow() {
   --webkit-box-shadow: -2px 2px 3px 0 rgba(219, 219, 219, .6);

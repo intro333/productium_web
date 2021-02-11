@@ -1,5 +1,6 @@
 <template>
-  <div class="p-tooltip p-triangle p-triangle-up"
+  <div class="p-tooltip p-triangle"
+       :class="['p-triangle-' + tp.trianglePosition]"
        :style="{top: `${tp.top}px`, left: `${tp.left}px` }">
     <p class="p-tooltip-text">{{tp.title}}</p>
   </div>
