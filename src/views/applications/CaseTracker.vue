@@ -55,7 +55,7 @@
       </div>
       <div @click="openContextMenu('ScaleModal', 208, 'scaleRef', true, null, 20)"
            ref="scaleRef"
-           class="tp-icon-box tp-icon-box-2-2"
+           class="t-pan-share-box"
            :class="{active: (contextMenu.state && contextMenu.type === 'ScaleModal')}">
         <p class="tp-icon-item tp-text">{{zoomPercent}}%</p>
         <img src="@/assets/img/common/selectArrow.svg"
