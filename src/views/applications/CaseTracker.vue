@@ -31,13 +31,38 @@
         <span class="tp-text tp-text-input-readonly text-ellipsis">{{project.name}}</span>
       </div>
       <img v-if="!project.nameIsEdited"
-           @click="openContextMenu('ProjectNameModal', 134, 'projectNameArrowRef', false, projectNameModalBody())"
+           @click="openContextMenu('ProjectNameModal', 134, 'projectNameArrowRef', false, projectNameModalBody(), 8)"
            ref="projectNameArrowRef"
            src="@/assets/img/common/selectArrow.svg"
            class="tp-icon-item select-arrow"
            alt="">
       <div v-if="project.nameIsEdited"
            class="tp-icon-item select-arrow"></div>
+    </div>
+    <div class="t-pan-right">
+      <div class="t-pan-user">
+        <div class="p-flex-center tp-icon-user-i t-pan-user__item"
+             style="background-color: #EC368D;">D</div>
+        <div class="p-flex-center tp-icon-user-i t-pan-user__item"
+             style="background-color: #F30C0C;">4</div>
+      </div>
+      <div @click="openShareModal"
+           class="t-pan-share">
+        <img src="@/assets/img/common/share2.svg"
+             class="t-pan-share-icon"
+             alt="">
+        <span class="t-pan-share-text">Share</span>
+      </div>
+      <div @click="openContextMenu('ScaleModal', 208, 'scaleRef', true, null, 20)"
+           ref="scaleRef"
+           class="tp-icon-box tp-icon-box-2-2"
+           :class="{active: (contextMenu.state && contextMenu.type === 'ScaleModal')}">
+        <p class="tp-icon-item tp-text">{{zoomPercent}}%</p>
+        <img src="@/assets/img/common/selectArrow.svg"
+             class="tp-icon-item select-arrow"
+             style="padding-right: 0;"
+             alt="">
+      </div>
     </div>
     <!-- COMPONENTS -->
     <SlideSidebar />
@@ -74,6 +99,7 @@ import ModalsMixin from "@/components/mixins/ModalsMixin";
 import {getModalPositionFunc} from "@/functions/calculations";
 import {ContextMenuBaseModel} from "@/models/modals/ContextMenuBaseModel";
 import ProjectMixin from "@/components/mixins/ProjectMixin";
+import {CentralModalModel} from "@/models/modals/CentralModalModel";
 
 export default {
   name: "CaseTracker",
@@ -116,10 +142,17 @@ export default {
     contextMenu() {
       return this.getContextMenuBase();
     },
+    zoomPercent() {
+      if (this.activeSlide && this.activeSlide.zoom) {
+        return Math.round(this.activeSlide.zoom.z * 100);
+      }
+      return 100;
+    }
   },
   methods: {
     ...mapActions(['fetchProjects', 'fetchSlides', 'fetchSlideLists', 'fetchCases', 'fetchCaseComments',
-      'openCommentsModalByCommentId', 'fetchInitData', 'setIsLoading', 'setIsNotAvailableForMobile', 'setContextMenuBase']),
+      'openCommentsModalByCommentId', 'fetchInitData', 'setIsLoading', 'setIsNotAvailableForMobile',
+      'setContextMenuBase', 'setCentralModal']),
     ...mapGetters(['getContextMenuBase', 'getCentralModal', 'getTooltip', 'getIsLoading', 'getNotAvailableForMobile']),
     handleScroll(e) {
       const self = this;
@@ -135,9 +168,17 @@ export default {
     goToProjects() {
       // this.$router.push('/case-tracker?projectId=1&slideId=1&slideListId=1&caseId=1'); // TODO Редиректить к списку проектов
     },
-    openContextMenu(type, width, _refStr, isRight = null, _body = null) {
+    openShareModal() {
+      this.setCentralModal(
+          new CentralModalModel()
+              .set(true,
+                  'ShareModal',
+                  500,)
+      );
+    },
+    openContextMenu(type, width, _refStr, isRight = null, _body = null, topPlus) {
       if (this.$refs[_refStr] && this.$refs[_refStr].getBoundingClientRect()) {
-        const modalPosition = getModalPositionFunc(this.$refs[_refStr], isRight, width);
+        const modalPosition = getModalPositionFunc(this.$refs[_refStr], isRight, width, topPlus);
         this.setContextMenuBase(new ContextMenuBaseModel()
             .set(true,
                 type,

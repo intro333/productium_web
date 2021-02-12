@@ -107,7 +107,7 @@
       }
     }
     &-text {
-      font-size: 14px;
+      font-size: 12px;
       color: white;
       &-input {
         outline: none;
@@ -160,6 +160,58 @@
       display: flex;
       justify-content: center;
       align-items: center;
+    }
+    &-right {
+      position: absolute;
+      width: 200px;
+      height: 40px;
+      right: 8px;
+      top: 8px;
+      background: #051923;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-sizing: border-box;
+      box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.24);
+      border-radius: 4px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 0 8px;
+    }
+    &-share {
+      box-sizing: border-box;
+      width: 65px;
+      height: 28px;
+      border-radius: 4px;
+      background-color: $color-base;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 4px 0 6px;
+      &-icon {
+        width: 16px;
+        height: 15px;
+      }
+      &-text {
+        color: white;
+        font-size: 12px;
+        font-weight: bold;
+      }
+      &:hover {
+        cursor: pointer;
+      }
+    }
+    &-user {
+      display: flex;
+      align-items: center;
+      &__item {
+        margin-right: 13px;
+        &:first-child {
+          margin-right: 8px;
+        }
+        &:hover {
+          cursor: default;
+        }
+      }
     }
   }
 }
