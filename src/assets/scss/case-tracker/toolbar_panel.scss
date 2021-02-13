@@ -125,6 +125,11 @@
           text-align: center;
         }
       }
+      &-cursor-default {
+        &:hover {
+          cursor: default;
+        }
+      }
     }
   }
   .t-pan {

@@ -158,7 +158,8 @@ export default {
       this.scalePercent = $event;
     },
     enterScalePercent() {
-      if (this.scalePercent === '' || this.scalePercent === '0') {
+      if (this.scalePercent === '' ||
+          this.scalePercent === '0' || parseInt(this.scalePercent) === (this.activeSlide.zoom.z * 100)) {
         return false;
       }
       const z = parseInt(this.scalePercent) / 100;

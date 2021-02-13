@@ -31,11 +31,11 @@ export class SlideModel {
     this.projectId = _slide.projectId;
     this.order = _slide.order;
     this.img = _slide.img;
-    this.imgUrl = _slide.imgUrl;
-    this.imgLeft = _slide.imgLeft;
-    this.imgTop = _slide.imgTop;
-    this.zoom = _slide.zoom;
-    this.lastClientX = _slide.lastClientX;
-    this.lastClientY = _slide.lastClientY;
+    this.imgUrl = _slide.imgUrl || null;
+    this.imgLeft = _slide.imgLeft || 0;
+    this.imgTop = _slide.imgTop || 0;
+    this.zoom = _slide.zoom || this.zoom;
+    this.lastClientX = _slide.lastClientX || 0;
+    this.lastClientY = _slide.lastClientY || 0;
   }
 }

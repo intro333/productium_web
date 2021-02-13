@@ -93,7 +93,7 @@ export default {
         _ref = _ref[0] ? _ref[0] : null;
       }
       if (_ref && _ref.getBoundingClientRect()) {
-        const modalPosition = getModalPositionFunc(_ref, isRight, width);
+        const modalPosition = getModalPositionFunc(_ref, isRight, width, 8);
         const selectOptions = {
           _case: [
             {

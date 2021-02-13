@@ -53,6 +53,7 @@ const actions = {
           order: 0,
           img: null
         });
+        console.log(5, newSlide);
         const newSlideList = new SlideList({
           id: getRandomInt(10, 1000),
           slideId: newSlide.id,

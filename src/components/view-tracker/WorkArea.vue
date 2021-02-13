@@ -24,6 +24,19 @@
                    class="wa-empty-info-input">
           </div>
           <p class="wa-empty-info-more rgb-black-50">jpg, jpeg, png, svg</p>
+          <div class="wa-empty-info-soon">
+            <div class="wa-empty-info-soon__item wa-empty-info-soon1"><span>soon</span></div>
+            <span class="wa-empty-info-soon__item wa-empty-info-soon2">импорт:</span>
+            <img src="@/assets/img/soon/cib_adobe-xd.svg"
+                 alt=""
+                 class="wa-empty-info-soon__item wa-empty-info-soon3">
+            <img src="@/assets/img/soon/ph_sketch-logo-thin.svg"
+                 alt=""
+                 class="wa-empty-info-soon__item wa-empty-info-soon3">
+            <img src="@/assets/img/soon/ph_figma-logo-thin.svg"
+                 alt=""
+                 class="wa-empty-info-soon__item wa-empty-info-soon3">
+          </div>
         </div>
       </div>
       <div v-if="activeSlide.img"

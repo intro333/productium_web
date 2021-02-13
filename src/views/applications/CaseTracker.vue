@@ -57,7 +57,7 @@
            ref="scaleRef"
            class="t-pan-share-box"
            :class="{active: (contextMenu.state && contextMenu.type === 'ScaleModal')}">
-        <p class="tp-icon-item tp-text">{{zoomPercent}}%</p>
+        <p class="tp-icon-item tp-text tp-text-cursor-default">{{zoomPercent}}%</p>
         <img src="@/assets/img/common/selectArrow.svg"
              class="tp-icon-item select-arrow"
              style="padding-right: 0;"
