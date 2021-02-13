@@ -76,7 +76,7 @@ p {
   &-context-menu {
     z-index: 7;
     position: absolute;
-    border-radius: 2px;
+    border-radius: 4px;
     background-color: $color-head;
     filter: drop-shadow(4px 4px 16px rgba(0, 0, 0, 0.24));
     //@include context-menu-shadow(1);
@@ -231,7 +231,7 @@ p {
     z-index: 7;
     position: relative;
     background-color: #fff;
-    border-radius: 2px;
+    border-radius: 4px;
     @include central-modal-shadow(.25);
     //display: flex;
     //flex-direction: column;
@@ -471,7 +471,7 @@ p {
 .p-tooltip {
   z-index: 15;
   position: absolute;
-  border-radius: 2px;
+  border-radius: 4px;
   background-color: $color-head;
   filter: drop-shadow(4px 4px 16px rgba(0, 0, 0, 0.24));
   //@include context-menu-shadow(1);

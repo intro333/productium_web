@@ -68,7 +68,7 @@
          class="wa2-tools__item"
          :class="{active: activeTool === 'handTool'}">
       <img src="@/assets/img/case-tracker/toolbar_panel/handTool.svg"
-           class="wa2-tools__item-icon wa2-tools__item-icon18"
+           class="wa2-tools__item-icon wa2-tools__item-icon1618"
            alt="">
     </div>
   </div>

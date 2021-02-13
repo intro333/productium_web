@@ -135,6 +135,7 @@ export default {
           canvasHeight: workAreaRef.clientHeight,
         });
         setTimeout(() => {
+          fabric.Object.prototype.noScaleCache = false; /* Чтобы правильно расширялся объект */
           slide.canvas = new fabric.Canvas('canvas', {
             preserveObjectStacking: true, // Не менять позицию объектов при нажатии на них (чтобы картинка не уходила на первый план)
             isDrawingMode: _this.markerMode
@@ -430,6 +431,7 @@ export default {
             }
           }); /* MOUSE MOVE END */
           slide.canvas.on('mouse:wheel', function(opt) { /* MOUSE WHEEL */
+            console.log(1);
             if (opt.e.ctrlKey) {
               let delta = opt.e.deltaY;
               let zoom = slide.canvas.getZoom();
@@ -465,7 +467,7 @@ export default {
             _this.objIsScaling = true;
             const shape = e.target;
             const objType = shape.type;
-            // const mouse = slide.canvas.getPointer(e.e);
+            const mouse = slide.canvas.getPointer(e.e);
             const scaleXIsChanged = shape.scaleX !== 1;
             const scaleYIsChanged = shape.scaleY !== 1;
             let w, h;
@@ -496,16 +498,16 @@ export default {
                 shape.set({ry: ry});
               }
             }
-            // if (_this.drawX > mouse.x) {
-            //   shape.set({originX: 'right'});
-            // } else {
-            //   shape.set({originX: 'left'});
-            // }
-            // if (_this.drawY > mouse.y){
-            //   shape.set({originY: 'bottom'});
-            // } else {
-            //   shape.set({originY: 'top'});
-            // }
+            if (_this.drawX > mouse.x) {
+              shape.set({originX: 'right'});
+            } else {
+              shape.set({originX: 'left'});
+            }
+            if (_this.drawY > mouse.y){
+              shape.set({originY: 'bottom'});
+            } else {
+              shape.set({originY: 'top'});
+            }
             shape.set({scaleX: 1});
             shape.set({scaleY: 1});
             slide.canvas.renderAll();

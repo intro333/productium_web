@@ -139,6 +139,9 @@ export default {
     window.removeEventListener('wheel', this.handleScroll);
   },
   computed: {
+    activeSlide() {
+      return this.getActiveSlide();
+    },
     contextMenu() {
       return this.getContextMenuBase();
     },
@@ -153,7 +156,8 @@ export default {
     ...mapActions(['fetchProjects', 'fetchSlides', 'fetchSlideLists', 'fetchCases', 'fetchCaseComments',
       'openCommentsModalByCommentId', 'fetchInitData', 'setIsLoading', 'setIsNotAvailableForMobile',
       'setContextMenuBase', 'setCentralModal']),
-    ...mapGetters(['getContextMenuBase', 'getCentralModal', 'getTooltip', 'getIsLoading', 'getNotAvailableForMobile']),
+    ...mapGetters(['getContextMenuBase', 'getCentralModal', 'getTooltip', 'getIsLoading', 'getNotAvailableForMobile',
+      'getActiveSlide']),
     handleScroll(e) {
       const self = this;
       window.clearTimeout( this.isScrolling );
