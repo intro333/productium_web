@@ -471,30 +471,18 @@ export default {
             const scaleXIsChanged = shape.scaleX !== 1;
             const scaleYIsChanged = shape.scaleY !== 1;
             let w, h;
-            // if (shape.scaleX > 1) { /* Расширяем объект */
-            //   w = shape.width + Math.abs(mouse.x - _this.drawX);
-            // } else if (shape.scaleY > 1) {
-            //   h = Math.abs(mouse.y - _this.drawY);
-            // } else { /* Сужаем объект */
-              w = Math.abs(shape.width * shape.scaleX);
-              h = Math.abs(shape.height * shape.scaleY);
-            // }
+            w = Math.abs(shape.width * shape.scaleX);
+            h = Math.abs(shape.height * shape.scaleY);
             if (objType === 'rect') {
               if (w) { shape.set({width: w}) }
               if (h) { shape.set({height: h}) }
             } else if (objType === 'ellipse') {
               if (scaleXIsChanged) {
                 let rx = Math.abs(w) / 2;
-                if (rx > shape.strokeWidth) {
-                  rx -= shape.strokeWidth / 2
-                }
                 shape.set({ rx: rx});
               }
               if (scaleYIsChanged) {
                 let ry = Math.abs(h) / 2;
-                if (ry > shape.strokeWidth) {
-                  ry -= shape.strokeWidth / 2
-                }
                 shape.set({ry: ry});
               }
             }
