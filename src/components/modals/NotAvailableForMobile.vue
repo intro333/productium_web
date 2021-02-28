@@ -33,7 +33,7 @@ export default {
   name: "NotAvailableForMobile",
   methods: {
     goToCommunity() {
-      window.open('http://productium.org:81', 'self'); // TODO вынести линки в .env
+      window.open('http://productium.org', 'self'); // TODO вынести линки в .env
     }
   }
 }
