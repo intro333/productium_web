@@ -166,6 +166,20 @@
       justify-content: center;
       align-items: center;
     }
+    &-cloud {
+      position: absolute;
+      top: 8px;
+      right: 221px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      &-icon {
+        margin-top: 6px;
+        //width: 24px;
+        //height: 23px;
+      }
+    }
     &-right {
       position: absolute;
       width: 200px;

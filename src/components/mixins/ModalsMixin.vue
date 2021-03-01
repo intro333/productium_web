@@ -17,7 +17,7 @@ export default {
   methods: {
     ...mapActions(['setContextMenuBase', 'setTooltip']),
     ...mapGetters(['getContextMenuBase', 'getTooltip']),
-    showTooltip($event, _refStr, title, isRefOfItem = false, isHoriz) {
+    showTooltip($event, _refStr, title, isRefOfItem = false, isHoriz = false, topPlus = 15) {
       this.isItemMenuHovered = true;
       const timeout = this.tp.state ? 0 : 1000;
       this.showTooltipTimeout = setTimeout(() => {
@@ -29,7 +29,7 @@ export default {
             _ref = this.$refs[_refStr];
           }
           if (this.isItemMenuHovered && _ref.getBoundingClientRect()) {
-            let modalPosition = getModalPositionFunc(_ref);
+            let modalPosition = getModalPositionFunc(_ref, null, 0, topPlus);
             let trianglePosition = 'up';
             if (isHoriz) {
               modalPosition = getHorizModalPositionFunc(_ref);

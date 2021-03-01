@@ -39,6 +39,16 @@
       <div v-if="project.nameIsEdited"
            class="tp-icon-item select-arrow"></div>
     </div>
+
+    <div @mouseenter="showTooltip($event, 'panCloudRef','Нет синхронизации', false, false, 5)"
+         @mouseleave="hideToolTip"
+         ref="panCloudRef"
+         class="t-pan-cloud">
+      <img src="@/assets/img/common/cloud.svg"
+           class="t-pan-cloud-icon"
+           alt="">
+    </div>
+
     <div class="t-pan-right">
       <div class="t-pan-user">
         <div class="p-flex-center tp-icon-user-i t-pan-user__item"
