@@ -8,11 +8,13 @@
        @mouseleave="showCaseChildOptions(false)"
        class="csb-cases-item-child"
        :class="{'rgb-base-20': caseChildActiveAndSelected(_child)}">
-    <img :src="getCaseShapeChildImg(_child)"
-         class="csb-cases-item-child-img"
-         alt="">
-    <span :ref="caseChildRef(_child, cKey)"
-          class="csb-cases-item-child-text text-ellipsis">{{_child.title}}</span>
+    <div style="display: flex;">
+      <img :src="getCaseShapeChildImg(_child)"
+           class="csb-cases-item-child-img"
+           alt="">
+      <span :ref="caseChildRef(_child, cKey)"
+            class="csb-cases-item-child-text text-ellipsis">{{_child.title}}</span>
+    </div>
     <div v-if="isShowCaseChildOptions || (contextMenu.state && contextMenu.cKey === cKey &&
       (contextMenu.body) && contextMenu.body.subject === '_caseChild')"
          @click="openCaseOptionsMenu(167, 'caseChildOptionsRef_' + cKey,

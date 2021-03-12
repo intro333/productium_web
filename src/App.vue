@@ -18,6 +18,10 @@ body {
     font-family: Inter, sans-serif;
     //letter-spacing: .6px;
   }
+  input[type=file], /* FF, IE7+, chrome (except button) */
+  input[type=file]::-webkit-file-upload-button { /* chromes and blink button */
+    cursor: pointer;
+  }
   &.modal-open {
     overflow: hidden;
     &-mobile {

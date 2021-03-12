@@ -14,16 +14,16 @@
            class="wa-empty">
         <div class="wa-empty-info-box"
              :class="{'wa-empty-is-dropped': fileIsDragOver}">
-          <div style="position: relative">
+          <div class="wa-empty-info-input-box">
             <p class="wa-empty-info rgb-black-50">перетащите файл сюда, или <span class="wa-empty-info-link"
             >выберите файл</span></p>
+            <p class="wa-empty-info-more rgb-black-50">jpg, jpeg, png, svg</p>
             <input ref="inputFileRef"
                    accept="image/png,image/jpeg,image/jpg,image/svg"
                    @change="uploadImageToCanvasBg"
                    type="file"
                    class="wa-empty-info-input">
           </div>
-          <p class="wa-empty-info-more rgb-black-50">jpg, jpeg, png, svg</p>
           <div class="wa-empty-info-soon">
             <div class="wa-empty-info-soon__item wa-empty-info-soon1"><span>soon</span></div>
             <span class="wa-empty-info-soon__item wa-empty-info-soon2">импорт:</span>

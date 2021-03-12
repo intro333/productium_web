@@ -41,8 +41,20 @@
             opacity: 0;
             overflow: hidden;
             top: 0;
-            right: 0;
-            width: 105px;
+            left: 0;
+            width: 305px;
+            height: 35px;
+            &:hover {
+              cursor: pointer !important;
+            }
+            &-box {
+              position: relative;
+              display: flex;
+              flex-direction: column;
+              &:hover {
+                cursor: pointer !important;
+              }
+            }
           }
           &-soon {
             display: flex;
