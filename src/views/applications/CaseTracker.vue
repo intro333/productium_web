@@ -89,6 +89,30 @@
                      :tooltip="getTooltip" />
     <Loading v-if="getIsLoading()" />
     <NotAvailableForMobile v-if="getNotAvailableForMobile()" />
+
+    <!-- video -->
+    <div v-if="isShowVideoLearning"
+         class="p-modal">
+      <div class="p-modal-background p-modal-background-60"
+           @click="close"></div>
+      <div class="video-preview">
+        <img @click="close"
+             src="@/assets/img/common/closeIconWhite.svg"
+             class="video-preview-close-icon"
+             alt="">
+        <div class="video-preview-box">
+          <video id="video"
+                 class="video-preview-player"
+                 loop
+                 autoplay
+                 muted
+          >
+            <source src="/video/learning.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -127,7 +151,8 @@ export default {
     NotAvailableForMobile,
   },
   data: () => ({
-    isScrolling: false
+    isScrolling: false,
+    isShowVideoLearning: false
   }),
   created() {
     if (this.$device.mobile || this.$device.ipad) {
@@ -144,6 +169,12 @@ export default {
   },
   mounted() {
     window.addEventListener('wheel', this.handleScroll);
+    if (!localStorage.getItem('video_learning')) {
+      setTimeout(() => {
+        this.isShowVideoLearning = true;
+        // this.localStorage.setItem('video_learning', 'was_watched');
+      }, 3000);
+    }
   },
   beforeDestroy() {
     window.removeEventListener('wheel', this.handleScroll);
@@ -207,6 +238,9 @@ export default {
         );
       }
     },
+    close() {
+      this.isShowVideoLearning = false;
+    }
   },
 }
 </script>
