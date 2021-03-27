@@ -144,11 +144,26 @@
     padding: 60px 20px 20px 20px;
     width: 85%;
     &-box {
+      position: relative;
       border-radius: 16px;
       overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
     &-player {
       width: 100%;
+      border: none;
+      outline: none;
+    }
+    &-control {
+      &-play {
+        position: absolute;
+        z-index: 2;
+        @media (max-width: 1024px) {
+          width: 90px;
+        }
+      }
     }
     &-close-icon {
       position: absolute;
@@ -159,6 +174,13 @@
       &:hover {
         cursor: pointer;
       }
+    }
+    &-title {
+      position: absolute;
+      top: 20px;
+      left: calc(50% - 37px);
+      font-size: 20px;
+      color: white;
     }
   }
 }

@@ -91,28 +91,8 @@
     <NotAvailableForMobile v-if="getNotAvailableForMobile()" />
 
     <!-- video -->
-    <div v-if="isShowVideoLearning"
-         class="p-modal">
-      <div class="p-modal-background p-modal-background-60"
-           @click="close"></div>
-      <div class="video-preview">
-        <img @click="close"
-             src="@/assets/img/common/closeIconWhite.svg"
-             class="video-preview-close-icon"
-             alt="">
-        <div class="video-preview-box">
-          <video id="video"
-                 class="video-preview-player"
-                 loop
-                 autoplay
-                 muted
-          >
-            <source src="/video/learning.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-      </div>
-    </div>
+    <VideoLearning v-if="isShowVideoLearning"
+                   :close="close" />
   </div>
 </template>
 
@@ -134,6 +114,7 @@ import {getModalPositionFunc} from "@/functions/calculations";
 import {ContextMenuBaseModel} from "@/models/modals/ContextMenuBaseModel";
 import ProjectMixin from "@/components/mixins/ProjectMixin";
 import {CentralModalModel} from "@/models/modals/CentralModalModel";
+import VideoLearning from "@/components/common/VideoLearning";
 
 export default {
   name: "CaseTracker",
@@ -149,10 +130,11 @@ export default {
     Loading,
     Tooltip,
     NotAvailableForMobile,
+    VideoLearning,
   },
   data: () => ({
     isScrolling: false,
-    isShowVideoLearning: false
+    isShowVideoLearning: false,
   }),
   created() {
     if (this.$device.mobile || this.$device.ipad) {
@@ -169,11 +151,12 @@ export default {
   },
   mounted() {
     window.addEventListener('wheel', this.handleScroll);
-    if (!localStorage.getItem('video_learning')) {
+    const vl = localStorage.getItem('video_learning');
+    if (!vl) {
       setTimeout(() => {
         this.isShowVideoLearning = true;
-        // this.localStorage.setItem('video_learning', 'was_watched');
-      }, 3000);
+        // localStorage.setItem('video_learning', 'was_watched');
+      }, 1500);
     }
   },
   beforeDestroy() {
@@ -240,7 +223,7 @@ export default {
     },
     close() {
       this.isShowVideoLearning = false;
-    }
+    },
   },
 }
 </script>
