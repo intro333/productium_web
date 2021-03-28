@@ -19,6 +19,7 @@ export default {
           hoverCursor: 'default',
         }, _child.params));
       } else if (_child.shapeType === 'marker') {
+        this.$clipboard(_child.params.path);
         return new fabric.Path(_child.params.path, Object.assign(
             this.baseFields(_child), _child.params));
       }
