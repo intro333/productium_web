@@ -14,8 +14,11 @@
                @play="play"
                @pause="pause"
                controls
+               controlsList="nodownload"
+               disablePictureInPicture
                ref="videoPreviewRef"
                muted
+               poster="video/poster.gif"
         >
           <source src="/video/learning.mp4"
                   type="video/mp4">

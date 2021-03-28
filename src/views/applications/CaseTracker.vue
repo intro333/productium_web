@@ -155,7 +155,7 @@ export default {
     if (!vl) {
       setTimeout(() => {
         this.isShowVideoLearning = true;
-        // localStorage.setItem('video_learning', 'was_watched');
+        localStorage.setItem('video_learning', 'was_watched');
       }, 1500);
     }
   },
