@@ -95,7 +95,7 @@ export default {
                   selectOptions: [
                     {
                       isItemOfMenu: true,
-                      title: 'Удалить',
+                      title: this.$t('common.delete'),
                       dontShowIsActive: true,
                       action: () => {
                         this.removeSlide({
@@ -104,14 +104,14 @@ export default {
                         });
                       },
                     },
-                    {
-                      isItemOfMenu: true,
-                      title: 'Дублировать',
-                      dontShowIsActive: true,
-                      action: () => {
-
-                      }
-                    }
+                    // {
+                    //   isItemOfMenu: true,
+                    //   title: 'Дублировать',
+                    //   dontShowIsActive: true,
+                    //   action: () => {
+                    //
+                    //   }
+                    // }
                   ],
                   subject: 'slide'
                 },

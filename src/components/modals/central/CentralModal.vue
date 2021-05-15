@@ -8,7 +8,7 @@
            :class="{'short-left': cm.type === 'CommentsModal'}">
         <div v-if="cm.type === 'ShareModal'"
              class="share-first">
-          <span class="share-first-pre">Поделиться</span>
+          <span class="share-first-pre">{{ $t('share.toShare') }}</span>
           <span class="share-first-name">CaseMaker</span>
         </div>
         <CaseNameWithStatusAndOptions v-if="selectedCase && cm.type === 'CommentsModal'"

@@ -98,7 +98,7 @@ export default {
           _case: [
             {
               isItemOfMenu: true,
-              title: 'В работе',
+              title: this.$t('case.statusInWork'),
               isActive: _caseOrCaseChild.caseStatus === 'in-work',
               action: () => {
                 this.changeCaseStatus({
@@ -110,7 +110,7 @@ export default {
             },
             {
               isItemOfMenu: true,
-              title: 'Готово',
+              title: this.$t('case.statusDone'),
               isActive: _caseOrCaseChild.caseStatus === 'done',
               action: () => {
                 this.changeCaseStatus({
@@ -125,14 +125,14 @@ export default {
             },
             {
               isItemOfMenu: true,
-              title: 'Переименовать',
+              title: this.$t('common.rename'),
               action: () => {
                 this.changeCaseNameEditable(_caseOrCaseChild,  _refCaseStr, true, isMultiple, i);
               }
             },
             {
               isItemOfMenu: true,
-              title: 'Удалить',
+              title: this.$t('common.delete'),
               action: () => {
                 this.removeCase(_caseOrCaseChild);
               }
@@ -141,7 +141,7 @@ export default {
           _caseChild: [
             {
               isItemOfMenu: true,
-              title: 'Удалить',
+              title: this.$t('common.delete'),
               action: () => {
                 this.removeCaseChild(_caseOrCaseChild);
               }

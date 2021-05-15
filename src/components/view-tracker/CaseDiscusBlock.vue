@@ -30,7 +30,7 @@
                   :class="{'ea-readonly': !selectedCase.isDiscusEdited,
                            'ea-edited': selectedCase.isDiscusEdited,
                   }"
-                  :placeholder="`Опишите ${(selectedCase.discusBlockActivityState === 'discus') ? 'задачу' : 'решение'}...`"></textarea>
+                  :placeholder="`${$t('case.describeIt')} ${(selectedCase.discusBlockActivityState === 'discus') ? $t('case.describeTask') : $t('case.describeDecision')}...`"></textarea>
         </div>
         <div class="cd-b-comments">
           <div v-if="selectedCase"
@@ -40,7 +40,7 @@
                                                                              class="cd-b-comments-text-link"
           >+{{notReadCasesComments.length}}</span>
           </span>
-            <span class="cd-b-comments-text">comments</span>
+            <span class="cd-b-comments-text">{{ $t('comments.comments') }}</span>
           </div>
         </div>
       </div>
@@ -59,18 +59,21 @@ export default {
   components: {CaseNameWithStatusAndOptions},
   mixins: [CaseMixin],
   data: () => ({
-    discusBlockButtons: [
-      {
-        title: 'обсуждение',
-        discusBlockActivityState: 'discus'
-      },
-      {
-        title: 'решение',
-        discusBlockActivityState: 'resolut'
-      },
-    ],
+
   }),
   computed: {
+    discusBlockButtons() {
+      return [
+        {
+          title: this.$t('case.discussion'),
+          discusBlockActivityState: 'discus'
+        },
+        {
+          title: this.$t('case.decision'),
+          discusBlockActivityState: 'resolut'
+        },
+      ];
+    },
     casesComments() {
       return this.getCasesComments().filter(_c =>
           _c.caseId === this.selectedCase.id);

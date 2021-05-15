@@ -3,7 +3,7 @@
     <div class="add-user-box share-modal-padding">
       <input class="add-user-item add-user-input"
              placeholder="Введите почту или @Имя пользователя">
-      <div class="add-user-item add-user-button">Пригласить</div>
+      <div class="add-user-item add-user-button">{{ $t('share.toInvite') }}</div>
     </div>
     <div class="user-list share-modal-padding wout-top">
       <div v-for="(user, i) in shareUsers"
@@ -32,7 +32,7 @@
         <img src="@/assets/img/common/linkIcon.svg"
              class="text-link-icon"
              alt="">
-        <a class="text-link">Копировать ссылку</a>
+        <a class="text-link">{{ $t('share.copyLink') }}</a>
       </div>
     </div>
   </div>
@@ -136,7 +136,7 @@ export default {
           new SimpleNotifyInsideModel()
               .set(true,
               273,
-              'Ссылка успешно скопирована')
+                  this.$t('share.linkCopied'))
       )
     },
   },

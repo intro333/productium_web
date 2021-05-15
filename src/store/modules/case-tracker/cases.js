@@ -41,7 +41,7 @@ const actions = {
             projectId: parseInt(query.projectId),
             slideId: parseInt(query.slideId),
             slideListId: parseInt(query.slideListId),
-            title: 'Задача ' + caseId,
+            title: 'Case ' + caseId,
             caseStatus: 'in-work',
             isOpen: true,
             discus: '',

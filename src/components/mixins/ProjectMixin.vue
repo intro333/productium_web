@@ -42,25 +42,25 @@ export default {
         list: [
           {
             isItemOfMenu: true,
-            title: 'Переименовать',
+            title: this.$t('common.rename'),
             action: () => {
               this.changeProjectNameEditable(true);
             }
           },
           {
             isItemOfMenu: true,
-            title: 'Удалить',
+            title: this.$t('common.delete'),
             action: () => {
               console.log('ACTION Удалить')
             }
           },
-          {
-            isItemOfMenu: true,
-            title: 'Дублировать',
-            action: () => {
-              console.log('ACTION Дублировать')
-            }
-          },
+          // {
+          //   isItemOfMenu: true,
+          //   title: 'Дублировать',
+          //   action: () => {
+          //     console.log('ACTION Дублировать')
+          //   }
+          // },
         ]
       };
     },

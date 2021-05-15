@@ -79,21 +79,21 @@ export default {
         },
         {
           isItemOfMenu: true,
-          title: 'Увеличить',
+          title: this.$t('common.increase'),
           action: () => {
             this.zoomIn(0.1);
           }
         },
         {
           isItemOfMenu: true,
-          title: 'Уменьшить',
+          title: this.$t('common.reduce'),
           action: () => {
             this.zoomOut(0.1);
           }
         },
         {
           isItemOfMenu: true,
-          title: 'Показать весь рабочий стол',
+          title: this.$t('common.showEntireDesktop'),
           action: () => {
             if (this.activeSlide && this.activeSlide.canvas) {
               this.activeSlide.lastClientX = 0;
@@ -110,14 +110,14 @@ export default {
         },
         {
           isItemOfMenu: true,
-          title: 'Увеличить на 50%',
+          title: this.$t('common.increase50'),
           action: () => {
             this.zoomIn(0.5);
           }
         },
         {
           isItemOfMenu: true,
-          title: 'Уменьшить на 50%',
+          title: this.$t('common.reduce50'),
           action: () => {
             this.zoomOut(0.5);
           }

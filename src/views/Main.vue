@@ -9,6 +9,7 @@ import {mapActions, mapGetters} from "vuex";
 
 export default {
   name: "Main",
+
   components: {
 
   },

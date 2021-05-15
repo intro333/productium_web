@@ -115,10 +115,11 @@ import {ContextMenuBaseModel} from "@/models/modals/ContextMenuBaseModel";
 import ProjectMixin from "@/components/mixins/ProjectMixin";
 import {CentralModalModel} from "@/models/modals/CentralModalModel";
 import VideoLearning from "@/components/common/VideoLearning";
+import LocaleMixin from "@/components/mixins/LocaleMixin";
 
 export default {
   name: "CaseTracker",
-  mixins: [ModalsMixin, ProjectMixin],
+  mixins: [ModalsMixin, ProjectMixin, LocaleMixin],
   components: {
     WorkArea,
     SlideSidebar,
@@ -148,6 +149,21 @@ export default {
         this.openCommentsModalByCommentId(parseInt(query.commentId));
       }
     }
+    this.fetchIpAddressAndSetOsInfo().then(info => {
+      if (info.userIp && (info.userIp !== '')) {
+        this.fetchAdditionalIpInfo(info.userIp).then(additionalInfo => {
+          if (additionalInfo && additionalInfo.location && additionalInfo.location.country) {
+            const location = additionalInfo.location;
+            const country = location.country;
+            if (country.code === 'RU') {
+              // this.changeLocale('ru');
+            } else {
+              this.changeLocale('en');
+            }
+          }
+        });
+      }
+    });
   },
   mounted() {
     window.addEventListener('wheel', this.handleScroll);
@@ -179,7 +195,7 @@ export default {
   methods: {
     ...mapActions(['fetchProjects', 'fetchSlides', 'fetchSlideLists', 'fetchCases', 'fetchCaseComments',
       'openCommentsModalByCommentId', 'fetchInitData', 'setIsLoading', 'setIsNotAvailableForMobile',
-      'setContextMenuBase', 'setCentralModal']),
+      'setContextMenuBase', 'setCentralModal', 'fetchIpAddressAndSetOsInfo', 'fetchAdditionalIpInfo']),
     ...mapGetters(['getContextMenuBase', 'getCentralModal', 'getTooltip', 'getIsLoading', 'getNotAvailableForMobile',
       'getActiveSlide']),
     handleScroll(e) {

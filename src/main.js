@@ -6,6 +6,8 @@ import device from "vue-device-detector";
 import { fabric } from 'fabric';
 import VueTheMask from 'vue-the-mask';
 import Clipboard from 'v-clipboard';
+import VueI18n from 'vue-i18n';
+import {messages} from '@/plugins/i18n';
 
 Vue.config.productionTip = false;
 Vue.use(VueTheMask);
@@ -15,6 +17,14 @@ Vue.use(Clipboard);
 
 import "./assets/scss/app.scss";
 import middlewarePipeline from "./router/middleware/middlewarePipeline";
+
+Vue.use(VueI18n);
+
+const i18n = new VueI18n({
+  locale: 'en', // set locale
+  fallbackLocale: 'en', // set fallback locale
+  messages, // set locale messages
+});
 
 router.beforeEach((to, from, next) => {
   if (!to.meta.middleware) {
@@ -36,5 +46,6 @@ router.beforeEach((to, from, next) => {
 new Vue({
   router,
   store,
-  render: h => h(App)
+  render: h => h(App),
+  i18n,
 }).$mount('#app')

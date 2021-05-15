@@ -38,10 +38,25 @@ export default {
     activeSlide() {
       return this.getActiveSlide();
     },
+    projects() {
+      return this.getProjects();
+    },
+    myProjects() {
+      return this.projects.filter(_project => _project.activityStatus === 'active')
+          .map(_project => {
+            return {
+              isItemOfMenu: true,
+              title: _project.name,
+              action: () => {
+
+              }
+            };
+      });
+    },
   },
   methods: {
     ...mapActions(['pushSlide', 'pushCase', 'setSlideImg']),
-    ...mapGetters(['getActiveSlide']),
+    ...mapGetters(['getActiveSlide', 'getProjects']),
     setSubMenu(subMenu) {
       this.subMenu = subMenu;
     },
@@ -49,18 +64,18 @@ export default {
       return [
         {
           isItemOfMenu: true,
-          title: 'Файл',
+          title: this.$t('nav.file'),
           subMenu: [
             {
               isItemOfMenu: true,
-              title: 'Создать новый проект',
+              title: this.$t('nav.createNewProject'),
               action: () => {
                 console.log('ACTION Создать новый проект');
               }
             },
             {
               isItemOfMenu: true,
-              title: 'Создать слайд',
+              title: this.$t('nav.createSlide'),
               action: () => {
                 this.pushSlide();
               }
@@ -68,7 +83,7 @@ export default {
             {
               isItemOfMenu: true,
               isDisable: !this.activeSlide.img,
-              title: 'Создать задачу',
+              title: this.$t('nav.createCase'),
               action: () => {
                 /* Задачу можно создать только если изображение добавлено */
                 if (this.activeSlide.img) {
@@ -83,7 +98,7 @@ export default {
               isItemOfMenu: true,
               isFileInput: true,
               isDisable: !!this.activeSlide.img,
-              title: 'Добавить изображение',
+              title: this.$t('nav.addImage'),
               action: () => {},
               fileAction: ($event) => {
                 /* Нельзя добавить более одного изображения */
@@ -100,11 +115,11 @@ export default {
         },
         {
           isItemOfMenu: true,
-          title: 'Редактировать',
+          title: this.$t('nav.edit'),
           subMenu: [
             {
               isItemOfMenu: true,
-              title: 'В архив',
+              title: this.$t('nav.remove'),
               action: () => {
                 console.log('ACTION В архив')
               }
@@ -113,7 +128,7 @@ export default {
         },
         {
           isItemOfMenu: true,
-          title: 'Сохранить',
+          title: this.$t('nav.save'),
           action: () => {
             console.log('ACTION Сохранить')
           }
@@ -123,41 +138,46 @@ export default {
         },
         {
           isItemOfMenu: true,
-          title: 'Помощь и настройки',
-          subMenu: [
-            {
-              isItemOfMenu: true,
-              title: 'Часто задаваемые вопросы',
-              action: () => {
-                console.log('ACTION Часто задаваемые вопросы')
-              }
-            },
-            {
-              isItemOfMenu: true,
-              title: 'Обратная связь',
-              action: () => {
-                console.log('ACTION Обратная связь')
-              }
-            },
-            {
-              isItemOfMenu: false,
-            },
-            {
-              isItemOfMenu: true,
-              title: 'Пользовательское соглашение',
-              action: () => {
-                console.log('ACTION Пользовательское соглашение')
-              }
-            },
-            {
-              isItemOfMenu: true,
-              title: 'Выйти из профиля',
-              action: () => {
-                console.log('ACTION Выйти из профиля')
-              }
-            },
-          ]
+          title: this.$t('nav.myProjects'),
+          subMenu: this.myProjects
         },
+        // {
+        //   isItemOfMenu: true,
+        //   title: 'Помощь и настройки',
+        //   subMenu: [
+        //     {
+        //       isItemOfMenu: true,
+        //       title: 'Часто задаваемые вопросы',
+        //       action: () => {
+        //         console.log('ACTION Часто задаваемые вопросы')
+        //       }
+        //     },
+        //     {
+        //       isItemOfMenu: true,
+        //       title: 'Обратная связь',
+        //       action: () => {
+        //         console.log('ACTION Обратная связь')
+        //       }
+        //     },
+        //     {
+        //       isItemOfMenu: false,
+        //     },
+        //     {
+        //       isItemOfMenu: true,
+        //       title: 'Пользовательское соглашение',
+        //       action: () => {
+        //         console.log('ACTION Пользовательское соглашение')
+        //       }
+        //     },
+        //     {
+        //       isItemOfMenu: true,
+        //       title: 'Выйти из профиля',
+        //       action: () => {
+        //         console.log('ACTION Выйти из профиля')
+        //       }
+        //     },
+        //   ]
+        // },
       ];
     },
   },

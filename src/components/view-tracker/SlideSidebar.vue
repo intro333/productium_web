@@ -15,7 +15,7 @@
                class="sl-b-add-content-button-img"
                alt="">
         </div>
-        <span class="sl-b-add-content-text">Добавить слайд</span>
+        <span class="sl-b-add-content-text">{{ $t('slide.addSlide') }}</span>
       </div>
     </div>
   </div>

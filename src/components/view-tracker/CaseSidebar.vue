@@ -5,7 +5,7 @@
         <div @click="selectTab('cases')"
              class="csb-header-tabs-item"
              :class="{'rgb-black-30': !isTabSelected('cases')}">
-          <span>Кейсы </span>
+          <span>{{ $t('case.imageToComment') }} </span>
           <span>
             <span>{{numOfInWorkCases}}</span>
             <span class="rgb-black-30">/{{numOfDoneCases}}</span>
@@ -82,21 +82,21 @@ export default {
       return [
         {
           status: 'all',
-          title: 'все',
+          title: this.$t('case.filterAll'),
           action: () => {
             this.caseFilterSelected = 0;
           }
         },
         {
           status: 'done',
-          title: 'готовые',
+          title: this.$t('case.filterReadyMade'),
           action: () => {
             this.caseFilterSelected = 1;
           }
         },
         {
           status: 'in-work',
-          title: 'в работе',
+          title: this.$t('case.statusInWork'),
           action: () => {
             this.caseFilterSelected = 2;
           }
@@ -165,7 +165,7 @@ export default {
                 null,
                 {
                   selectOptions: this.caseFilters.map(_f => {
-                    let title = 'Показывать ' + ((_f.status === 'all') ? _f.title : `"${_f.title}"`);
+                    let title = this.$t('case.show') + ((_f.status === 'all') ? _f.title : `"${_f.title}"`);
                     return {
                       isItemOfMenu: true,
                       title,

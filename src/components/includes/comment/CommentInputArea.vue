@@ -22,11 +22,11 @@
                     class="pc-input-area-text p-textarea-custom scroll-textarea"
                     :class="{'pc-input-area-text-empty': textIsEmpty,
                       'pc-input-area-text-with-link': isUserLink}"
-                    :placeholder="!userLink ? 'Напишите комментарий...' : ''"></textarea>
+                    :placeholder="!userLink ? $t('comments.writeComment') : ''"></textarea>
         </div>
         <div v-if="imagesIsCanUpload"
              class="pc-input-area-add-img-box">
-          <img @mouseenter="showTooltip($event, 'addImageIcon','Изображение к комментарию')"
+          <img @mouseenter="showTooltip($event, 'addImageIcon',$t('comments.imageToComment'))"
                @mouseleave="hideToolTip"
                ref="addImageIcon"
                src="@/assets/img/common/media/addImageIcon.svg"
@@ -51,7 +51,7 @@
       />
     </div>
     <div class="pc-input-area-right">
-      <span class="pc-input-area-descr">Нажмите ENTER, чтобы отправить комментарий</span>
+      <span class="pc-input-area-descr">{{ $t('comments.pressEnterMessage') }}</span>
     </div>
   </div>
 </template>

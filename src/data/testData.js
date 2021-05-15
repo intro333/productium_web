@@ -15,7 +15,7 @@ export const mockProjects = [
   new ProjectModel({
     id: 2,
     name: 'Untitled2',
-    activityStatus: 'active',
+    activityStatus: 'archived',
   }),
   new ProjectModel({
     id: 3,

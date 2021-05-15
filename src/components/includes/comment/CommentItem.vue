@@ -29,7 +29,7 @@
         <div class="pc-comment-item-body-bottom">
           <span class="pc-comment-item-body-date">{{getDateTime()}}</span>
           <span @click="reply"
-                class="pc-comment-item-body-reply">ответить</span>
+                class="pc-comment-item-body-reply">{{ $t('common.toAnswer') }}</span>
         </div>
         <div v-if="comment.children && comment.children.length"
              class="pc-comment-item-children">
@@ -198,14 +198,14 @@ export default {
                   selectOptions: [
                     {
                       isItemOfMenu: true,
-                      title: 'Удалить',
+                      title: this.$t('common.delete'),
                       action: () => {
                         this.removeCaseComment(_comment);
                       },
                     },
                     {
                       isItemOfMenu: true,
-                      title: 'Скопировать',
+                      title: this.$t('common.copy'),
                       action: () => {
                         let url = window.location.host;
                         url += this.$route.fullPath;
@@ -236,7 +236,7 @@ export default {
           new SimpleNotifyInsideModel()
               .set(true,
                   260,
-                  'Ссылка скопирована в буфер обмена')
+                  this.$t('common.linkIsCopied'))
       )
     },
   },

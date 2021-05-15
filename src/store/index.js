@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 
 Vue.use(Vuex);
 
+import '../plugins/axios';
 import common from './modules/common';
 import modals from './modules/modals';
 import caseTrackerProjects from './modules/case-tracker/projects';
