@@ -40,7 +40,7 @@
            class="tp-icon-item select-arrow"></div>
     </div>
 
-    <div @mouseenter="showTooltip($event, 'panCloudRef','Нет синхронизации', false, false, 5)"
+    <div @mouseenter="showTooltip($event, 'panCloudRef', $t('message.errorNoSyncing'), false, false, 5)"
          @mouseleave="hideToolTip"
          ref="panCloudRef"
          class="t-pan-cloud">
@@ -156,7 +156,7 @@ export default {
             const location = additionalInfo.location;
             const country = location.country;
             if (country.code === 'RU') {
-              // this.changeLocale('ru');
+              this.changeLocale('ru');
             } else {
               this.changeLocale('en');
             }

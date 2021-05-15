@@ -1,6 +1,6 @@
 <template>
   <div class="wa2-tools">
-    <div @mouseenter="showTooltip($event, 'controlRef','Перемещать', false, true)"
+    <div @mouseenter="showTooltip($event, 'controlRef', $t('slide.moveTool'), false, true)"
          @mouseleave="hideToolTip"
          @click="selectActiveTool('moveTool')"
          ref="controlRef"
@@ -10,7 +10,7 @@
            class="wa2-tools__item-icon"
            alt="">
     </div>
-    <div @mouseenter="showTooltip($event, 'markerRef','Маркер', false, true)"
+    <div @mouseenter="showTooltip($event, 'markerRef', $t('slide.moveTool'), false, true)"
          @mouseleave="hideToolTip"
          @click="selectActiveTool('markerTool')"
          ref="markerRef"
@@ -33,14 +33,14 @@
              alt="">
       </div>
       <img @click="openContextMenu('ShapesModal', 165, 'shapeRef', false, shapesModalBody(), 'left')"
-           @mouseenter="showTooltip($event, 'shapeRef','Инструменты', false, true)"
+           @mouseenter="showTooltip($event, 'shapeRef', $t('slide.shapeTool'), false, true)"
            @mouseleave="hideToolTip"
            src="@/assets/img/common/selectArrowRight.svg"
            class="wa2-tools__item-arrow select-arrow select-arrow-right"
            alt="">
     </div>
     <div @click="openContextMenu('ColorModal', 233, 'colorRef', false, null, 'left')"
-         @mouseenter="showTooltip($event, 'colorRef','Цвет', false, true)"
+         @mouseenter="showTooltip($event, 'colorRef', $t('slide.colorTool'), false, true)"
          @mouseleave="hideToolTip"
          ref="colorRef"
          class="wa2-tools__item wa2-tools__item2"
@@ -50,7 +50,7 @@
            class="wa2-tools__item-arrow wa2-tools__item-arrow2 select-arrow select-arrow-right"
            alt="">
     </div>
-    <div @mouseenter="showTooltip($event, 'superToolRef','СуперТул', false, true)"
+    <div @mouseenter="showTooltip($event, 'superToolRef', $t('slide.superTool'), false, true)"
          @mouseleave="hideToolTip"
          @click="selectActiveTool('superTool')"
          ref="superToolRef"
@@ -61,7 +61,7 @@
            :class="{active: activeTool === 'superTool', 'not-active': activeTool !== 'superTool'}"
            alt="">
     </div>
-    <div @mouseenter="showTooltip($event, 'handToolRef','Hand Tool', false, true)"
+    <div @mouseenter="showTooltip($event, 'handToolRef', $t('slide.handTool'), false, true)"
          @mouseleave="hideToolTip"
          @click="selectActiveTool('handTool')"
          ref="handToolRef"
@@ -133,11 +133,11 @@ export default {
     shapeActiveToolTitle() {
       switch (this.activeShapeTool) {
         case 'rectangleTool':
-          return 'Прямоугольник';
+          return this.$t('slide.shapeRectangle');
         case 'ellipseTool':
-          return 'Эллипс';
+          return this.$t('slide.shapeEllipse');
         default:
-          return 'Прямоугольник';
+          return this.$t('slide.shapeRectangle');
       }
     },
     shapeSvg() {

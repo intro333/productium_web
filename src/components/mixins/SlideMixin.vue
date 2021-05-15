@@ -667,7 +667,7 @@ export default {
       return {
         list: [
           {
-            title: 'Прямоугольник',
+            title: this.$t('slide.shapeRectangle'),
             type: 'rectangle',
             isDisabled: false,
             action: () => {
@@ -675,7 +675,7 @@ export default {
             }
           },
           {
-            title: 'Эллипс',
+            title: this.$t('slide.shapeEllipse'),
             type: 'ellipse',
             isDisabled: false,
             action: () => {
@@ -683,7 +683,7 @@ export default {
             }
           },
           {
-            title: 'Стрелка',
+            title: this.$t('slide.shapeArrow'),
             type: 'arrow',
             isDisabled: true,
             action: () => {
@@ -691,7 +691,7 @@ export default {
             }
           },
           {
-            title: 'Линия',
+            title: this.$t('slide.shapeLine'),
             type: 'line',
             isDisabled: true,
             action: () => {

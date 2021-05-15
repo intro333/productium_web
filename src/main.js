@@ -21,7 +21,7 @@ import middlewarePipeline from "./router/middleware/middlewarePipeline";
 Vue.use(VueI18n);
 
 const i18n = new VueI18n({
-  locale: 'en', // set locale
+  locale: 'ru', // set locale
   fallbackLocale: 'en', // set fallback locale
   messages, // set locale messages
 });
