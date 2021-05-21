@@ -2,7 +2,7 @@
   <div class="share-modal">
     <div class="add-user-box share-modal-padding">
       <input class="add-user-item add-user-input"
-             placeholder="Введите почту или @Имя пользователя">
+             :placeholder="$t('share.placeholder1')">
       <div class="add-user-item add-user-button">{{ $t('share.toInvite') }}</div>
     </div>
     <div class="user-list share-modal-padding wout-top">
@@ -18,7 +18,7 @@
         <div @click="openRolesSelect(i, user)"
              class="ul-item-right">
           <span :ref="'roleNameRef_' + i"
-                class="ul-item-right-text">{{getUserRole(user.role)}}</span>
+                class="ul-item-right-text">{{$t('userRole.' + user.role)}}</span>
           <img src="@/assets/img/case-tracker/toolbar_panel/share/selectArrow.svg"
                class="ul-item-right-arrow select-arrow"
                alt="">
@@ -42,7 +42,7 @@
 import {getModalPositionFunc} from "@/functions/calculations";
 import {ContextMenuBaseModel} from "@/models/modals/ContextMenuBaseModel";
 import {mapActions} from "vuex";
-import {userRoleToTitle} from "@/functions/conversation";
+// import {userRoleToTitle} from "@/functions/conversation";
 import {SimpleNotifyInsideModel} from "@/models/modals/SimpleNotifyInsideModel";
 
 export default {
@@ -93,7 +93,7 @@ export default {
                     selectOptions: [
                       {
                         isItemOfMenu: true,
-                        title: userRoleToTitle('guest'),
+                        title: this.$t('userRole.guest'),
                         isActive: user.role === 'guest',
                         action: () => {
                           this.selectUserRole(user, 'guest');
@@ -101,7 +101,7 @@ export default {
                       },
                       {
                         isItemOfMenu: true,
-                        title: userRoleToTitle('editor'),
+                        title: this.$t('userRole.editor'),
                         isActive: user.role === 'editor',
                         action: () => {
                           this.selectUserRole(user, 'editor');
@@ -109,7 +109,7 @@ export default {
                       },
                       {
                         isItemOfMenu: true,
-                        title: userRoleToTitle('manager'),
+                        title: this.$t('userRole.manager'),
                         isActive: user.role === 'manager',
                         action: () => {
                           this.selectUserRole(user, 'manager');
@@ -128,9 +128,9 @@ export default {
       user.role = role;
       this.setContextMenuBase(new ContextMenuBaseModel());
     },
-    getUserRole(role) {
-      return userRoleToTitle(role);
-    },
+    // getUserRole(role) {
+    //   return userRoleToTitle(role);
+    // },
     copyShareLink() {
       this.setSimpleNotifyInside(
           new SimpleNotifyInsideModel()

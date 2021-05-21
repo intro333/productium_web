@@ -158,21 +158,26 @@ export default {
         this.openCommentsModalByCommentId(parseInt(query.commentId));
       }
     }
-    // this.fetchIpAddressAndSetOsInfo().then(info => {
-    //   if (info.userIp && (info.userIp !== '')) {
-    //     this.fetchAdditionalIpInfo(info.userIp).then(additionalInfo => {
-    //       if (additionalInfo && additionalInfo.location && additionalInfo.location.country) {
-    //         const location = additionalInfo.location;
-    //         const country = location.country;
-    //         if (country.code === 'RU') {
-    //           this.changeLocale('ru');
-    //         } else {
-    //           this.changeLocale('en');
-    //         }
-    //       }
-    //     });
-    //   }
-    // });
+    if (this.$route.query.lang) { // TODO УБрать
+      this.changeLocale(this.$route.query.lang);
+    }
+    this.fetchIpAddressAndSetOsInfo().then(info => {
+      if (info.userIp && (info.userIp !== '')) {
+        this.fetchAdditionalIpInfo(info.userIp).then(additionalInfo => {
+          if (additionalInfo && additionalInfo.location && additionalInfo.location.country) {
+            const location = additionalInfo.location;
+            const country = location.country;
+            if (!this.$route.query.lang) { // TODO УБрать
+              if (country.code === 'RU') {
+                this.changeLocale('ru');
+              } else {
+                this.changeLocale('en');
+              }
+            }
+          }
+        });
+      }
+    });
   },
   mounted() {
     window.addEventListener('wheel', this.handleScroll);

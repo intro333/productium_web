@@ -10,7 +10,7 @@
            class="wa2-tools__item-icon"
            alt="">
     </div>
-    <div @mouseenter="showTooltip($event, 'markerRef', $t('slide.moveTool'), false, true)"
+    <div @mouseenter="showTooltip($event, 'markerRef', $t('slide.markerTool'), false, true)"
          @mouseleave="hideToolTip"
          @click="selectActiveTool('markerTool')"
          ref="markerRef"

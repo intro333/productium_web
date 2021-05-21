@@ -15,8 +15,8 @@
         <div class="wa-empty-info-box"
              :class="{'wa-empty-is-dropped': fileIsDragOver}">
           <div class="wa-empty-info-input-box">
-            <p class="wa-empty-info rgb-black-50">перетащите файл сюда, или <span class="wa-empty-info-link"
-            >выберите файл</span></p>
+            <p class="wa-empty-info rgb-black-50">{{ $t('slide.drop1') }} <span class="wa-empty-info-link"
+            >{{ $t('slide.drop2') }}</span></p>
             <p class="wa-empty-info-more rgb-black-50">jpg, jpeg, png, svg</p>
             <input ref="inputFileRef"
                    accept="image/png,image/jpeg,image/jpg,image/svg"
@@ -26,7 +26,7 @@
           </div>
           <div class="wa-empty-info-soon">
             <div class="wa-empty-info-soon__item wa-empty-info-soon1"><span>soon</span></div>
-            <span class="wa-empty-info-soon__item wa-empty-info-soon2">импорт:</span>
+            <span class="wa-empty-info-soon__item wa-empty-info-soon2">{{ $t('slide.import') }}:</span>
             <img src="@/assets/img/soon/cib_adobe-xd.svg"
                  alt=""
                  class="wa-empty-info-soon__item wa-empty-info-soon3">
