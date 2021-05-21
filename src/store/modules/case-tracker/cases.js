@@ -6,7 +6,7 @@ import {mockCases, mockCaseComments} from "@/data/testData";
 import {shapeTitleAutoIncrement} from "@/functions/case-tracker/projectsF";
 import {CaseCommentModel} from "@/models/case-tracker/CaseCommentModel";
 
-const state = {
+export const state = {
   cases: [],
   casesComments: [],
   selectedCase: null

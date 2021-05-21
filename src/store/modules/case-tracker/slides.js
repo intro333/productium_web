@@ -5,7 +5,7 @@ import {getRandomInt} from "@/functions/calculations";
 import router from "@/router";
 import {mockSlideLists, mockSlides} from "@/data/testData";
 
-const state = {
+export const state = {
   slides: [],
   slideLists: [],
   activeSlide: null,

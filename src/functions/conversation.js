@@ -39,3 +39,8 @@ export function sortCasesComments(a, b) {
   }
   return 0;
 }
+
+export function shortFullName(fullName) {
+  const names = fullName.split(' ');
+  return `${names[0][0]}${names[1][0]}`;
+}

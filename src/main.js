@@ -8,6 +8,7 @@ import VueTheMask from 'vue-the-mask';
 import Clipboard from 'v-clipboard';
 import VueI18n from 'vue-i18n';
 import {messages} from '@/plugins/i18n';
+import VueJwtDecode from 'vue-jwt-decode'
 
 Vue.config.productionTip = false;
 Vue.use(VueTheMask);
@@ -20,6 +21,7 @@ import "./assets/scss/app.scss";
 import middlewarePipeline from "./router/middleware/middlewarePipeline";
 
 Vue.use(VueI18n);
+Vue.use(VueJwtDecode);
 
 const i18n = new VueI18n({
   locale: 'ru', // set locale

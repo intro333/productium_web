@@ -19,6 +19,7 @@
     "vue-device-detector": "^1.1.5",
     "vue-faker": "^3.0.0",
     "vue-i18n": "^8.24.4",
+    "vue-jwt-decode": "^0.1.0",
     "vue-router": "^3.2.0",
     "vue-the-mask": "^0.11.1",
     "vuex": "^3.4.0"

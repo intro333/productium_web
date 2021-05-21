@@ -1,8 +1,10 @@
 import {CurrentUserModel} from "@/models/CurrentUserModel";
 import {getOS} from "@/functions/validation";
+import {shortFullName} from "@/functions/conversation";
 
 const state = {
     accessToken: localStorage.getItem('access_token'),
+    isAuthorized: !!localStorage.getItem('access_token'),
     currentUser: new CurrentUserModel(1, 'Dmitriy D', 'DD', '#7c4a4a'),
     sInfo: {
         userIp: '',
@@ -15,11 +17,12 @@ const state = {
 const getters = {
     getCurrentUser: state => state.currentUser,
     getOsInfo: state => state.osInfo,
+    geIsAuthorized: state => state.isAuthorized,
     getAdditionalIpInfo: state => state.additionalIpInfo,
 };
 
 const actions = {
-    login({ commit }, payload) {
+    login({ commit, dispatch }, payload) {
         return new Promise((resolve, reject) => {
             window.axios.post('auth/login/', {
               fullName: payload.fullName,
@@ -29,6 +32,8 @@ const actions = {
                 console.log('response', response);
                 const info = response.data;
                 commit('LOGIN', info);
+                dispatch('setCurrentUser', new CurrentUserModel(info.userId, payload.fullName, shortFullName(payload.fullName), '#7c4a4a'));
+                dispatch('setData', info.userId);
                 resolve(info);
               }, () => {
                   reject(false)
@@ -75,8 +80,9 @@ const actions = {
 
 const mutations = {
     LOGIN(state, info) {
-      state.accessToken = info.access_token;
-      localStorage.setItem('access_token', info.access_token);
+      state.accessToken = info.accessToken;
+      state.isAuthorized = true;
+      localStorage.setItem('access_token', info.accessToken);
     },
     SET_CURRENT_USER(state, user) { state.currentUser = user; },
     SET_OS_INFO(state, info) { state.osInfo = info; },

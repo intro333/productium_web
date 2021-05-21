@@ -116,6 +116,9 @@ import ProjectMixin from "@/components/mixins/ProjectMixin";
 import {CentralModalModel} from "@/models/modals/CentralModalModel";
 import VideoLearning from "@/components/common/VideoLearning";
 import LocaleMixin from "@/components/mixins/LocaleMixin";
+import VueJwtDecode from 'vue-jwt-decode';
+import {CurrentUserModel} from "@/models/CurrentUserModel";
+import {shortFullName} from "@/functions/conversation";
 
 export default {
   name: "CaseTracker",
@@ -139,20 +142,32 @@ export default {
   }),
   created() {
     /* Auth check */
-    // const token = localStorage.getItem('access_token');
-    // if (!token) {
-    //   const fk = this.$faker();
-    //   const fullName = `${fk.name.firstName()} ${fk.name.lastName()}`;
-    //   const password = fk.internet.password();
-    //   this.login({fullName, password});
-    // }
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      const fk = this.$faker();
+      const fullName = `${fk.name.firstName()} ${fk.name.lastName()}`;
+      const password = fk.internet.password();
+      this.login({fullName, password});
+    } else {
+      const decodeToken = VueJwtDecode.decode(token);
+      this.setCurrentUser(
+          new CurrentUserModel(
+              decodeToken.sub,
+              decodeToken.username,
+              shortFullName(decodeToken.username),
+              '#7c4a4a'
+          )
+      );
+    }
 
     if (this.$device.mobile || this.$device.ipad) {
       this.setIsNotAvailableForMobile(true);
       // return false;
     } else {
       this.setIsLoading(true);
-      this.fetchInitData();
+      if (this.isAuthorized) {
+        this.fetchInitData();
+      }
       const query = router.currentRoute.query;
       if (query && query.commentId) {
         this.openCommentsModalByCommentId(parseInt(query.commentId));
@@ -165,23 +180,23 @@ export default {
     if (langCode) {
       this.changeLocale(langCode);
     }
-    this.fetchIpAddressAndSetOsInfo().then(info => {
-      if (info.userIp && (info.userIp !== '')) {
-        this.fetchAdditionalIpInfo(info.userIp).then(additionalInfo => {
-          if (additionalInfo && additionalInfo.location && additionalInfo.location.country) {
-            const location = additionalInfo.location;
-            const country = location.country;
-            const langByCountry = (country.code === 'RU') ? 'ru' : 'en';
-            if (!this.$route.query.lang) {
-              this.changeLocale(langByCountry);
-            }
-            if (!langCode && !this.$route.query.lang) { /* query.lang служебный случай */
-              localStorage.setItem('lang_code', langByCountry);
-            }
-          }
-        });
-      }
-    });
+    // this.fetchIpAddressAndSetOsInfo().then(info => {
+    //   if (info.userIp && (info.userIp !== '')) {
+    //     this.fetchAdditionalIpInfo(info.userIp).then(additionalInfo => {
+    //       if (additionalInfo && additionalInfo.location && additionalInfo.location.country) {
+    //         const location = additionalInfo.location;
+    //         const country = location.country;
+    //         const langByCountry = (country.code === 'RU') ? 'ru' : 'en';
+    //         if (!this.$route.query.lang) {
+    //           this.changeLocale(langByCountry);
+    //         }
+    //         if (!langCode && !this.$route.query.lang) { /* query.lang служебный случай */
+    //           localStorage.setItem('lang_code', langByCountry);
+    //         }
+    //       }
+    //     });
+    //   }
+    // });
   },
   mounted() {
     window.addEventListener('wheel', this.handleScroll);
@@ -197,6 +212,9 @@ export default {
     window.removeEventListener('wheel', this.handleScroll);
   },
   computed: {
+    isAuthorized() {
+      return this.geIsAuthorized();
+    },
     activeSlide() {
       return this.getActiveSlide();
     },
@@ -213,9 +231,10 @@ export default {
   methods: {
     ...mapActions(['fetchProjects', 'fetchSlides', 'fetchSlideLists', 'fetchCases', 'fetchCaseComments',
       'openCommentsModalByCommentId', 'fetchInitData', 'setIsLoading', 'setIsNotAvailableForMobile',
-      'setContextMenuBase', 'setCentralModal', 'fetchIpAddressAndSetOsInfo', 'fetchAdditionalIpInfo', 'login']),
+      'setContextMenuBase', 'setCentralModal', 'fetchIpAddressAndSetOsInfo', 'fetchAdditionalIpInfo',
+      'login', 'setCurrentUser']),
     ...mapGetters(['getContextMenuBase', 'getCentralModal', 'getTooltip', 'getIsLoading', 'getNotAvailableForMobile',
-      'getActiveSlide']),
+      'getActiveSlide', 'geIsAuthorized']),
     handleScroll(e) {
       const self = this;
       window.clearTimeout( this.isScrolling );
