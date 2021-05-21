@@ -158,8 +158,12 @@ export default {
         this.openCommentsModalByCommentId(parseInt(query.commentId));
       }
     }
-    if (this.$route.query.lang) { // TODO УБрать
+    if (this.$route.query.lang) {
       this.changeLocale(this.$route.query.lang);
+    }
+    const langCode = localStorage.getItem('lang_code');
+    if (langCode) {
+      this.changeLocale(langCode);
     }
     this.fetchIpAddressAndSetOsInfo().then(info => {
       if (info.userIp && (info.userIp !== '')) {
@@ -167,12 +171,12 @@ export default {
           if (additionalInfo && additionalInfo.location && additionalInfo.location.country) {
             const location = additionalInfo.location;
             const country = location.country;
-            if (!this.$route.query.lang) { // TODO УБрать
-              if (country.code === 'RU') {
-                this.changeLocale('ru');
-              } else {
-                this.changeLocale('en');
-              }
+            const langByCountry = (country.code === 'RU') ? 'ru' : 'en';
+            if (!this.$route.query.lang) {
+              this.changeLocale(langByCountry);
+            }
+            if (!langCode && !this.$route.query.lang) { /* query.lang служебный случай */
+              localStorage.setItem('lang_code', langByCountry);
             }
           }
         });
