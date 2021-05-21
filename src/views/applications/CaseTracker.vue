@@ -138,6 +138,15 @@ export default {
     isShowVideoLearning: false,
   }),
   created() {
+    /* Auth check */
+    // const token = localStorage.getItem('access_token');
+    // if (!token) {
+    //   const fk = this.$faker();
+    //   const fullName = `${fk.name.firstName()} ${fk.name.lastName()}`;
+    //   const password = fk.internet.password();
+    //   this.login({fullName, password});
+    // }
+
     if (this.$device.mobile || this.$device.ipad) {
       this.setIsNotAvailableForMobile(true);
       // return false;
@@ -149,21 +158,21 @@ export default {
         this.openCommentsModalByCommentId(parseInt(query.commentId));
       }
     }
-    this.fetchIpAddressAndSetOsInfo().then(info => {
-      if (info.userIp && (info.userIp !== '')) {
-        this.fetchAdditionalIpInfo(info.userIp).then(additionalInfo => {
-          if (additionalInfo && additionalInfo.location && additionalInfo.location.country) {
-            const location = additionalInfo.location;
-            const country = location.country;
-            if (country.code === 'RU') {
-              this.changeLocale('ru');
-            } else {
-              this.changeLocale('en');
-            }
-          }
-        });
-      }
-    });
+    // this.fetchIpAddressAndSetOsInfo().then(info => {
+    //   if (info.userIp && (info.userIp !== '')) {
+    //     this.fetchAdditionalIpInfo(info.userIp).then(additionalInfo => {
+    //       if (additionalInfo && additionalInfo.location && additionalInfo.location.country) {
+    //         const location = additionalInfo.location;
+    //         const country = location.country;
+    //         if (country.code === 'RU') {
+    //           this.changeLocale('ru');
+    //         } else {
+    //           this.changeLocale('en');
+    //         }
+    //       }
+    //     });
+    //   }
+    // });
   },
   mounted() {
     window.addEventListener('wheel', this.handleScroll);
@@ -195,7 +204,7 @@ export default {
   methods: {
     ...mapActions(['fetchProjects', 'fetchSlides', 'fetchSlideLists', 'fetchCases', 'fetchCaseComments',
       'openCommentsModalByCommentId', 'fetchInitData', 'setIsLoading', 'setIsNotAvailableForMobile',
-      'setContextMenuBase', 'setCentralModal', 'fetchIpAddressAndSetOsInfo', 'fetchAdditionalIpInfo']),
+      'setContextMenuBase', 'setCentralModal', 'fetchIpAddressAndSetOsInfo', 'fetchAdditionalIpInfo', 'login']),
     ...mapGetters(['getContextMenuBase', 'getCentralModal', 'getTooltip', 'getIsLoading', 'getNotAvailableForMobile',
       'getActiveSlide']),
     handleScroll(e) {

@@ -2,6 +2,7 @@ import {CurrentUserModel} from "@/models/CurrentUserModel";
 import {getOS} from "@/functions/validation";
 
 const state = {
+    accessToken: localStorage.getItem('access_token'),
     currentUser: new CurrentUserModel(1, 'Dmitriy D', 'DD', '#7c4a4a'),
     sInfo: {
         userIp: '',
@@ -18,6 +19,22 @@ const getters = {
 };
 
 const actions = {
+    login({ commit }, payload) {
+        return new Promise((resolve, reject) => {
+            window.axios.post('auth/login/', {
+              fullName: payload.fullName,
+              password: payload.password,
+            })
+              .then(response => {
+                console.log('response', response);
+                const info = response.data;
+                commit('LOGIN', info);
+                resolve(info);
+              }, () => {
+                  reject(false)
+              });
+        });
+    },
     fetchAdditionalIpInfo({ commit }, ip) {
         return new Promise((resolve, reject) => {
             window.axios.get('https://api.ipregistry.co/' + ip + '?key=0sr7pwpf45eqwk', {})
@@ -57,6 +74,10 @@ const actions = {
 };
 
 const mutations = {
+    LOGIN(state, info) {
+      state.accessToken = info.access_token;
+      localStorage.setItem('access_token', info.access_token);
+    },
     SET_CURRENT_USER(state, user) { state.currentUser = user; },
     SET_OS_INFO(state, info) { state.osInfo = info; },
     SET_ADDITIONAL_IP_INFO(state, info) { state.additionalIpInfo = info; },

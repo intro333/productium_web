@@ -13,6 +13,7 @@ Vue.config.productionTip = false;
 Vue.use(VueTheMask);
 Vue.use(device);
 Vue.use(fabric);
+Vue.use(require('vue-faker'));
 Vue.use(Clipboard);
 
 import "./assets/scss/app.scss";

@@ -5,7 +5,7 @@
         <div @click="selectTab('cases')"
              class="csb-header-tabs-item"
              :class="{'rgb-black-30': !isTabSelected('cases')}">
-          <span>{{ $t('case.imageToComment') }} </span>
+          <span>{{ $t('case.cases') }} </span>
           <span>
             <span>{{numOfInWorkCases}}</span>
             <span class="rgb-black-30">/{{numOfDoneCases}}</span>
