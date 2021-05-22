@@ -24,7 +24,7 @@ const getters = {
 const actions = {
     login({ commit, dispatch }, payload) {
         return new Promise((resolve, reject) => {
-            window.axios.post('auth/login/', {
+            window.axios.post('api/auth/login/', {
               fullName: payload.fullName,
               password: payload.password,
             })

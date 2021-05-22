@@ -9,5 +9,6 @@ export class ProjectModel {
     this.id = _project.id;
     this.name = _project.name;
     this.activityStatus = _project.activityStatus;
+    this.isSelected = _project.isSelected || false;
   }
 }

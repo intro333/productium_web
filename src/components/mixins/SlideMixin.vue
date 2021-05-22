@@ -502,6 +502,7 @@ export default {
           });
           /* IMAGE HANDLER */
           if (slide && slide.img) {
+            const src = slide.imgUrl ? (this.$axios.defaults.baseURL + slide.imgUrl) : slide.imgBase64;
             const slideImg = new Image();
             slideImg.onload = function () {
               let imgLeft = 0;
@@ -532,13 +533,15 @@ export default {
                 selectable: false
               });
               slide.imgObj = _img;
+              console.log('slide', slide);
               if (slide.canvas) {
                 slide.canvas.add(_img);
               }
             };
             /* TODO Такой формат только для прототипа. Для MVP скорее всего будет только imgUrl. Т.е. дропаем файл и он сразу добавляется на сервак
             *  Правда тогда обработка будет в промисе (в store -> action) */
-            slideImg.src = slide.imgUrl ? slide.imgUrl : slide.imgBase64;
+            slideImg.src = src;
+            console.log('slideImg', slideImg);
           }
           setTimeout(() => {
             if (slide.canvas) {

@@ -123,7 +123,7 @@ const actions = {
     const _case = payload.case;
     const query = router.currentRoute.query;
     if (_case) {
-      if (query && query.caseId) {
+      if (query && ("caseId" in query)) { /* caseId может быть 0 или null - это норм */
         const caseId = parseInt(query.caseId);
         if (payload.isFirstLoad && _case) {
           commit('SELECT_CASE', payload);
@@ -148,6 +148,11 @@ const actions = {
         router.push({
           path: '/case-tracker',
           query: Object.assign({}, query, {caseId: 0})
+        });
+      } else {
+        router.push({
+          path: '/case-tracker',
+          query: Object.assign({}, query, {caseId: null})
         });
       }
     }
@@ -227,6 +232,7 @@ const actions = {
         // TODO После события mouse:up попадаем сюда, создаём в БД фигуру и затем добавляем её в foundCase
         const id = getRandomInt(10, 1000);
         shapeObj.id = id;
+        console.log('state.selectedCase 1', state.selectedCase);
         const foundCase = state.cases.find(_c => _c.id === state.selectedCase.id);
         if (foundCase) {
           const children = foundCase.children;
@@ -284,6 +290,11 @@ const actions = {
 
 const mutations = {
   /* CASES */
+  SET_ALL_CASES_STATE(state, newState) {
+    Object.keys(newState).forEach(_k => {
+      state[_k] = newState[_k];
+    });
+  },
   SET_CASES(state, _cases) {
     state.cases = _cases;
   },

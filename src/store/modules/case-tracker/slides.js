@@ -44,8 +44,7 @@ const actions = {
     return new Promise((resolve) => {
       setTimeout(() => { // TODO Имитация задержки с сервера (УБРАТЬ!)
         /* TODO Mock */
-        const projects = getters.getProjects;
-        const selectedProject = projects.find(_p => _p.isSelected);
+        const selectedProject = getters.getSelectedProject;
         const newSlide = new SlideModel({
           id: getRandomInt(10, 1000),
           slideState: 'in-work',
@@ -146,8 +145,34 @@ const actions = {
     commit('PUSH_SLIDE_LIST', {});
   },
   /* SLIDE IMAGE */
-  setSlideImg({commit}, file) {
-    commit('SET_SLIDE_IMG', file);
+  setSlideImg({commit, getters}, file) {
+    const currentUser = getters.getCurrentUser;
+    return new Promise((resolve, reject) => {
+      const query = router.currentRoute.query;
+      if (query && query.slideId) {
+        const foundSlide = state.slides
+          .find(_s => _s.id === parseInt(query.slideId));
+        if (foundSlide) {
+          let formData = new FormData();
+          formData.append('file', file);
+          formData.append('userId', currentUser.id);
+          formData.append('slideId', state.activeSlide.id);
+          window.axios.post('api/projects-all/upload-slide-img', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          }).then(response => {
+            const data = response.data;
+            console.log('setSlideImg', data);
+            commit('SET_SLIDE_IMG', {file, foundSlide});
+            resolve(data);
+          }, error => {
+            console.log('error setSlideImg', error);
+            reject(error);
+          });
+        }
+      }
+    });
   },
   /* OTHER */
   setActiveTool({commit}, tool) {
@@ -173,6 +198,7 @@ const actions = {
             resolve(_case);
           });
         } else {
+          console.log(555555555)
           router.push('/case-tracker?projectId=1&slideId=1&slideListId=1&caseId=1');
         }
       };
@@ -312,6 +338,7 @@ const actions = {
               }, 20);
             } else {
               dispatch('setIsLoading', false);
+              console.log(4444)
               router.push('/case-tracker?projectId=1&slideId=1&slideListId=1&caseId=1');
             }
           }, 20);
@@ -328,6 +355,11 @@ const actions = {
 
 const mutations = {
   /* SLIDES */
+  SET_ALL_SLIDES_STATE(state, newState) {
+    Object.keys(newState).forEach(_k => {
+      state[_k] = newState[_k];
+    });
+  },
   SET_SLIDES(state, slides) {
     state.slides = slides;
   },
@@ -359,26 +391,22 @@ const mutations = {
     state.activeSlideList = _slideList;
   },
   /* SLIDE CANVAS */
-  SET_SLIDE_IMG(state, img) {
-    const query = router.currentRoute.query;
-    if (query && query.slideId) {
-      const foundSlide = state.slides
-        .find(_s => _s.id === parseInt(query.slideId));
-      if (foundSlide) {
-        state.activeShapeTool = 'rectangleTool';
-        state.activeTool = 'superTool'; /* При добавлении изобр-я переключаемся на суперТул, чтобы создать кейс */
-        if (img) {
-          foundSlide.img = img;
-          const reader = new FileReader();
-          reader.readAsDataURL(img);
-          reader.onload = () => {
-            foundSlide.imgBase64 = reader.result;
-          };
-        } else {
-          foundSlide.img = null;
-          foundSlide.imgBase64 = null;
-        }
-      }
+  SET_SLIDE_IMG(state, payload) {
+    const foundSlide = payload.foundSlide;
+    const img = payload.file;
+    state.activeShapeTool = 'rectangleTool';
+    state.activeTool = 'superTool'; /* При добавлении изобр-я переключаемся на суперТул, чтобы создать кейс */
+    console.log('img', img);
+    if (img) {
+      foundSlide.img = img;
+      const reader = new FileReader();
+      reader.readAsDataURL(img);
+      reader.onload = () => {
+        foundSlide.imgBase64 = reader.result;
+      };
+    } else {
+      foundSlide.img = null;
+      foundSlide.imgBase64 = null;
     }
   },
   SET_ACTIVE_TOOL(state, _activeTool) { state.activeTool = _activeTool; },

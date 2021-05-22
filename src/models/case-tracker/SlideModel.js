@@ -37,5 +37,6 @@ export class SlideModel {
     this.zoom = _slide.zoom || this.zoom;
     this.lastClientX = _slide.lastClientX || 0;
     this.lastClientY = _slide.lastClientY || 0;
+    this.isSelected = _slide.isSelected || false;
   }
 }

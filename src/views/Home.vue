@@ -9,7 +9,8 @@
 export default {
   name: "Home",
   created() {
-    this.$router.push('/case-tracker?projectId=1&slideId=1&slideListId=1&caseId=1');
+    this.$router.push('/case-tracker');
+    // this.$router.push('/case-tracker?projectId=1&slideId=1&slideListId=1&caseId=1');
   }
 }
 </script>
