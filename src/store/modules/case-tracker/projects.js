@@ -149,7 +149,7 @@ const actions = {
                 userId: currentUser.id
             }).then(response => {
                 const data = response.data;
-                console.log('response projects-all by data id', data);
+                // console.log('response projects-all by data id', data);
                 setProjectDataLoad(data, commit, dispatch);
                 resolve(data);
             }, error => {

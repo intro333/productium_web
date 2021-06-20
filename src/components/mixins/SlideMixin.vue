@@ -82,7 +82,7 @@ export default {
   methods: {
     ...mapActions(['setActiveTool', 'setActiveShapeTool', 'setCanvasInfo', 'setActiveSlide', 'changeCasesParamsByOffset',
       'changeCaseElemFields', 'addShapeToCase', 'pushCase', 'selectCaseChild', 'setActiveColor', 'openCase',
-      'clearCaseChildren', 'changeSlideZoom']),
+      'clearCaseChildren', 'changeSlideZoom', 'getImgByUrl']),
     ...mapGetters(['getSlides', 'getActiveSlide',  'getActiveSlideList', 'getActiveTool', 'getActiveShapeTool', 'getCanvasInfo',
       'getSelectedCase', 'getCases', 'getActiveColor']),
     fetchSlidesL() {
@@ -116,11 +116,12 @@ export default {
       const canvasBox = document.getElementById('canvasBox');
       const canvasDiv = document.getElementById('canvas');
       if (canvasBox && !canvasDiv) {
+        const workAreaRef = this.$refs.workAreaRef;
         const newCanvas = document.createElement("canvas");
         newCanvas.className = 'vw-canvas';
         newCanvas.id = 'canvas';
-        newCanvas.width = this.canvasInfo.canvasWidth;
-        newCanvas.height = this.canvasInfo.canvasHeight;
+        newCanvas.width = workAreaRef.clientWidth;
+        newCanvas.height = workAreaRef.clientHeight;
         canvasBox.appendChild(newCanvas);
       }
     },
@@ -431,7 +432,6 @@ export default {
             }
           }); /* MOUSE MOVE END */
           slide.canvas.on('mouse:wheel', function(opt) { /* MOUSE WHEEL */
-            console.log(1);
             if (opt.e.ctrlKey) {
               let delta = opt.e.deltaY;
               let zoom = slide.canvas.getZoom();
@@ -500,9 +500,9 @@ export default {
             shape.set({scaleY: 1});
             slide.canvas.renderAll();
           });
-          /* IMAGE HANDLER */
-          if (slide && slide.img) {
-            const src = slide.imgUrl ? (this.$axios.defaults.baseURL + slide.imgUrl) : slide.imgBase64;
+
+          const setImg = (imgBase64) => {
+            const src = imgBase64;
             const slideImg = new Image();
             slideImg.onload = function () {
               let imgLeft = 0;
@@ -519,6 +519,7 @@ export default {
               }
               slide.imgLeft = imgLeft;
               slide.imgTop = imgTop;
+              slide.imgBase64 = imgBase64;
               let _img = new fabric.Image(slideImg, {
                 width: slideImg.width,
                 height: slideImg.height,
@@ -533,7 +534,6 @@ export default {
                 selectable: false
               });
               slide.imgObj = _img;
-              console.log('slide', slide);
               if (slide.canvas) {
                 slide.canvas.add(_img);
               }
@@ -541,14 +541,30 @@ export default {
             /* TODO Такой формат только для прототипа. Для MVP скорее всего будет только imgUrl. Т.е. дропаем файл и он сразу добавляется на сервак
             *  Правда тогда обработка будет в промисе (в store -> action) */
             slideImg.src = src;
-            console.log('slideImg', slideImg);
-          }
-          setTimeout(() => {
-            if (slide.canvas) {
-              this.panningHandler(slide);
-              slide.canvas.renderAll();
+          };
+          /* IMAGE HANDLER */
+          if (slide && slide.img) {
+            if (slide.imgBase64) {
+              setImg(slide.imgBase64);
+              setTimeout(() => {
+                if (slide.canvas) {
+                  this.panningHandler(slide);
+                  slide.canvas.renderAll();
+                }
+              }, 20);
+            } else if (slide.imgUrl) { /* From server */
+              this.getImgByUrl(slide.imgUrl).then(_imgBase64 => {
+                // const src = slide.imgUrl ? (this.$axios.defaults.baseURL + slide.imgUrl) : slide.imgBase64;
+                setImg(_imgBase64);
+                setTimeout(() => {
+                  if (slide.canvas) {
+                    this.panningHandler(slide);
+                    slide.canvas.renderAll();
+                  }
+                }, 20);
+              });
             }
-          }, 20);
+          }
         }, 20);
       }
     },

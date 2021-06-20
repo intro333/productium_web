@@ -144,6 +144,22 @@ const actions = {
   pushSlideList({commit}) {
     commit('PUSH_SLIDE_LIST', {});
   },
+  getImgByUrl(_, url) {
+    console.log('url', url);
+    return new Promise((resolve, reject) => {
+      window.axios.get(url, { responseType: 'arraybuffer' })
+        .then(response => {
+          let image = btoa(
+            new Uint8Array(response.data)
+              .reduce((data, byte) => data + String.fromCharCode(byte), '')
+          );
+          resolve(`data:${response.headers['content-type'].toLowerCase()};base64,${image}`);
+        }, error => {
+          console.log('error getImgByUrl', error);
+          reject(error);
+        });
+    });
+  },
   /* SLIDE IMAGE */
   setSlideImg({commit, getters}, file) {
     const currentUser = getters.getCurrentUser;

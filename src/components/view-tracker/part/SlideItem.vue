@@ -13,7 +13,7 @@
              class="sl-b-slide-bg-no-img"
              alt="">
         <img v-if="slide.img"
-             :src="slide.imgUrl ? slide.imgUrl : slide.imgBase64"
+             :src="slide.imgBase64"
              class="sl-b-slide-bg-img"
              alt="">
       </div>
