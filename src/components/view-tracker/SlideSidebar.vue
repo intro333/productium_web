@@ -46,6 +46,7 @@ export default {
     ...mapActions(['setContextMenuBase', 'pushSlide']),
     ...mapGetters(['getCases']),
     addSlide() {
+      console.log(1111);
       this.pushSlide();
     },
   },

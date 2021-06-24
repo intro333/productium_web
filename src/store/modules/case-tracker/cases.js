@@ -29,37 +29,52 @@ const actions = {
       }, 200);
     });
   },
-  pushCase({commit, dispatch}) {
+  pushCase({commit, getters, dispatch}) {
     return new Promise((resolve) => {
-      setTimeout(() => { // TODO Имитация задержки с сервера (УБРАТЬ!)
-        const query = router.currentRoute.query;
-        if (query && query.slideListId) {
-          // TODO MOCK
-          const caseId = getRandomInt(10, 1000);
-          const newSCase = new CaseModel({
-            id: caseId,
-            projectId: parseInt(query.projectId),
-            slideId: parseInt(query.slideId),
-            slideListId: parseInt(query.slideListId),
-            title: 'Case ' + caseId,
-            caseStatus: 'in-work',
-            isOpen: true,
-            discus: '',
-            resolut: '',
-            children: [],
-            order: 0,
+      const currentUser = getters.getCurrentUser;
+      const query = router.currentRoute.query;
+      if (query && query.slideListId) {
+        // TODO MOCK
+        const caseId = state.cases.length+1;
+        const newSCase = new CaseModel({
+          id: caseId,
+          projectId: parseInt(query.projectId),
+          slideId: parseInt(query.slideId),
+          slideListId: parseInt(query.slideListId),
+          title: 'Case ' + caseId,
+          caseStatus: 'in-work',
+          isOpen: true,
+          discus: '',
+          resolut: '',
+          children: [],
+          order: 0,
+        });
+        commit('PUSH_CASE', newSCase);
+        commit('SET_ACTIVE_TOOL', 'moveTool');
+        setTimeout(() => {
+          const _cases = state.cases;
+          window.axios.post('api/projects-all/add-case', {
+            userId: currentUser.id,
+            caseData: {
+              cases: _cases,
+              casesComments: state.casesComments,
+              selectedCase: state.selectedCase,
+            }
+          }).then(response => {
+            const data = response.data;
+            setTimeout(() => {
+              dispatch('goToSelectedCase', {
+                case: newSCase,
+                reloadWithSlide: true
+              });
+            }, 20);
+            resolve(data);
+          }, error => {
+            console.log('error pushCase', error);
           });
-          commit('PUSH_CASE', newSCase);
-          commit('SET_ACTIVE_TOOL', 'moveTool');
-          setTimeout(() => {
-            dispatch('goToSelectedCase', {
-              case: newSCase,
-              reloadWithSlide: true
-            });
-          }, 20);
-          resolve(newSCase);
-        }
-      }, 200);
+        }, 20);
+        resolve(newSCase);
+      }
     });
   },
   selectCase({commit, dispatch}, payload) {
@@ -232,7 +247,6 @@ const actions = {
         // TODO После события mouse:up попадаем сюда, создаём в БД фигуру и затем добавляем её в foundCase
         const id = getRandomInt(10, 1000);
         shapeObj.id = id;
-        console.log('state.selectedCase 1', state.selectedCase);
         const foundCase = state.cases.find(_c => _c.id === state.selectedCase.id);
         if (foundCase) {
           const children = foundCase.children;

@@ -248,6 +248,7 @@ export default {
           .replace(/Tool/g, '') + '.svg');
     },
     goToProjects() {
+      console.log(16161616);
       this.$router.push('/case-tracker?projectId=1&slideId=1&slideListId=1&caseId=1'); // TODO Редиректить к списку проектов
     },
   }

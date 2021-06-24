@@ -34,7 +34,7 @@ export default {
         if (mutation.payload) {
           this.fetchSlidesL();
         }
-      } else if (mutation.type === 'SET_SLIDES') {
+      } else if (mutation.type === 'SET_SLIDES' || mutation.type === 'SET_ALL_SLIDES_STATE') {
         this.fetchSlidesL();
       }
     });
@@ -116,12 +116,17 @@ export default {
       const canvasBox = document.getElementById('canvasBox');
       const canvasDiv = document.getElementById('canvas');
       if (canvasBox && !canvasDiv) {
-        const workAreaRef = this.$refs.workAreaRef;
         const newCanvas = document.createElement("canvas");
         newCanvas.className = 'vw-canvas';
         newCanvas.id = 'canvas';
-        newCanvas.width = workAreaRef.clientWidth;
-        newCanvas.height = workAreaRef.clientHeight;
+        if (this.canvasInfo.canvasWidth) {
+          newCanvas.width = this.canvasInfo.canvasWidth;
+          newCanvas.height = this.canvasInfo.canvasHeight;
+        } else {
+          const workAreaRef = this.$refs.workAreaRef;
+          newCanvas.width = workAreaRef.clientWidth;
+          newCanvas.height = workAreaRef.clientHeight;
+        }
         canvasBox.appendChild(newCanvas);
       }
     },

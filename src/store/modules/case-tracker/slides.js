@@ -42,6 +42,64 @@ const actions = {
   pushSlide({commit, getters, dispatch}) {
     dispatch('setIsLoading', true);
     return new Promise((resolve) => {
+      const currentUser = getters.getCurrentUser;
+      const selectedProject = getters.getSelectedProject;
+      const newSlide = new SlideModel({
+        id: state.slides.length+1,
+        slideState: 'in-work',
+        projectId: selectedProject.id,
+        order: 0,
+        img: null
+      });
+      const listId = state.slideLists.length+1;
+      const newSlideList = new SlideList({
+        id: listId,
+        slideId: newSlide.id,
+        name: 'Лист' + listId
+      });
+      commit('PUSH_SLIDE', newSlide);
+      commit('PUSH_SLIDE_LIST', newSlideList);
+      setTimeout(() => {
+        const _slides = [];
+        state.slides.forEach((_s, _k) => {
+          const obj = Object.assign({}, state.slides[_k]);
+          obj.canvas = null;
+          obj.imgBase64 = null;
+          obj.imgObj = null;
+          _slides.push(obj);
+        });
+        window.axios.post('api/projects-all/add-slide', {
+          userId: currentUser.id,
+          slideData: {
+            slides: _slides,
+            slideLists: state.slideLists,
+            activeSlide: null,
+            activeSlideList: null,
+            activeTool: "moveTool",
+            activeShapeTool: "rectangleTool",
+            canvasInfo: {
+              canvasWidth: 0,
+              canvasHeight: 0
+            }
+          }
+        }).then(response => {
+          const data = response.data;
+          setTimeout(() => {
+            dispatch('selectCaseListAndCaseOfActiveSlide', {
+              slide: newSlide,
+              isNew: true,
+            });
+          }, 20);
+          resolve(data);
+        }, error => {
+          console.log('error pushSlide', error);
+        });
+      }, 20);
+    });
+  },
+  pushSlide2({commit, getters, dispatch}) {
+    dispatch('setIsLoading', true);
+    return new Promise((resolve) => {
       setTimeout(() => { // TODO Имитация задержки с сервера (УБРАТЬ!)
         /* TODO Mock */
         const selectedProject = getters.getSelectedProject;
@@ -145,7 +203,6 @@ const actions = {
     commit('PUSH_SLIDE_LIST', {});
   },
   getImgByUrl(_, url) {
-    console.log('url', url);
     return new Promise((resolve, reject) => {
       window.axios.get(url, { responseType: 'arraybuffer' })
         .then(response => {
@@ -214,7 +271,6 @@ const actions = {
             resolve(_case);
           });
         } else {
-          console.log(555555555)
           router.push('/case-tracker?projectId=1&slideId=1&slideListId=1&caseId=1');
         }
       };
@@ -354,7 +410,6 @@ const actions = {
               }, 20);
             } else {
               dispatch('setIsLoading', false);
-              console.log(4444)
               router.push('/case-tracker?projectId=1&slideId=1&slideListId=1&caseId=1');
             }
           }, 20);

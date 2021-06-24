@@ -9,6 +9,7 @@
 export default {
   name: "Home",
   created() {
+    console.log(17171717);
     this.$router.push('/case-tracker');
     // this.$router.push('/case-tracker?projectId=1&slideId=1&slideListId=1&caseId=1');
   }

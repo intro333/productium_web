@@ -202,12 +202,21 @@ const mutations = {
 const setProjectDataLoad = (data, commit, dispatch) => {
     const projects = data.projects;
     const slides = data.slides;
+    slides.slides.forEach(_s => {
+        if (_s.imgUrl) {
+            dispatch('getImgByUrl', _s.imgUrl)
+              .then(_imgBase64 => {
+                  _s.imgBase64 = _imgBase64;
+              });
+        }
+    });
     const cases = data.cases;
 
     projects.selectedProject = projects.projects.find(_p => _p.isSelected);
     slides.activeSlide = slides.slides.find(_p => _p.isSelected);
     slides.activeSlideList = slides.slideLists.find(_p => _p.isSelected);
-    cases.selectedCase = cases.cases.find(_p => _p.isSelected);
+    cases.selectedCase = cases.cases;
+    // cases.selectedCase = cases.cases.find(_p => _p.isSelected);
 
     setTimeout(() => {
         commit('SET_ALL_PROJECTS_STATE', projects);
@@ -230,6 +239,7 @@ const setProjectDataLoad = (data, commit, dispatch) => {
                 }, 100);
             } else {
                 dispatch('setIsLoading', false);
+                console.log(131313131313)
                 router.push(
                   `/case-tracker?projectId=${projects.selectedProject.id}&slideId=${slides.activeSlide.id}&slideListId=${slides.activeSlideList.id}&caseId=${cases.selectedCase.id}`
                 );
@@ -240,6 +250,7 @@ const setProjectDataLoad = (data, commit, dispatch) => {
             const slideListId = (slides.activeSlideList && slides.activeSlideList.id) ? `slideListId=${slides.activeSlideList.id}` : '';
             const caseId = (cases.selectedCase && cases.selectedCase.id) ? `caseId=${cases.selectedCase.id}` : '';
             dispatch('setIsLoading', false);
+            console.log(121212121212)
             router.push(`/case-tracker?${projectId}&${slideId}&${slideListId}&${caseId}`);
         }
     }, 100);
