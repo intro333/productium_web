@@ -60,20 +60,19 @@ const actions = {
               casesComments: state.casesComments,
               selectedCase: state.selectedCase,
             }
-          }).then(response => {
-            const data = response.data;
+          }).then(() => {
+            // const data = response.data;
+            dispatch('goToSelectedCase', {
+              case: newSCase,
+              reloadWithSlide: true
+            });
             setTimeout(() => {
-              dispatch('goToSelectedCase', {
-                case: newSCase,
-                reloadWithSlide: true
-              });
-            }, 20);
-            resolve(data);
+              resolve(newSCase);
+            }, 500);
           }, error => {
             console.log('error pushCase', error);
           });
         }, 20);
-        resolve(newSCase);
       }
     });
   },
@@ -86,8 +85,9 @@ const actions = {
       reloadWithSlide: true
     });
   },
-  removeCase({commit, dispatch}, _case) {
+  removeCase({commit, dispatch, getters}, _case) {
     commit('REMOVE_CASE', _case);
+    const currentUser = getters.getCurrentUser;
     if (_case.isSelected) {
       _case.isSelected = false;
       setTimeout(() => {
@@ -102,6 +102,21 @@ const actions = {
             reloadWithSlide: true,
             closeCommentsModal: true
           });
+          setTimeout(() => {
+            const _cases = state.cases;
+            window.axios.post('api/projects-all/add-case', {
+              userId: currentUser.id,
+              caseData: {
+                cases: _cases,
+                casesComments: state.casesComments,
+                selectedCase: state.selectedCase,
+              }
+            }).then(() => {
+
+            }, error => {
+              console.log('error pushCase', error);
+            });
+          }, 40);
         }
       }, 20);
     }
@@ -241,41 +256,75 @@ const actions = {
     );
   },
   /* SHAPES */
-  addShapeToCase({commit}, shapeObj) {
+  addShapeToCase({commit, getters}, shapeObj) {
     return new Promise((resolve, reject) => {
-      setTimeout(() => { // TODO Имитация задержки с сервера (УБРАТЬ!)
-        // TODO После события mouse:up попадаем сюда, создаём в БД фигуру и затем добавляем её в foundCase
-        const id = getRandomInt(10, 1000);
-        shapeObj.id = id;
-        const foundCase = state.cases.find(_c => _c.id === state.selectedCase.id);
-        if (foundCase) {
-          const children = foundCase.children;
-          const objsByType = children
-            .filter(_o => _o.shapeType === shapeObj.shapeType);
-          if (objsByType.length) {
-            shapeObj.title = shapeTitleAutoIncrement(shapeObj, objsByType);
-          }
-          setTimeout(() => {
+      const currentUser = getters.getCurrentUser;
+      const foundCase = state.cases.find(_c => _c.id === state.selectedCase.id);
+      if (foundCase) {
+        const children = foundCase.children;
+        shapeObj.id = children.length+1;
+        const objsByType = children.filter(_o => _o.shapeType === shapeObj.shapeType);
+        if (objsByType.length) {
+          shapeObj.title = shapeTitleAutoIncrement(shapeObj, objsByType);
+        }
+        if (!foundCase.isOpen) {
+          foundCase.isOpen = true;
+        }
+        children.push(shapeObj);
+        setTimeout(() => {
+          window.axios.post('api/projects-all/add-case', {
+            userId: currentUser.id,
+            caseData: {
+              cases: state.cases,
+              casesComments: state.casesComments,
+              selectedCase: state.selectedCase,
+            }
+          }).then(() => {
+            // const data = response.data;
             commit('ADD_SHAPE_TO_CASE', {
               case: foundCase,
-              shapeObj
+              children
             });
             resolve(shapeObj);
-          }, 30);
-          if (!foundCase.isOpen) {
-            foundCase.isOpen = true;
-          }
-        } else {
-          reject(null);
-        }
-      }, 200);
+          }, error => {
+            console.log('error addShapeToCase', error);
+          });
+        }, 30);
+      } else {
+        reject(null);
+      }
     });
   },
   selectCaseChild({commit}, payload) {
     commit('SELECT_CASE_CHILD', payload);
   },
-  removeCaseChild({commit}, _caseChild) {
-    commit('REMOVE_CASE_CHILD', _caseChild);
+  removeCaseChild({commit, getters}, _caseChild) {
+    return new Promise((resolve) => {
+      const currentUser = getters.getCurrentUser;
+      const activeCase = state.cases.find(_c => _c.id === state.selectedCase.id);
+      if (activeCase) {
+        activeCase.children = activeCase.children
+          .filter(_ch => _ch.id !== _caseChild.id);
+        commit('REMOVE_CASE_CHILD', {
+          activeCase,
+          caseChildId: _caseChild.id
+        });
+        setTimeout(() => {
+          window.axios.post('api/projects-all/add-case', {
+            userId: currentUser.id,
+            caseData: {
+              cases: state.cases,
+              casesComments: state.casesComments,
+              selectedCase: state.selectedCase,
+            }
+          }).then(() => {
+            resolve(activeCase);
+          }, error => {
+            console.log('error removeCaseChild', error);
+          });
+        }, 30);
+      }
+    });
   },
   changeCaseStatus({commit}, payload) {
     commit('CHANGE_CASE_STATUS', payload);
@@ -283,15 +332,29 @@ const actions = {
   changeCasesParamsByOffset({commit}, payload) {
     commit('CHANGE_CASES_PARAMS_BY_OFFSET', payload);
   },
-  changeCaseElemFields({commit}, fields) {
+  changeCaseElemFields({commit, getters}, fields) {
     return new Promise((resolve, reject) => {
+      const currentUser = getters.getCurrentUser;
       const foundCase = state.cases.find(_c => _c.id === state.selectedCase.id);
       if (foundCase) {
         commit('CHANGE_CASE_ELEM_FIELDS', {
           fields,
           foundCase
         });
-        resolve(foundCase);
+        setTimeout(() => {
+          window.axios.post('api/projects-all/add-case', {
+            userId: currentUser.id,
+            caseData: {
+              cases: state.cases,
+              casesComments: state.casesComments,
+              selectedCase: state.selectedCase,
+            }
+          }).then(() => {
+            resolve(foundCase);
+          }, error => {
+            console.log('error changeCaseElemFields', error);
+          });
+        }, 30);
       } else {
         reject(false);
       }
@@ -326,13 +389,8 @@ const mutations = {
       }
     })
   },
-  REMOVE_CASE_CHILD(state, _caseChild) {
-    const activeCase = state.cases.find(_c => _c.id === state.selectedCase.id);
-    if (activeCase) {
-      activeCase.children = activeCase.children
-        .filter(_ch => _ch.id !== _caseChild.id);
-      state.selectedCase = activeCase;
-    }
+  REMOVE_CASE_CHILD(state, payload) {
+    state.selectedCase = payload.activeCase;
   },
   CHANGE_CASE_STATUS(state, payload) {
     payload._case.caseStatus = payload.status;
@@ -391,9 +449,7 @@ const mutations = {
   /* SHAPES */
   ADD_SHAPE_TO_CASE(state, payload) {
     const _case = payload.case;
-    const children = _case.children;
-    children.push(payload.shapeObj);
-    _case.children = children;
+    _case.children = payload.children;
   },
   SELECT_CASE_CHILD(state, payload) {
     if (payload._case) {
