@@ -259,7 +259,11 @@ const actions = {
   addShapeToCase({commit, getters}, shapeObj) {
     return new Promise((resolve, reject) => {
       const currentUser = getters.getCurrentUser;
+      console.log('shapeObj', shapeObj);
       const foundCase = state.cases.find(_c => _c.id === state.selectedCase.id);
+      if (shapeObj.params && shapeObj.params.canvas) {
+        shapeObj.params.canvas = null;
+      }
       if (foundCase) {
         const children = foundCase.children;
         shapeObj.id = children.length+1;
@@ -326,8 +330,38 @@ const actions = {
       }
     });
   },
-  changeCaseStatus({commit}, payload) {
+  changeCaseStatus({commit, getters}, payload) {
+    const currentUser = getters.getCurrentUser;
     commit('CHANGE_CASE_STATUS', payload);
+    setTimeout(() => {
+      window.axios.post('api/projects-all/add-case', {
+        userId: currentUser.id,
+        caseData: {
+          cases: state.cases,
+          casesComments: state.casesComments,
+          selectedCase: state.selectedCase,
+        }
+      }).then(() => {
+
+      }, error => {
+        console.log('error changeCaseStatus', error);
+      });
+    }, 30);
+  },
+  caseRename({getters}) {
+    const currentUser = getters.getCurrentUser;
+    window.axios.post('api/projects-all/add-case', {
+      userId: currentUser.id,
+      caseData: {
+        cases: state.cases,
+        casesComments: state.casesComments,
+        selectedCase: state.selectedCase,
+      }
+    }).then(() => {
+
+    }, error => {
+      console.log('error caseRename', error);
+    });
   },
   changeCasesParamsByOffset({commit}, payload) {
     commit('CHANGE_CASES_PARAMS_BY_OFFSET', payload);

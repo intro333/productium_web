@@ -142,6 +142,7 @@ const actions = {
     });
   },
   removeSlide({commit, getters, dispatch}, payload) {
+    const currentUser = getters.getCurrentUser;
     dispatch('setIsLoading', true);
     const slide = payload.slide;
     const removeNotifys = () => {
@@ -153,37 +154,62 @@ const actions = {
       });
     };
     return new Promise((resolve) => {
-      setTimeout(() => { // TODO Имитация задержки с сервера (УБРАТЬ!)
-        if (payload.slidesLength > 1) {
-          commit('REMOVE_SLIDE', slide);
-          if (slide.isSelected) { /* Если удаляемый слайд был выбран, то выбираем последний слайд */
-            slide.isSelected = false;
-            setTimeout(() => {
-              const query = router.currentRoute.query;
-              if (query && query.projectId) {
-                const _projectId = parseInt(query.projectId);
-                const filteredSlides = state.slides.filter(_s => {
-                  if (_s.slideState !== 'archived' && _s.projectId === _projectId) {
-                    return _s;
-                  }
-                });
-                dispatch('selectCaseListAndCaseOfActiveSlide', {
-                  slide: filteredSlides[filteredSlides.length-1],
-                });
-                resolve();
-              }
-            }, 20);
-          } else {
-            dispatch('setIsLoading', false);
-          }
-        } else if (payload.slidesLength === 1) {
-          /* При удалении последнего слайда удалять картинку и кейсы и оставлять пустой слайд (начальное состояние) */
-          commit('REMOVE_SLIDE', slide);
-          dispatch('pushSlide');
-          resolve();
+      if (payload.slidesLength > 1) {
+        commit('REMOVE_SLIDE', slide);
+        if (slide.isSelected) { /* Если удаляемый слайд был выбран, то выбираем последний слайд */
+          slide.isSelected = false;
+          setTimeout(() => {
+            const query = router.currentRoute.query;
+            if (query && query.projectId) {
+              const _projectId = parseInt(query.projectId);
+              const filteredSlides = state.slides.filter(_s => {
+                if (_s.slideState !== 'archived' && _s.projectId === _projectId) {
+                  return _s;
+                }
+              });
+              dispatch('selectCaseListAndCaseOfActiveSlide', {
+                slide: filteredSlides[filteredSlides.length-1],
+              });
+              resolve();
+            }
+          }, 20);
         }
-        removeNotifys();
-      }, 200);
+        setTimeout(() => {
+          const _slides = [];
+          state.slides.forEach((_s, _k) => {
+            const obj = Object.assign({}, state.slides[_k]);
+            obj.canvas = null;
+            obj.imgBase64 = null;
+            obj.imgObj = null;
+            _slides.push(obj);
+          });
+          window.axios.post('api/projects-all/add-slide', {
+            userId: currentUser.id,
+            slideData: {
+              slides: _slides,
+              slideLists: state.slideLists,
+              activeSlide: null,
+              activeSlideList: null,
+              activeTool: "moveTool",
+              activeShapeTool: "rectangleTool",
+              canvasInfo: {
+                canvasWidth: 0,
+                canvasHeight: 0
+              }
+            }
+          }).then(() => {
+            dispatch('setIsLoading', false);
+          }, error => {
+            console.log('error removeSlide', error);
+          });
+        }, 50);
+      } else if (payload.slidesLength === 1) {
+        /* При удалении последнего слайда удалять картинку и кейсы и оставлять пустой слайд (начальное состояние) */
+        commit('REMOVE_SLIDE', slide);
+        dispatch('pushSlide');
+        resolve();
+      }
+      removeNotifys();
     });
   },
   selectSlide({dispatch}, _slide) {
@@ -194,6 +220,36 @@ const actions = {
   },
   setActiveSlide({commit}, _slide) {
     commit('SET_ACTIVE_SLIDE', _slide);
+  },
+  updateSlideInfoOnServer({getters}) {
+    const currentUser = getters.getCurrentUser;
+    const _slides = [];
+    state.slides.forEach((_s, _k) => {
+      const obj = Object.assign({}, state.slides[_k]);
+      obj.canvas = null;
+      obj.imgBase64 = null;
+      obj.imgObj = null;
+      _slides.push(obj);
+    });
+    window.axios.post('api/projects-all/add-slide', {
+      userId: currentUser.id,
+      slideData: {
+        slides: _slides,
+        slideLists: state.slideLists,
+        activeSlide: null,
+        activeSlideList: null,
+        activeTool: "moveTool",
+        activeShapeTool: "rectangleTool",
+        canvasInfo: {
+          canvasWidth: 0,
+          canvasHeight: 0
+        }
+      }
+    }).then(() => {
+      //
+    }, error => {
+      console.log('error updateSlideInfoOnServer', error);
+    });
   },
   /* SLIDE LISTS */
   fetchSlideLists({commit}) {

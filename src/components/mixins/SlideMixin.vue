@@ -82,7 +82,7 @@ export default {
   methods: {
     ...mapActions(['setActiveTool', 'setActiveShapeTool', 'setCanvasInfo', 'setActiveSlide', 'changeCasesParamsByOffset',
       'changeCaseElemFields', 'addShapeToCase', 'pushCase', 'selectCaseChild', 'setActiveColor', 'openCase',
-      'clearCaseChildren', 'changeSlideZoom', 'getImgByUrl']),
+      'clearCaseChildren', 'changeSlideZoom', 'getImgByUrl', 'updateSlideInfoOnServer']),
     ...mapGetters(['getSlides', 'getActiveSlide',  'getActiveSlideList', 'getActiveTool', 'getActiveShapeTool', 'getCanvasInfo',
       'getSelectedCase', 'getCases', 'getActiveColor']),
     fetchSlidesL() {
@@ -217,6 +217,7 @@ export default {
 
               _this.lastClientX = 0;
               _this.lastClientY = 0;
+              // _this.updateSlideInfoOnServer();
             } else if (_this.moveMode) {
               const activeObject = slide.canvas.getActiveObject();
               const activeObjects = slide.canvas.getActiveObjects();

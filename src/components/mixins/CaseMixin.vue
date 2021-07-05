@@ -7,7 +7,8 @@ export default {
   name: "CaseMixin",
   data: () => ({
     cases: [],
-    preText: ''
+    preText: '',
+    changeCaseNameEditableState: false,
   }),
   created() {
     this.removeCaseUnsubscribe = this.$store.subscribe((mutation) => {
@@ -36,7 +37,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setContextMenuBase', 'removeCase', 'removeCaseChild', 'changeCaseStatus']),
+    ...mapActions(['setContextMenuBase', 'removeCase', 'removeCaseChild', 'changeCaseStatus', 'caseRename']),
     ...mapGetters(['getCases', 'getSelectedCase']),
     fetchCasesL() {
       const query = this.$route.query;
@@ -53,8 +54,13 @@ export default {
       }
     },
     changeCaseNameEditable(_case, refStr, state, isMultiple=false, i=0) {
-      _case.isEdited = state;
-      this.caseRefFocusHandler(_case, refStr, state, isMultiple, i);
+      if (this.changeCaseNameEditableState !== state) {
+        this.changeCaseNameEditableState = _case.isEdited = state;
+        this.caseRefFocusHandler(_case, refStr, state, isMultiple, i);
+        if (!state) {
+          this.caseRename();
+        }
+      }
     },
     caseRefFocusHandler(_case, refStr, state, isMultiple=false, i=0) {
       setTimeout(() => {
