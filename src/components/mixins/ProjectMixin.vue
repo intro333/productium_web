@@ -1,12 +1,29 @@
 <script>
 import {ProjectModel} from "@/models/case-tracker/ProjectModel";
-import {mapGetters} from "vuex";
+import {mapActions, mapGetters} from "vuex";
+import {projectFilterWithSelect} from "@/functions/case-tracker/projectsF";
 
 export default {
   name: "ProjectMixin",
+  data: () => ({
+    projectNameEditableState: false,
+    projects: [],
+  }),
+  created() {
+    this.projUnsubscribe = this.$store.subscribe((mutation) => {
+      if (mutation.type === 'SET_ALL_PROJECTS_STATE') {
+        this.fetchProjectsL();
+      }
+    });
+  },
+  beforeDestroy() {
+    if (this.projUnsubscribe) {
+      this.projUnsubscribe();
+    }
+  },
   computed: {
     project() {
-      const projects = this.getProjects();
+      const projects = this.projects;
       if (projects.length) {
         const foundProject = projects.find(_p => _p.isSelected);
         if (foundProject) {
@@ -24,6 +41,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['updateProjectInfoOnServer']),
     ...mapGetters(['getProjects']),
     changeProjectNameEditable(state) {
       this.project.nameIsEdited = state;
@@ -35,6 +53,10 @@ export default {
         if (!state && this.project.name === '') {
           this.project.name = 'Untitled'
         }
+        if (!state && state !== this.projectNameEditableState) {
+          this.updateProjectInfoOnServer();
+        }
+        this.projectNameEditableState = state;
       }, 20)
     },
     projectNameModalBody() {
@@ -70,6 +92,22 @@ export default {
         this.project.name = name;
       }
     },
+    fetchProjectsL() {
+      const query = this.$route.query;
+      if (query && query.projectId) {
+        this.projects = projectFilterWithSelect(
+            this.getProjects(),
+            parseInt(query.projectId)
+        );
+      } else {
+        this.projects = [];
+      }
+    },
   },
+  watch: {
+    $route () {
+      this.fetchProjectsL();
+    }
+  }
 }
 </script>

@@ -139,6 +139,28 @@ const actions = {
             });
         });
     },
+    addNewProject({commit, dispatch}) {
+        dispatch('setIsLoading', true);
+        return new Promise(() => {
+            const id = state.projects.length+1;
+            const newProject = new ProjectModel({
+                id: id,
+                name: 'Untitled' + id,
+                activityStatus: 'active',
+                isSelected: true,
+            });
+            commit('SET_PROJECT', newProject);
+            dispatch('updateProjectInfoOnServer').then(() => {
+                console.log(' AFTER updateProjectInfoOnServer');
+                dispatch('pushSlide').then(_newSlide => {
+                    console.log(' AFTER pushSlide', _newSlide);
+                    dispatch('selectProject', newProject);
+                    // dispatch('setIsLoading', false);
+                    // router.push(`/case-tracker?projectId=${newProject.id}&slideId=${_newSlide.id}&slideListId=${_newSlide.id}`);
+                });
+            });
+        });
+    },
 
     /* INIT */
     fetchInitData({commit, dispatch, getters}) {
@@ -172,7 +194,72 @@ const actions = {
             // TODO Можно ещё поставить проверку, есть ли этот увет в массиве pickerColors (через Object.keys)
             commit('SET_ACTIVE_COLOR', color);
         }
-    }
+    },
+    updateProjectInfoOnServer({getters}) {
+        return new Promise((resolve) => {
+            const currentUser = getters.getCurrentUser;
+            setTimeout(() => {
+                window.axios.post('api/projects-all/update-project-info', {
+                    userId: currentUser.id,
+                    projectData: {
+                        projects: state.projects,
+                        selectedProject: null,
+                        activeColor: state.activeColor,
+                    }
+                }).then(() => {
+                    resolve();
+                }, error => {
+                    console.log('error updateProjectInfoOnServer', error);
+                });
+            }, 100);
+        });
+    },
+    selectProject({commit, dispatch, getters}, _project) {
+        dispatch('setIsLoading', true);
+        const currentUser = getters.getCurrentUser;
+        commit('SELECT_PROJECT', _project);
+        state.projects.map(_p => {
+            _p.isSelected = _p.id === _project.id;
+            return _p;
+        });
+        const _slidesState = slidesState;
+        const _casesState = casesState;
+        let isFindSlide = false;
+        let activeSlide = null;
+        let activeSlideList = null;
+        _slidesState.slides.forEach(_s => {
+            if (!isFindSlide && _s.slideState !== 'archived' && _s.projectId === _project.id) {
+                activeSlide = _s; // Записываем первый попавшийся слайд
+                _s.isSelected = true;
+                isFindSlide = true;
+            } else {
+                _s.isSelected = false;
+            }
+        });
+        _slidesState.slideLists.forEach(_l => {
+            if (activeSlide.id === _l.slideId) {
+                _l.isSelected = true;
+                activeSlideList = _l;
+            } else {
+                _l.isSelected = false;
+            }
+        });
+        _slidesState.activeSlide = activeSlide;
+        _slidesState.activeSlideList = activeSlideList;
+        _casesState.selectedCase = null;
+        setTimeout(() => {
+            setProjectDataLoad({
+                userId: currentUser.id,
+                projects: state,
+                slides: _slidesState,
+                cases: casesState,
+            }, commit, dispatch, {
+                projectId: state.selectedProject.id,
+                slideId: activeSlide.id,
+                slideListId: activeSlideList.id,
+            });
+        }, 200);
+    },
 };
 
 const mutations = {
@@ -194,12 +281,18 @@ const mutations = {
             state.projects = _projects;
         }
     },
+    SET_PROJECT(state, _project) {
+        state.projects.push(_project);
+    },
+    SELECT_PROJECT(state, _project) {
+        state.selectedProject = _project;
+    },
     PUSH_PROJECT(state, _project) { state.projects.push(_project); },
     SET_ACTIVE_COLOR(state, color) { state.activeColor = color.replace(/#/g, ''); },
 };
 
 /* FUNCTIONS */
-const setProjectDataLoad = (data, commit, dispatch) => {
+const setProjectDataLoad = (data, commit, dispatch, _query=null) => {
     const projects = data.projects;
     const slides = data.slides;
     slides.slides.forEach(_s => {
@@ -215,15 +308,16 @@ const setProjectDataLoad = (data, commit, dispatch) => {
     projects.selectedProject = projects.projects.find(_p => _p.isSelected);
     slides.activeSlide = slides.slides.find(_p => _p.isSelected);
     slides.activeSlideList = slides.slideLists.find(_p => _p.isSelected);
-    cases.selectedCase = cases.cases;
+    // cases.selectedCase = cases.cases;
     // cases.selectedCase = cases.cases.find(_p => _p.isSelected);
+    console.log('projects', slides)
 
     setTimeout(() => {
         commit('SET_ALL_PROJECTS_STATE', projects);
         commit('SET_ALL_SLIDES_STATE', slides);
         commit('SET_ALL_CASES_STATE', cases);
     }, 50);
-    const query = router.currentRoute.query;
+    const query = _query || router.currentRoute.query;
     // console.log('query', query);
     setTimeout(() => {
         if (query && query.projectId) {
@@ -239,7 +333,6 @@ const setProjectDataLoad = (data, commit, dispatch) => {
                 }, 100);
             } else {
                 dispatch('setIsLoading', false);
-                console.log(131313131313)
                 router.push(
                   `/case-tracker?projectId=${projects.selectedProject.id}&slideId=${slides.activeSlide.id}&slideListId=${slides.activeSlideList.id}&caseId=${cases.selectedCase.id}`
                 );
@@ -250,7 +343,6 @@ const setProjectDataLoad = (data, commit, dispatch) => {
             const slideListId = (slides.activeSlideList && slides.activeSlideList.id) ? `slideListId=${slides.activeSlideList.id}` : '';
             const caseId = (cases.selectedCase && cases.selectedCase.id) ? `caseId=${cases.selectedCase.id}` : '';
             dispatch('setIsLoading', false);
-            console.log(121212121212)
             router.push(`/case-tracker?${projectId}&${slideId}&${slideListId}&${caseId}`);
         }
     }, 100);

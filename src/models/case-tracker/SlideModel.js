@@ -1,6 +1,6 @@
 export class SlideModel {
   id = 0;
-  slideState = 'in-work';
+  slideState = 'in-work'; /* in-work | done | archived */
   projectId = 0;
   order = 0;
   img = null;

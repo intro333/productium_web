@@ -1,10 +1,11 @@
 import {CaseModel} from "@/models/case-tracker/CaseModel";
 import router from "@/router";
-import {getObjectOffsetByZoom, getOffsetByZoom, getRandomInt} from "@/functions/calculations";
+import {getObjectOffsetByZoom, getOffsetByZoom} from "@/functions/calculations";
 import {CentralModalModel} from "@/models/modals/CentralModalModel";
 import {mockCases, mockCaseComments} from "@/data/testData";
 import {shapeTitleAutoIncrement} from "@/functions/case-tracker/projectsF";
 import {CaseCommentModel} from "@/models/case-tracker/CaseCommentModel";
+import moment from 'moment';
 
 export const state = {
   cases: [],
@@ -190,44 +191,67 @@ const actions = {
   openCase({commit}) {
     commit('OPEN_CASE');
   },
+  updateCaseInfoOnServer({getters}) {
+    const currentUser = getters.getCurrentUser;
+    setTimeout(() => {
+      const _cases = state.cases;
+      window.axios.post('api/projects-all/add-case', {
+        userId: currentUser.id,
+        caseData: {
+          cases: _cases,
+          casesComments: state.casesComments,
+          selectedCase: state.selectedCase,
+        }
+      }).then(() => {
+
+      }, error => {
+        console.log('error updateCaseOnServer', error);
+      });
+    }, 20);
+  },
   /* CASE COMMENTS */
   fetchCaseComments({commit}) {
     commit('SET_CASES_COMMENTS', mockCaseComments);
   },
-  addCaseComment({commit, getters}, payload) {
+  addCaseComment({commit, getters, dispatch}, payload) {
+    const nowDate = moment().format('YYYY-MM-DD HH:mm:ss');
     return new Promise((resolve) => {
-        setTimeout(() => { // TODO Имитация задержки с сервера (УБРАТЬ!)
-          const query = router.currentRoute.query;
-          const currentUser = getters.getCurrentUser;
-          if (query && query.caseId) {
-            const commentId = getRandomInt(10, 1000); // TODO MOCK
-            const newComment = { // TODO Этот объект придёт с сервера
-              id: commentId,
-              projectId: parseInt(query.projectId),
-              slideId: parseInt(query.slideId),
-              slideListId: parseInt(query.slideListId),
-              caseId: parseInt(query.caseId),
-              parent: payload.parentKey ? payload.parentKey : null,
-              message: payload.commentMessage,
-              user: currentUser,
-              images: payload.images,
-              updatedAt: '2020-10-30 11:46:15', // TODO Дата придёт с сервера
-              notifyInfo: {
-                status: 'fromCurrentUser',
-              }, // Моё сообщение, оно не будет мне показано в оповещении
-              userLink: payload.isUserLink ? {
-                replyUser: payload.replyUser, // TODO по идее при отправке коммента на бэк отправляем лишь id юзера, а при получении данных мы по нему берём нужные данные, ибо они могут поменяться
-                replyCommentId: payload.comment.id
-              } : null,
-            };
-            commit('ADD_CASES_COMMENT', newComment);
-            resolve(newComment);
-          }
-        }, 200);
+      const query = router.currentRoute.query;
+      const currentUser = getters.getCurrentUser;
+      if (query && query.caseId) {
+        const commentId = state.casesComments.length+1;
+        const newComment = {
+          id: commentId,
+          projectId: parseInt(query.projectId),
+          slideId: parseInt(query.slideId),
+          slideListId: parseInt(query.slideListId),
+          caseId: parseInt(query.caseId),
+          parent: payload.parentKey || null,
+          message: payload.commentMessage,
+          user: currentUser,
+          images: payload.images,
+          updatedAt: nowDate,
+          notifyInfo: {
+            status: 'fromCurrentUser',
+          }, // Моё сообщение, оно не будет мне показано в оповещении
+          userLink: payload.isUserLink ? {
+            replyUser: payload.replyUser, // TODO по идее при отправке коммента на бэк отправляем лишь id юзера, а при получении данных мы по нему берём нужные данные, ибо они могут поменяться
+            replyCommentId: payload.comment.id
+          } : null,
+        };
+        commit('ADD_CASES_COMMENT', newComment);
+        setTimeout(() => {
+          dispatch('updateCaseOnServer');
+          resolve(newComment);
+        }, 100);
+      }
     });
   },
-  removeCaseComment({commit}, commentObj) {
+  removeCaseComment({commit, dispatch}, commentObj) {
     commit('REMOVE_CASES_COMMENT', commentObj);
+    setTimeout(() => {
+      dispatch('updateCaseOnServer');
+    }, 100);
   },
   openCommentsModalByCommentId({dispatch}, commentId) {
     dispatch('setCentralModal',

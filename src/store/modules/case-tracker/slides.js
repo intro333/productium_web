@@ -82,15 +82,15 @@ const actions = {
               canvasHeight: 0
             }
           }
-        }).then(response => {
-          const data = response.data;
+        }).then(() => {
+          // const data = response.data;
           setTimeout(() => {
             dispatch('selectCaseListAndCaseOfActiveSlide', {
               slide: newSlide,
               isNew: true,
             });
           }, 20);
-          resolve(data);
+          resolve(newSlide);
         }, error => {
           console.log('error pushSlide', error);
         });
@@ -327,7 +327,7 @@ const actions = {
             resolve(_case);
           });
         } else {
-          router.push('/case-tracker?projectId=1&slideId=1&slideListId=1&caseId=1');
+          router.push('/case-tracker?projectId=1&slideId=1&slideListId=1&caseId=1'); // TODO Так нельзя!
         }
       };
       if (query && query.slideId) {
@@ -336,7 +336,8 @@ const actions = {
         if (foundSlide) {
           dispatch('selectCaseListAndCaseOfActiveSlide', {
             slide: foundSlide,
-            isFirstLoad: true
+            isFirstLoad: true,
+            query,
           }).then(_case => {
             dispatch('setIsLoading', false);
             resolve(_case);
@@ -352,7 +353,7 @@ const actions = {
   selectCaseListAndCaseOfActiveSlide({commit, getters, dispatch}, payload) {
     return new Promise((resolve) => {
       const _slide = payload.slide;
-      const query = router.currentRoute.query;
+      const query = payload.query || router.currentRoute.query;
       const _cases = getters.getCases;
       const slideLists = state.slideLists;
       let slideIdNotEqual = true;

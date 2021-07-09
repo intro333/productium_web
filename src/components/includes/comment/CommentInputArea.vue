@@ -24,20 +24,20 @@
                       'pc-input-area-text-with-link': isUserLink}"
                     :placeholder="!userLink ? $t('comments.writeComment') : ''"></textarea>
         </div>
-        <div v-if="imagesIsCanUpload"
-             class="pc-input-area-add-img-box">
-          <img @mouseenter="showTooltip($event, 'addImageIcon',$t('comments.imageToComment'))"
-               @mouseleave="hideToolTip"
-               ref="addImageIcon"
-               src="@/assets/img/common/media/addImageIcon.svg"
-               class="pc-input-area-add-img"
-               alt="">
-          <input ref="inputFileRef"
-                 accept="image/png,image/jpeg,image/jpg,image/svg"
-                 @change="uploadImageToMessage"
-                 type="file"
-                 class="pc-input-area-add-img-input">
-        </div>
+<!--        <div v-if="imagesIsCanUpload"-->
+<!--             class="pc-input-area-add-img-box">-->
+<!--          <img @mouseenter="showTooltip($event, 'addImageIcon',$t('comments.imageToComment'))"-->
+<!--               @mouseleave="hideToolTip"-->
+<!--               ref="addImageIcon"-->
+<!--               src="@/assets/img/common/media/addImageIcon.svg"-->
+<!--               class="pc-input-area-add-img"-->
+<!--               alt="">-->
+<!--          <input ref="inputFileRef"-->
+<!--                 accept="image/png,image/jpeg,image/jpg,image/svg"-->
+<!--                 @change="uploadImageToMessage"-->
+<!--                 type="file"-->
+<!--                 class="pc-input-area-add-img-input">-->
+<!--        </div>-->
       </div>
     </div>
     <div v-if="images.length"

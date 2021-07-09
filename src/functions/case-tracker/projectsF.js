@@ -9,6 +9,17 @@ export function slidesOfProjectFilterWithSelect(_slides, projectId, slideId) {
   });
 }
 
+export function projectFilterWithSelect(_projects, projectId) {
+  console.log('proId', projectId);
+  return _projects.filter(_p => {
+    if (_p.activityStatus !== 'archived') {
+      _p.isSelected = _p.id === projectId;
+      console.log('_p', _p);
+      return _p;
+    }
+  });
+}
+
 export function fillCasesCommentsTree(comments) {
   const result = [];
   comments

@@ -87,7 +87,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setCentralModal']),
+    ...mapActions(['setCentralModal', 'updateCaseInfoOnServer']),
     ...mapGetters(['getCasesComments']),
     isActiveDiscusBlockActivityState(_state) {
       return this.selectedCase.discusBlockActivityState === _state;
@@ -114,6 +114,9 @@ export default {
           this.saveDiscuseText();
         } else if (eType === 'click') {
           this.selectedCase.isDiscusEdited = _state;
+        }
+        if (eType !== 'click' && eType !== 'Escape') {
+          this.updateCaseInfoOnServer();
         }
       }
     },

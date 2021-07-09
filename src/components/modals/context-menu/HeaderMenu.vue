@@ -48,14 +48,14 @@ export default {
               isItemOfMenu: true,
               title: _project.name,
               action: () => {
-
+                this.selectProject(_project);
               }
             };
       });
     },
   },
   methods: {
-    ...mapActions(['pushSlide', 'pushCase', 'setSlideImg']),
+    ...mapActions(['addNewProject', 'pushSlide', 'pushCase', 'setSlideImg', 'selectProject']),
     ...mapGetters(['getActiveSlide', 'getProjects']),
     setSubMenu(subMenu) {
       this.subMenu = subMenu;
@@ -70,6 +70,7 @@ export default {
               isItemOfMenu: true,
               title: this.$t('nav.createNewProject'),
               action: () => {
+                this.addNewProject();
                 console.log('ACTION Создать новый проект');
               }
             },
