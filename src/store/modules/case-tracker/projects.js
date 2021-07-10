@@ -140,6 +140,7 @@ const actions = {
         });
     },
     addNewProject({commit, dispatch}) {
+        state.selectedProject.isSelected = false;
         dispatch('setIsLoading', true);
         return new Promise(() => {
             const id = state.projects.length+1;
@@ -151,12 +152,8 @@ const actions = {
             });
             commit('SET_PROJECT', newProject);
             dispatch('updateProjectInfoOnServer').then(() => {
-                console.log(' AFTER updateProjectInfoOnServer');
-                dispatch('pushSlide').then(_newSlide => {
-                    console.log(' AFTER pushSlide', _newSlide);
+                dispatch('pushSlide', newProject.id).then(() => {
                     dispatch('selectProject', newProject);
-                    // dispatch('setIsLoading', false);
-                    // router.push(`/case-tracker?projectId=${newProject.id}&slideId=${_newSlide.id}&slideListId=${_newSlide.id}`);
                 });
             });
         });
@@ -218,10 +215,6 @@ const actions = {
         dispatch('setIsLoading', true);
         const currentUser = getters.getCurrentUser;
         commit('SELECT_PROJECT', _project);
-        state.projects.map(_p => {
-            _p.isSelected = _p.id === _project.id;
-            return _p;
-        });
         const _slidesState = slidesState;
         const _casesState = casesState;
         let isFindSlide = false;
@@ -237,7 +230,7 @@ const actions = {
             }
         });
         _slidesState.slideLists.forEach(_l => {
-            if (activeSlide.id === _l.slideId) {
+            if (activeSlide && activeSlide.id === _l.slideId) {
                 _l.isSelected = true;
                 activeSlideList = _l;
             } else {
@@ -285,6 +278,10 @@ const mutations = {
         state.projects.push(_project);
     },
     SELECT_PROJECT(state, _project) {
+        state.projects = state.projects.map(_p => {
+            _p.isSelected = _p.id === _project.id;
+            return _p;
+        });
         state.selectedProject = _project;
     },
     PUSH_PROJECT(state, _project) { state.projects.push(_project); },
@@ -293,6 +290,8 @@ const mutations = {
 
 /* FUNCTIONS */
 const setProjectDataLoad = (data, commit, dispatch, _query=null) => {
+    const query = _query || router.currentRoute.query;
+    // console.log('query', query);
     const projects = data.projects;
     const slides = data.slides;
     slides.slides.forEach(_s => {
@@ -305,20 +304,26 @@ const setProjectDataLoad = (data, commit, dispatch, _query=null) => {
     });
     const cases = data.cases;
 
-    projects.selectedProject = projects.projects.find(_p => _p.isSelected);
-    slides.activeSlide = slides.slides.find(_p => _p.isSelected);
-    slides.activeSlideList = slides.slideLists.find(_p => _p.isSelected);
+    if (query) {
+        if (query.projectId) {
+            projects.selectedProject = projects.projects.find(_p => _p.id === parseInt(query.projectId));
+        }
+        if (query.slideId) {
+            slides.activeSlide = slides.slides.find(_s => _s.id === parseInt(query.slideId));
+        }
+        if (query.slideListId) {
+            slides.activeSlideList = slides.slideLists.find(_l => _l.id === parseInt(query.slideListId));
+        }
+    }
     // cases.selectedCase = cases.cases;
     // cases.selectedCase = cases.cases.find(_p => _p.isSelected);
-    console.log('projects', slides)
+    // console.log('projects', slides)
 
     setTimeout(() => {
         commit('SET_ALL_PROJECTS_STATE', projects);
         commit('SET_ALL_SLIDES_STATE', slides);
         commit('SET_ALL_CASES_STATE', cases);
     }, 50);
-    const query = _query || router.currentRoute.query;
-    // console.log('query', query);
     setTimeout(() => {
         if (query && query.projectId) {
             const project = state.projects.find(_p => _p.id === parseInt(query.projectId));

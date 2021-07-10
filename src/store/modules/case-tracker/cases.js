@@ -283,7 +283,6 @@ const actions = {
   addShapeToCase({commit, getters}, shapeObj) {
     return new Promise((resolve, reject) => {
       const currentUser = getters.getCurrentUser;
-      console.log('shapeObj', shapeObj);
       const foundCase = state.cases.find(_c => _c.id === state.selectedCase.id);
       if (shapeObj.params && shapeObj.params.canvas) {
         shapeObj.params.canvas = null;
@@ -433,7 +432,10 @@ const mutations = {
   SET_CASES(state, _cases) {
     state.cases = _cases;
   },
-  PUSH_CASE(state, _case) { state.cases.push(_case); },
+  PUSH_CASE(state, _case) {
+    state.cases.push(_case);
+    state.selectedCase = _case;
+  },
   SELECT_CASE(state, payload) {
     state.selectedCase = payload.case;
   },

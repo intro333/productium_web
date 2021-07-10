@@ -33,6 +33,9 @@ export default {
     SlideItem
   },
   computed: {
+    selectedProject() {
+      return this.getSelectedProject();
+    },
     slidesLength() {
       return this.slides.length;
     },
@@ -44,9 +47,9 @@ export default {
   },
   methods: {
     ...mapActions(['setContextMenuBase', 'pushSlide']),
-    ...mapGetters(['getCases']),
+    ...mapGetters(['getCases', 'getSelectedProject']),
     addSlide() {
-      this.pushSlide();
+      this.pushSlide(this.selectedProject.id);
     },
   },
 }

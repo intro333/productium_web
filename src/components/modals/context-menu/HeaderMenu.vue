@@ -41,6 +41,9 @@ export default {
     projects() {
       return this.getProjects();
     },
+    selectedProject() {
+      return this.getSelectedProject();
+    },
     myProjects() {
       return this.projects.filter(_project => _project.activityStatus === 'active')
           .map(_project => {
@@ -56,7 +59,7 @@ export default {
   },
   methods: {
     ...mapActions(['addNewProject', 'pushSlide', 'pushCase', 'setSlideImg', 'selectProject']),
-    ...mapGetters(['getActiveSlide', 'getProjects']),
+    ...mapGetters(['getActiveSlide', 'getProjects', 'getSelectedProject']),
     setSubMenu(subMenu) {
       this.subMenu = subMenu;
     },
@@ -78,7 +81,7 @@ export default {
               isItemOfMenu: true,
               title: this.$t('nav.createSlide'),
               action: () => {
-                this.pushSlide();
+                this.pushSlide(this.selectedProject.id);
               }
             },
             {

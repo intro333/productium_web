@@ -10,11 +10,11 @@ export default {
     projects: [],
   }),
   created() {
-    this.projUnsubscribe = this.$store.subscribe((mutation) => {
-      if (mutation.type === 'SET_ALL_PROJECTS_STATE') {
-        this.fetchProjectsL();
-      }
-    });
+    // this.projUnsubscribe = this.$store.subscribe((mutation) => {
+    //   if (mutation.type === 'SET_ALL_PROJECTS_STATE') {
+    //     this.fetchProjectsL();
+    //   }
+    // });
   },
   beforeDestroy() {
     if (this.projUnsubscribe) {

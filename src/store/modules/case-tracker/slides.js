@@ -39,23 +39,26 @@ const actions = {
       }, 200);
     });
   },
-  pushSlide({commit, getters, dispatch}) {
+  pushSlide({commit, getters, dispatch}, projectId) {
     dispatch('setIsLoading', true);
+    commit('RESET_SLIDES_STATUS', 'isSelected');
+    commit('RESET_SLIDE_LISTS_STATUS', 'isSelected');
     return new Promise((resolve) => {
       const currentUser = getters.getCurrentUser;
-      const selectedProject = getters.getSelectedProject;
       const newSlide = new SlideModel({
         id: state.slides.length+1,
         slideState: 'in-work',
-        projectId: selectedProject.id,
+        projectId: projectId,
         order: 0,
-        img: null
+        img: null,
+        isSelected: true
       });
       const listId = state.slideLists.length+1;
       const newSlideList = new SlideList({
         id: listId,
         slideId: newSlide.id,
-        name: 'Лист' + listId
+        name: 'Лист' + listId,
+        isSelected: true
       });
       commit('PUSH_SLIDE', newSlide);
       commit('PUSH_SLIDE_LIST', newSlideList);
@@ -88,9 +91,10 @@ const actions = {
             dispatch('selectCaseListAndCaseOfActiveSlide', {
               slide: newSlide,
               isNew: true,
+            }).then(() => {
+              resolve(newSlide);
             });
           }, 20);
-          resolve(newSlide);
         }, error => {
           console.log('error pushSlide', error);
         });
@@ -143,6 +147,7 @@ const actions = {
   },
   removeSlide({commit, getters, dispatch}, payload) {
     const currentUser = getters.getCurrentUser;
+    const selectedProject = getters.getSelectedProject;
     dispatch('setIsLoading', true);
     const slide = payload.slide;
     const removeNotifys = () => {
@@ -206,7 +211,7 @@ const actions = {
       } else if (payload.slidesLength === 1) {
         /* При удалении последнего слайда удалять картинку и кейсы и оставлять пустой слайд (начальное состояние) */
         commit('REMOVE_SLIDE', slide);
-        dispatch('pushSlide');
+        dispatch('pushSlide', selectedProject.id);
         resolve();
       }
       removeNotifys();
@@ -327,7 +332,8 @@ const actions = {
             resolve(_case);
           });
         } else {
-          router.push('/case-tracker?projectId=1&slideId=1&slideListId=1&caseId=1'); // TODO Так нельзя!
+          console.log('НЕВЕРНЫЙ РОУТ FROM selectFoundSlideFromSlides!');
+          // router.push('/case-tracker?projectId=1&slideId=1&slideListId=1&caseId=1'); // TODO Так нельзя!
         }
       };
       if (query && query.slideId) {
@@ -354,11 +360,12 @@ const actions = {
     return new Promise((resolve) => {
       const _slide = payload.slide;
       const query = payload.query || router.currentRoute.query;
+      const currentQuery = router.currentRoute.query;
       const _cases = getters.getCases;
       const slideLists = state.slideLists;
       let slideIdNotEqual = true;
       if (query && query.slideId) {
-        const _slideId = parseInt(query.slideId);
+        const _slideId = parseInt(currentQuery.slideId);
         slideIdNotEqual = _slideId !== _slide.id;
       }
       if (payload.isNew || payload.isFirstLoad || payload.isRepaint || slideIdNotEqual) {
@@ -407,6 +414,7 @@ const actions = {
                     commit('SET_ACTIVE_TOOL', 'moveTool');
                   }
                   if (slideIdNotEqual) {
+                    console.log('router push slide 1.1');
                     router.push({
                       path: '/case-tracker',
                       query: Object.assign({}, query, {
@@ -416,7 +424,9 @@ const actions = {
                       })
                     });
                   } else if (payload.isFirstLoad) {
+                    console.log(2222222, payload)
                     if (slideListId !== parseInt(query.slideListId) || _case.id !== parseInt(query.caseId)) {
+                      console.log('router push slide 1.2');
                       router.push({
                         path: '/case-tracker',
                         query: Object.assign({}, query, {
@@ -438,6 +448,7 @@ const actions = {
                   resolve(_case);
                 } else { /* Нет ни одного кейса */
                   if (slideIdNotEqual) {
+                    console.log('router push slide 1.3');
                     router.push({
                       path: '/case-tracker',
                       query: Object.assign({}, query, {
@@ -466,8 +477,9 @@ const actions = {
                 }
               }, 20);
             } else {
+              console.log('НЕВЕРНЫЙ РОУТ FROM selectCaseListAndCaseOfActiveSlide!');
               dispatch('setIsLoading', false);
-              router.push('/case-tracker?projectId=1&slideId=1&slideListId=1&caseId=1');
+              // router.push('/case-tracker?projectId=1&slideId=1&slideListId=1&caseId=1'); // TODO Так нельзя!
             }
           }, 20);
         }, 20);
@@ -500,6 +512,16 @@ const mutations = {
   },
   SET_ACTIVE_SLIDE(state, _slide) {
     state.activeSlide = _slide;
+  },
+  RESET_SLIDES_STATUS(state, status) {
+    state.slides.forEach(_s => {
+      _s[status] = false;
+    });
+  },
+  RESET_SLIDE_LISTS_STATUS(state, status) {
+    state.slideLists.forEach(_s => {
+      _s[status] = false;
+    });
   },
   /* SLIDE LISTS */
   SET_SLIDE_LISTS(state, _slideLists) {
