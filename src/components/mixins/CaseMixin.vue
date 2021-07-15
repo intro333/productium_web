@@ -149,7 +149,10 @@ export default {
               isItemOfMenu: true,
               title: this.$t('common.delete'),
               action: () => {
-                this.removeCaseChild(_caseOrCaseChild);
+                this.removeCaseChild({
+                  caseChild: _caseOrCaseChild,
+                  removeOnlyOnCanvas: false
+                });
               }
             },
           ]

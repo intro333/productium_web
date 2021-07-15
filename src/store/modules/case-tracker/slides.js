@@ -39,7 +39,7 @@ const actions = {
       }, 200);
     });
   },
-  pushSlide({commit, getters, dispatch}, projectId) {
+  pushSlide({commit, getters, dispatch}, payload) {
     dispatch('setIsLoading', true);
     commit('RESET_SLIDES_STATUS', 'isSelected');
     commit('RESET_SLIDE_LISTS_STATUS', 'isSelected');
@@ -48,7 +48,7 @@ const actions = {
       const newSlide = new SlideModel({
         id: state.slides.length+1,
         slideState: 'in-work',
-        projectId: projectId,
+        projectId: payload.projectId,
         order: 0,
         img: null,
         isSelected: true
@@ -91,6 +91,7 @@ const actions = {
             dispatch('selectCaseListAndCaseOfActiveSlide', {
               slide: newSlide,
               isNew: true,
+              query: payload.query,
             }).then(() => {
               resolve(newSlide);
             });
@@ -211,7 +212,7 @@ const actions = {
       } else if (payload.slidesLength === 1) {
         /* При удалении последнего слайда удалять картинку и кейсы и оставлять пустой слайд (начальное состояние) */
         commit('REMOVE_SLIDE', slide);
-        dispatch('pushSlide', selectedProject.id);
+        dispatch('pushSlide', {projectId: selectedProject.id});
         resolve();
       }
       removeNotifys();
@@ -297,7 +298,7 @@ const actions = {
             }
           }).then(response => {
             const data = response.data;
-            console.log('setSlideImg', data);
+            foundSlide.imgUrl = data.imgUrl;
             commit('SET_SLIDE_IMG', {file, foundSlide});
             resolve(data);
           }, error => {
@@ -424,7 +425,6 @@ const actions = {
                       })
                     });
                   } else if (payload.isFirstLoad) {
-                    console.log(2222222, payload)
                     if (slideListId !== parseInt(query.slideListId) || _case.id !== parseInt(query.caseId)) {
                       console.log('router push slide 1.2');
                       router.push({
@@ -546,7 +546,7 @@ const mutations = {
     const img = payload.file;
     state.activeShapeTool = 'rectangleTool';
     state.activeTool = 'superTool'; /* При добавлении изобр-я переключаемся на суперТул, чтобы создать кейс */
-    console.log('img', img);
+    // console.log('img', img);
     if (img) {
       foundSlide.img = img;
       const reader = new FileReader();

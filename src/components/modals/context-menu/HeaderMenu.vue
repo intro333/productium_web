@@ -49,9 +49,12 @@ export default {
           .map(_project => {
             return {
               isItemOfMenu: true,
+              isHovered: _project.isSelected,
               title: _project.name,
               action: () => {
-                this.selectProject(_project);
+                if (!_project.isSelected) {
+                  this.selectProject(_project);
+                }
               }
             };
       });
@@ -81,7 +84,7 @@ export default {
               isItemOfMenu: true,
               title: this.$t('nav.createSlide'),
               action: () => {
-                this.pushSlide(this.selectedProject.id);
+                this.pushSlide({projectId: this.selectedProject.id});
               }
             },
             {

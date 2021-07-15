@@ -152,7 +152,10 @@ const actions = {
             });
             commit('SET_PROJECT', newProject);
             dispatch('updateProjectInfoOnServer').then(() => {
-                dispatch('pushSlide', newProject.id).then(() => {
+                dispatch('pushSlide', {
+                    projectId: newProject.id,
+                    query: Object.assign(router.currentRoute.query, {projectId: newProject.id})
+                }).then(() => {
                     dispatch('selectProject', newProject);
                 });
             });
@@ -306,7 +309,9 @@ const setProjectDataLoad = (data, commit, dispatch, _query=null) => {
 
     if (query) {
         if (query.projectId) {
-            projects.selectedProject = projects.projects.find(_p => _p.id === parseInt(query.projectId));
+            const foundProject = projects.projects.find(_p => _p.id === parseInt(query.projectId));
+            projects.selectedProject = foundProject;
+            commit('SELECT_PROJECT', foundProject);
         }
         if (query.slideId) {
             slides.activeSlide = slides.slides.find(_s => _s.id === parseInt(query.slideId));
@@ -343,12 +348,26 @@ const setProjectDataLoad = (data, commit, dispatch, _query=null) => {
                 );
             }
         } else {
-            const projectId = (projects.selectedProject && projects.selectedProject.id) ? `projectId=${projects.selectedProject.id}` : '';
-            const slideId = (slides.activeSlide && slides.activeSlide.id) ? `slideId=${slides.activeSlide.id}` : '';
-            const slideListId = (slides.activeSlideList && slides.activeSlideList.id) ? `slideListId=${slides.activeSlideList.id}` : '';
-            const caseId = (cases.selectedCase && cases.selectedCase.id) ? `caseId=${cases.selectedCase.id}` : '';
+            let projectId, slideId, slideListId, caseId;
+            projectId = slideId = slideListId = caseId = '';
+            if (projects.projects[0] && projects.projects[0].id) {
+                const firstProject = projects.projects[0];
+                projectId = `?projectId=${firstProject.id}`;
+                const foundSlide = slides.slides.find(_s => _s.slideState !== 'archived' &&
+                  (_s.projectId === firstProject.id));
+                if (foundSlide) {
+                    slideId = `&slideId=${foundSlide.id}`;
+                    slideListId = `&slideListId=${foundSlide.id}`;
+                    const foundCase = cases.cases.find(_c => _c.caseStatus !== 'archived' &&
+                      _c.slideId === foundSlide.id);
+                    if (foundCase) {
+                        caseId = `&caseId=${foundCase.id}`;
+                    }
+                }
+            }
             dispatch('setIsLoading', false);
-            router.push(`/case-tracker?${projectId}&${slideId}&${slideListId}&${caseId}`);
+            router.push(`/case-tracker?${projectId}${slideId}${slideListId}${caseId}`);
+            setProjectDataLoad(data, commit, dispatch, _query);
         }
     }, 100);
 };

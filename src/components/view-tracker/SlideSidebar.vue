@@ -49,7 +49,7 @@ export default {
     ...mapActions(['setContextMenuBase', 'pushSlide']),
     ...mapGetters(['getCases', 'getSelectedProject']),
     addSlide() {
-      this.pushSlide(this.selectedProject.id);
+      this.pushSlide({projectId: this.selectedProject.id});
     },
   },
 }

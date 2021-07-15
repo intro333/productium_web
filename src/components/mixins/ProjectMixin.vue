@@ -9,18 +9,18 @@ export default {
     projectNameEditableState: false,
     projects: [],
   }),
-  created() {
+  // created() {
     // this.projUnsubscribe = this.$store.subscribe((mutation) => {
     //   if (mutation.type === 'SET_ALL_PROJECTS_STATE') {
     //     this.fetchProjectsL();
     //   }
     // });
-  },
-  beforeDestroy() {
-    if (this.projUnsubscribe) {
-      this.projUnsubscribe();
-    }
-  },
+  // },
+  // beforeDestroy() {
+  //   if (this.projUnsubscribe) {
+  //     this.projUnsubscribe();
+  //   }
+  // },
   computed: {
     project() {
       const projects = this.projects;

@@ -4,7 +4,7 @@
        @mouseenter="hoverMenuItem"
        @click="clickItem"
        class="cm-list-item"
-       :class="{'is-disable': item.isDisable}">
+       :class="{'is-disable': item.isDisable, 'is-hovered': item.isHovered}">
     <span class="cm-list-item-text"
           :class="{'is-disable': item.isDisable}">{{item.title}}</span>
     <img v-if="item.subMenu && item.subMenu.length"

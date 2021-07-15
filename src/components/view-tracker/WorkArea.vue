@@ -90,7 +90,10 @@ export default {
             const canvas = this.activeSlide.canvas;
             if (canvas.getActiveObject()) {
               const activeObj =  canvas.getActiveObject();
-              this.removeCaseChild(activeObj);
+              this.removeCaseChild({
+                caseChild: activeObj,
+                removeOnlyOnCanvas: false
+              });
             }
             canvas.renderAll();
           }

@@ -166,7 +166,11 @@ export default {
     } else {
       this.setIsLoading(true);
       if (this.isAuthorized) {
-        this.fetchInitData();
+        this.fetchInitData().then(() => {
+          setTimeout(() => {
+            this.fetchProjectsL();
+          }, 300);
+        });
       }
       const query = router.currentRoute.query;
       if (query && query.commentId) {

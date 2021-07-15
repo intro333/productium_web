@@ -91,13 +91,20 @@ const actions = {
     const currentUser = getters.getCurrentUser;
     if (_case.isSelected) {
       _case.isSelected = false;
+      _case.children.forEach(_shape => {
+        dispatch('removeCaseChild', {
+          caseChild: _shape,
+          removeOnlyOnCanvas: true
+        });
+      });
       setTimeout(() => {
         const query = router.currentRoute.query;
         if (query && query.slideListId) {
           const _slideListId = parseInt(query.slideListId);
           const filteredCases = state.cases.filter(_s =>
             _s.caseStatus !== 'archived' && _s.slideListId === _slideListId);
-          const anotherCase = filteredCases.length ? filteredCases[filteredCases.length-1] : { id: 0 };
+          // const anotherCase = filteredCases.length ? filteredCases[filteredCases.length-1] : { id: 0 };
+          const anotherCase = filteredCases.length ? filteredCases[filteredCases.length-1] : null;
           dispatch('goToSelectedCase', {
             case: anotherCase,
             reloadWithSlide: true,
@@ -173,6 +180,7 @@ const actions = {
         }
       }
     } else {
+      commit('SELECT_CASE', {case: null});
       commit('SET_ACTIVE_SHAPE_TOOL', 'rectangleTool');
       commit('SET_ACTIVE_TOOL', 'superTool');
       if (payload.isFirstLoad && query.caseId !== '0') {
@@ -325,7 +333,8 @@ const actions = {
   selectCaseChild({commit}, payload) {
     commit('SELECT_CASE_CHILD', payload);
   },
-  removeCaseChild({commit, getters}, _caseChild) {
+  removeCaseChild({commit, getters}, payload) {
+    const _caseChild = payload.caseChild;
     return new Promise((resolve) => {
       const currentUser = getters.getCurrentUser;
       const activeCase = state.cases.find(_c => _c.id === state.selectedCase.id);
@@ -336,20 +345,22 @@ const actions = {
           activeCase,
           caseChildId: _caseChild.id
         });
-        setTimeout(() => {
-          window.axios.post('api/projects-all/add-case', {
-            userId: currentUser.id,
-            caseData: {
-              cases: state.cases,
-              casesComments: state.casesComments,
-              selectedCase: state.selectedCase,
-            }
-          }).then(() => {
-            resolve(activeCase);
-          }, error => {
-            console.log('error removeCaseChild', error);
-          });
-        }, 30);
+        if (!payload.removeOnlyOnCanvas) {
+          setTimeout(() => {
+            window.axios.post('api/projects-all/add-case', {
+              userId: currentUser.id,
+              caseData: {
+                cases: state.cases,
+                casesComments: state.casesComments,
+                selectedCase: state.selectedCase,
+              }
+            }).then(() => {
+              resolve(activeCase);
+            }, error => {
+              console.log('error removeCaseChild', error);
+            });
+          }, 30);
+        }
       }
     });
   },
