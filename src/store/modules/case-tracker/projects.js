@@ -7,8 +7,8 @@ import {
     // mockSlides
 } from "@/data/testData";
 import {ProjectModel} from "@/models/case-tracker/ProjectModel";
-import {SlideModel} from "@/models/case-tracker/SlideModel";
-import {SlideList} from "@/models/case-tracker/SlideList";
+// import {SlideModel} from "@/models/case-tracker/SlideModel";
+// import {SlideList} from "@/models/case-tracker/SlideList";
 // import {CaseModel} from "@/models/case-tracker/CaseModel";
 import {state as slidesState} from './slides';
 import {state as casesState} from './cases';
@@ -71,40 +71,35 @@ const actions = {
     /* SET DATA */
     setData({commit, dispatch}, userId) {
         return new Promise((resolve, reject) => {
-            /* PROJECTS */
-            const projects = state;
+            /* PROJECT */
             const newProject = new ProjectModel({
-                id: 1,
+                id: 0,
                 name: 'Untitled1',
                 activityStatus: 'active',
                 isSelected: true,
             });
-            projects.projects = [newProject];
-            // projects.selectedProject = newProject;
 
             /* SLIDES */
-            const slides = slidesState;
-            const newSlide = new SlideModel({
-                id: 1,
-                slideState: 'in-work',
-                projectId: 1,
-                order: 0,
-                img: null,
-                isSelected: true,
-            });
-            const newSlideList = new SlideList({
-                id: 1,
-                slideId: 1,
-                name: 'Лист1',
-                isSelected: true,
-            });
-            slides.slides = [newSlide];
-            slides.slideLists = [newSlideList];
-            // slides.activeSlide = newSlide;
-            // slides.activeSlideList = newSlideList;
+            const slides = {slides: [], slideLists: []};
+            // const newSlide = new SlideModel({
+            //     id: 1,
+            //     slideState: 'in-work',
+            //     projectId: 1,
+            //     order: 0,
+            //     img: null,
+            //     isSelected: true,
+            // });
+            // const newSlideList = new SlideList({
+            //     id: 1,
+            //     slideId: 1,
+            //     name: 'Лист1',
+            //     isSelected: true,
+            // });
+            // slides.slides = [newSlide];
+            // slides.slideLists = [newSlideList];
 
             /* CASES */
-            const cases = casesState;
+            const cases = {cases: [], casesComments: []};
             // const newCase = new CaseModel({
             //     id: 1,
             //     projectId: 1,
@@ -124,40 +119,57 @@ const actions = {
 
               /* REQUEST */
             window.axios.post('api/projects-all/set-data', {
-                projects,
+                name: newProject.name,
+                activityStatus: newProject.activityStatus,
                 slides,
                 cases,
                 userId,
             }).then(response => {
-                const data = response.data;
-                setProjectDataLoad(data, commit, dispatch);
-                console.log('response setData', data);
-                resolve(data);
+                const projectDB = response.data;
+                dispatch('pushSlide', {
+                    projectId: projectDB.id,
+                    query: {projectId: projectDB.id},
+                    noRoute: true
+                }).then(() => {
+                    projectDB.slides.slides = slidesState.slides;
+                    projectDB.slides.slideLists = slidesState.slideLists;
+                    setProjectDataLoad([projectDB], commit, dispatch);
+                });
+                resolve(projectDB);
             }, error => {
                 console.log('error setData', error);
                 reject(error);
             });
         });
     },
-    addNewProject({commit, dispatch}) {
+    addNewProject({commit, getters, dispatch}) {
+        const currentUser = getters.getCurrentUser;
         state.selectedProject.isSelected = false;
+        const slides = {slides: [], slideLists: []};
+        const cases = {cases: [], casesComments: []};
         dispatch('setIsLoading', true);
         return new Promise(() => {
             const id = state.projects.length+1;
-            const newProject = new ProjectModel({
-                id: id,
+            window.axios.post('api/projects-all/add-project', {
                 name: 'Untitled' + id,
                 activityStatus: 'active',
-                isSelected: true,
-            });
-            commit('SET_PROJECT', newProject);
-            dispatch('updateProjectInfoOnServer').then(() => {
+                slides,
+                cases,
+                userId: currentUser.id,
+            }).then(response => {
+                const newProject = new ProjectModel(response.data);
+                delete newProject.slides;
+                delete newProject.cases;
+                commit('SET_PROJECT', newProject);
                 dispatch('pushSlide', {
                     projectId: newProject.id,
-                    query: Object.assign(router.currentRoute.query, {projectId: newProject.id})
+                    query: {projectId: newProject.id},
+                    noRoute: true
                 }).then(() => {
                     dispatch('selectProject', newProject);
                 });
+            }, error => {
+                console.log('error addNewProject', error);
             });
         });
     },
@@ -214,9 +226,21 @@ const actions = {
             }, 100);
         });
     },
-    selectProject({commit, dispatch, getters}, _project) {
+    updateSimpleProjectInfoOnServer(_, _project) {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                window.axios.post('api/projects-all/update-simple-project-info', {
+                    project: _project,
+                }).then(() => {
+                    resolve();
+                }, error => {
+                    console.log('error updateSimpleProjectInfoOnServer', error);
+                });
+            }, 100);
+        });
+    },
+    selectProject({commit, dispatch}, _project) {
         dispatch('setIsLoading', true);
-        const currentUser = getters.getCurrentUser;
         commit('SELECT_PROJECT', _project);
         const _slidesState = slidesState;
         const _casesState = casesState;
@@ -244,16 +268,24 @@ const actions = {
         _slidesState.activeSlideList = activeSlideList;
         _casesState.selectedCase = null;
         setTimeout(() => {
-            setProjectDataLoad({
-                userId: currentUser.id,
-                projects: state,
-                slides: _slidesState,
-                cases: casesState,
-            }, commit, dispatch, {
-                projectId: state.selectedProject.id,
+            // const projects = state.projects;
+            // projects.cases = casesState;
+            // projects.slides = _slidesState;
+            setProjectDataLoad(state.projects, commit, dispatch, {
+                projectId: _project.id,
                 slideId: activeSlide.id,
                 slideListId: activeSlideList.id,
             });
+            // setProjectDataLoad({
+            //     userId: currentUser.id,
+            //     projects: state,
+            //     slides: _slidesState,
+            //     cases: casesState,
+            // }, commit, dispatch, {
+            //     projectId: state.selectedProject.id,
+            //     slideId: activeSlide.id,
+            //     slideListId: activeSlideList.id,
+            // });
         }, 200);
     },
 };
@@ -292,40 +324,78 @@ const mutations = {
 };
 
 /* FUNCTIONS */
-const setProjectDataLoad = (data, commit, dispatch, _query=null) => {
-    const query = _query || router.currentRoute.query;
-    // console.log('query', query);
-    const projects = data.projects;
-    const slides = data.slides;
-    slides.slides.forEach(_s => {
-        if (_s.imgUrl) {
-            dispatch('getImgByUrl', _s.imgUrl)
-              .then(_imgBase64 => {
-                  _s.imgBase64 = _imgBase64;
-              });
+const setProjectDataLoad = (projects, commit, dispatch, _query=null) => {
+    let query = _query || router.currentRoute.query;
+    // console.log('query FROM project', query);
+    const projectsState = state;
+    const slides = slidesState;
+    const cases = casesState;
+    const allSlides = [];
+    const allSlideLists = [];
+    const allCases = [];
+    projects.forEach(_project => {
+        if (_project.slides) {
+            _project.slides.slides.forEach(_s => {
+                if (_s.imgUrl) {
+                    dispatch('getImgByUrl', _s.imgUrl)
+                      .then(_imgBase64 => {
+                          _s.imgBase64 = _imgBase64;
+                      });
+                }
+                allSlides.push(_s);
+            });
+            _project.slides.slideLists.forEach(_c => {
+                allSlideLists.push(_c);
+            });
+            _project.cases.cases.forEach(_c => {
+                allCases.push(_c);
+            });
+            delete _project.slides;
+            delete _project.cases;
         }
     });
-    const cases = data.cases;
+    if (allSlides.length) {
+        projectsState.projects = projects;
+        slides.slides = allSlides;
+        slides.slideLists = allSlideLists;
+        cases.cases = allCases;
+    }
+
+    // slides.slides.forEach(_s => {
+    //     if (_s.imgUrl) {
+    //         dispatch('getImgByUrl', _s.imgUrl)
+    //           .then(_imgBase64 => {
+    //               _s.imgBase64 = _imgBase64;
+    //           });
+    //     }
+    // });
+    // const cases = data.cases;
 
     if (query) {
         if (query.projectId) {
-            const foundProject = projects.projects.find(_p => _p.id === parseInt(query.projectId));
-            projects.selectedProject = foundProject;
+            const foundProject = projects.find(_p => _p.id === parseInt(query.projectId));
+            projectsState.selectedProject = foundProject;
             commit('SELECT_PROJECT', foundProject);
-        }
-        if (query.slideId) {
-            slides.activeSlide = slides.slides.find(_s => _s.id === parseInt(query.slideId));
-        }
-        if (query.slideListId) {
-            slides.activeSlideList = slides.slideLists.find(_l => _l.id === parseInt(query.slideListId));
+            if (query.slideId) {
+                let foundSlide = slides.slides.find(_s => _s.id === parseInt(query.slideId));
+                if (foundSlide) {
+                    if (foundSlide.slideState === 'archived' || foundSlide.projectId !== foundProject.id) {
+                        foundSlide = slides.slides.find(_s => (_s.slideState !== 'archived') && (_s.projectId === foundProject.id));
+                        if (foundSlide) {
+                            slides.activeSlide = foundSlide;
+                            const foundSlideList = slides.activeSlideList = slides.slideLists.find(_l => _l.slideId === foundSlide.id);
+                            query = Object.assign(query, {slideId: foundSlide.id, slideListId: foundSlideList.id});
+                        }
+                    } else { /* Слайд из текущего проекта */
+                        slides.activeSlide = foundSlide;
+                        slides.activeSlideList = slides.slideLists.find(_l => _l.slideId === foundSlide.id);
+                    }
+                }
+            }
         }
     }
-    // cases.selectedCase = cases.cases;
-    // cases.selectedCase = cases.cases.find(_p => _p.isSelected);
-    // console.log('projects', slides)
-
     setTimeout(() => {
-        commit('SET_ALL_PROJECTS_STATE', projects);
+        commit('SET_ALL_PROJECTS_STATE', projectsState);
         commit('SET_ALL_SLIDES_STATE', slides);
         commit('SET_ALL_CASES_STATE', cases);
     }, 50);
@@ -344,14 +414,14 @@ const setProjectDataLoad = (data, commit, dispatch, _query=null) => {
             } else {
                 dispatch('setIsLoading', false);
                 router.push(
-                  `/case-tracker?projectId=${projects.selectedProject.id}&slideId=${slides.activeSlide.id}&slideListId=${slides.activeSlideList.id}&caseId=${cases.selectedCase.id}`
+                  `/case-tracker?projectId=${projectsState.selectedProject.id}&slideId=${slides.activeSlide.id}&slideListId=${slides.activeSlideList.id}&caseId=${cases.selectedCase.id}`
                 );
             }
         } else {
             let projectId, slideId, slideListId, caseId;
             projectId = slideId = slideListId = caseId = '';
-            if (projects.projects[0] && projects.projects[0].id) {
-                const firstProject = projects.projects[0];
+            if (projects[0] && projects[0].id) {
+                const firstProject = projects[0];
                 projectId = `?projectId=${firstProject.id}`;
                 const foundSlide = slides.slides.find(_s => _s.slideState !== 'archived' &&
                   (_s.projectId === firstProject.id));
@@ -367,7 +437,7 @@ const setProjectDataLoad = (data, commit, dispatch, _query=null) => {
             }
             dispatch('setIsLoading', false);
             router.push(`/case-tracker?${projectId}${slideId}${slideListId}${caseId}`);
-            setProjectDataLoad(data, commit, dispatch, _query);
+            setProjectDataLoad(projects, commit, dispatch, _query);
         }
     }, 100);
 };

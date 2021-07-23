@@ -120,29 +120,29 @@ export default {
             },
           ]
         },
-        {
-          isItemOfMenu: true,
-          title: this.$t('nav.edit'),
-          subMenu: [
-            {
-              isItemOfMenu: true,
-              title: this.$t('nav.remove'),
-              action: () => {
-                console.log('ACTION В архив')
-              }
-            }
-          ]
-        },
-        {
-          isItemOfMenu: true,
-          title: this.$t('nav.save'),
-          action: () => {
-            console.log('ACTION Сохранить')
-          }
-        },
-        {
-          isItemOfMenu: false,
-        },
+        // {
+        //   isItemOfMenu: true,
+        //   title: this.$t('nav.edit'),
+        //   subMenu: [
+        //     {
+        //       isItemOfMenu: true,
+        //       title: this.$t('nav.remove'),
+        //       action: () => {
+        //         console.log('ACTION В архив')
+        //       }
+        //     }
+        //   ]
+        // },
+        // {
+        //   isItemOfMenu: true,
+        //   title: this.$t('nav.save'),
+        //   action: () => {
+        //     console.log('ACTION Сохранить')
+        //   }
+        // },
+        // {
+        //   isItemOfMenu: false,
+        // },
         {
           isItemOfMenu: true,
           title: this.$t('nav.myProjects'),

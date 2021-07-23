@@ -8,7 +8,7 @@ export class ProjectModel {
   constructor(_project) {
     this.id = _project.id;
     this.name = _project.name;
-    this.activityStatus = _project.activityStatus;
+    this.activityStatus = _project.activityStatus || 'active';
     this.isSelected = _project.isSelected || false;
   }
 }

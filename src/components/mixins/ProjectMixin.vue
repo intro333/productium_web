@@ -41,7 +41,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['updateProjectInfoOnServer']),
+    ...mapActions(['updateSimpleProjectInfoOnServer']),
     ...mapGetters(['getProjects']),
     changeProjectNameEditable(state) {
       this.project.nameIsEdited = state;
@@ -54,7 +54,7 @@ export default {
           this.project.name = 'Untitled'
         }
         if (!state && state !== this.projectNameEditableState) {
-          this.updateProjectInfoOnServer();
+          this.updateSimpleProjectInfoOnServer(this.project);
         }
         this.projectNameEditableState = state;
       }, 20)

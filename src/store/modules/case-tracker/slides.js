@@ -65,33 +65,30 @@ const actions = {
       setTimeout(() => {
         const _slides = [];
         state.slides.forEach((_s, _k) => {
-          const obj = Object.assign({}, state.slides[_k]);
-          obj.canvas = null;
-          obj.imgBase64 = null;
-          obj.imgObj = null;
-          _slides.push(obj);
+          if (_s.projectId === payload.projectId) {
+            const obj = Object.assign({}, state.slides[_k]);
+            obj.canvas = null;
+            obj.imgBase64 = null;
+            obj.imgObj = null;
+            _slides.push(obj);
+          }
         });
         window.axios.post('api/projects-all/add-slide', {
           userId: currentUser.id,
+          projectId: payload.projectId,
           slideData: {
             slides: _slides,
-            slideLists: state.slideLists,
-            activeSlide: null,
-            activeSlideList: null,
-            activeTool: "moveTool",
-            activeShapeTool: "rectangleTool",
-            canvasInfo: {
-              canvasWidth: 0,
-              canvasHeight: 0
-            }
+            slideLists: state.slideLists.filter(_l => _slides.find(_s => _s.id === _l.slideId)),
           }
         }).then(() => {
           // const data = response.data;
           setTimeout(() => {
+            const query = payload.query ? Object.assign(payload.query, {slideId: newSlide.id, slideListId: newSlideList.id}) : null;
             dispatch('selectCaseListAndCaseOfActiveSlide', {
               slide: newSlide,
               isNew: true,
-              query: payload.query,
+              query,
+              noRoute: payload.noRoute
             }).then(() => {
               resolve(newSlide);
             });
@@ -264,7 +261,7 @@ const actions = {
   pushSlideList({commit}) {
     commit('PUSH_SLIDE_LIST', {});
   },
-  getImgByUrl(_, url) {
+  async getImgByUrl(_, url) {
     return new Promise((resolve, reject) => {
       window.axios.get(url, { responseType: 'arraybuffer' })
         .then(response => {
@@ -282,6 +279,7 @@ const actions = {
   /* SLIDE IMAGE */
   setSlideImg({commit, getters}, file) {
     const currentUser = getters.getCurrentUser;
+    const project = getters.getSelectedProject;
     return new Promise((resolve, reject) => {
       const query = router.currentRoute.query;
       if (query && query.slideId) {
@@ -291,6 +289,7 @@ const actions = {
           let formData = new FormData();
           formData.append('file', file);
           formData.append('userId', currentUser.id);
+          formData.append('projectId', project.id);
           formData.append('slideId', state.activeSlide.id);
           window.axios.post('api/projects-all/upload-slide-img', formData, {
             headers: {
@@ -362,6 +361,8 @@ const actions = {
       const _slide = payload.slide;
       const query = payload.query || router.currentRoute.query;
       const currentQuery = router.currentRoute.query;
+      // console.log('query FROM slides', query);
+      // console.log('currentQuery FROM slides', currentQuery);
       const _cases = getters.getCases;
       const slideLists = state.slideLists;
       let slideIdNotEqual = true;
@@ -447,8 +448,9 @@ const actions = {
                   }
                   resolve(_case);
                 } else { /* Нет ни одного кейса */
-                  if (slideIdNotEqual) {
-                    console.log('router push slide 1.3');
+                  // console.log('payload.noRoute', payload.noRoute);
+                  if (slideIdNotEqual && !payload.noRoute) {
+                    console.log('router push slide 1.3', query);
                     router.push({
                       path: '/case-tracker',
                       query: Object.assign({}, query, {

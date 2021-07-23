@@ -132,6 +132,8 @@ export default {
     //   return userRoleToTitle(role);
     // },
     copyShareLink() {
+      const shareLink = '';
+      this.$clipboard(shareLink);
       this.setSimpleNotifyInside(
           new SimpleNotifyInsideModel()
               .set(true,

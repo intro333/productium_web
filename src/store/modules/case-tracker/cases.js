@@ -6,6 +6,7 @@ import {mockCases, mockCaseComments} from "@/data/testData";
 import {shapeTitleAutoIncrement} from "@/functions/case-tracker/projectsF";
 import {CaseCommentModel} from "@/models/case-tracker/CaseCommentModel";
 import moment from 'moment';
+import { v4 as uuidv4 } from 'uuid';
 
 export const state = {
   cases: [],
@@ -30,9 +31,8 @@ const actions = {
       }, 200);
     });
   },
-  pushCase({commit, getters, dispatch}) {
+  pushCase({commit, dispatch}) {
     return new Promise((resolve) => {
-      const currentUser = getters.getCurrentUser;
       const query = router.currentRoute.query;
       if (query && query.slideListId) {
         // TODO MOCK
@@ -53,16 +53,7 @@ const actions = {
         commit('PUSH_CASE', newSCase);
         commit('SET_ACTIVE_TOOL', 'moveTool');
         setTimeout(() => {
-          const _cases = state.cases;
-          window.axios.post('api/projects-all/add-case', {
-            userId: currentUser.id,
-            caseData: {
-              cases: _cases,
-              casesComments: state.casesComments,
-              selectedCase: state.selectedCase,
-            }
-          }).then(() => {
-            // const data = response.data;
+          dispatch('updateCaseInfoOnServer').then(() => {
             dispatch('goToSelectedCase', {
               case: newSCase,
               reloadWithSlide: true
@@ -70,8 +61,8 @@ const actions = {
             setTimeout(() => {
               resolve(newSCase);
             }, 500);
-          }, error => {
-            console.log('error pushCase', error);
+          }).catch(err => {
+            console.log('error pushCase', err);
           });
         }, 20);
       }
@@ -86,18 +77,18 @@ const actions = {
       reloadWithSlide: true
     });
   },
-  removeCase({commit, dispatch, getters}, _case) {
+  removeCase({commit, dispatch}, _case) {
     commit('REMOVE_CASE', _case);
-    const currentUser = getters.getCurrentUser;
-    if (_case.isSelected) {
-      _case.isSelected = false;
-      _case.children.forEach(_shape => {
-        dispatch('removeCaseChild', {
-          caseChild: _shape,
-          removeOnlyOnCanvas: true
-        });
+    // _case.isSelected = false;
+    _case.children.forEach(_shape => {
+      dispatch('removeCaseChild', {
+        _case,
+        caseChild: _shape,
+        removeOnlyOnCanvas: true
       });
-      setTimeout(() => {
+    });
+    setTimeout(() => {
+      if (_case.isSelected) {
         const query = router.currentRoute.query;
         if (query && query.slideListId) {
           const _slideListId = parseInt(query.slideListId);
@@ -110,24 +101,16 @@ const actions = {
             reloadWithSlide: true,
             closeCommentsModal: true
           });
-          setTimeout(() => {
-            const _cases = state.cases;
-            window.axios.post('api/projects-all/add-case', {
-              userId: currentUser.id,
-              caseData: {
-                cases: _cases,
-                casesComments: state.casesComments,
-                selectedCase: state.selectedCase,
-              }
-            }).then(() => {
-
-            }, error => {
-              console.log('error pushCase', error);
-            });
-          }, 40);
         }
-      }, 20);
-    }
+      }
+    }, 20);
+    setTimeout(() => {
+      dispatch('updateCaseInfoOnServer').then(() => {
+
+      }).catch(error => {
+        console.log('error removeCase', error);
+      });
+    }, 40);
   },
   goToSlideAndCase({dispatch, getters}, notify) {
     const _slideId = parseInt(notify.slideId);
@@ -200,22 +183,23 @@ const actions = {
     commit('OPEN_CASE');
   },
   updateCaseInfoOnServer({getters}) {
-    const currentUser = getters.getCurrentUser;
-    setTimeout(() => {
-      const _cases = state.cases;
-      window.axios.post('api/projects-all/add-case', {
-        userId: currentUser.id,
-        caseData: {
-          cases: _cases,
-          casesComments: state.casesComments,
-          selectedCase: state.selectedCase,
-        }
-      }).then(() => {
-
-      }, error => {
-        console.log('error updateCaseOnServer', error);
-      });
-    }, 20);
+    return new Promise((resolve, reject) => {
+      const project = getters.getSelectedProject;
+      setTimeout(() => {
+        window.axios.post('api/projects-all/add-case', {
+          projectId: project.id,
+          caseData: {
+            cases: state.cases.filter(_c => _c.caseStatus !== 'archived' && _c.projectId === project.id),
+            casesComments: state.casesComments
+          }
+        }).then(() => {
+          resolve();
+        }, error => {
+          console.log('error updateCaseInfoOnServer', error);
+          reject();
+        });
+      }, 20);
+    });
   },
   /* CASE COMMENTS */
   fetchCaseComments({commit}) {
@@ -249,7 +233,7 @@ const actions = {
         };
         commit('ADD_CASES_COMMENT', newComment);
         setTimeout(() => {
-          dispatch('updateCaseOnServer');
+          dispatch('updateCaseInfoOnServer');
           resolve(newComment);
         }, 100);
       }
@@ -258,7 +242,7 @@ const actions = {
   removeCaseComment({commit, dispatch}, commentObj) {
     commit('REMOVE_CASES_COMMENT', commentObj);
     setTimeout(() => {
-      dispatch('updateCaseOnServer');
+      dispatch('updateCaseInfoOnServer');
     }, 100);
   },
   openCommentsModalByCommentId({dispatch}, commentId) {
@@ -288,16 +272,16 @@ const actions = {
     );
   },
   /* SHAPES */
-  addShapeToCase({commit, getters}, shapeObj) {
+  addShapeToCase({commit, dispatch}, shapeObj) {
     return new Promise((resolve, reject) => {
-      const currentUser = getters.getCurrentUser;
       const foundCase = state.cases.find(_c => _c.id === state.selectedCase.id);
       if (shapeObj.params && shapeObj.params.canvas) {
         shapeObj.params.canvas = null;
       }
       if (foundCase) {
         const children = foundCase.children;
-        shapeObj.id = children.length+1;
+        shapeObj.id = uuidv4();
+        console.log('shapeObj.id', shapeObj.id);
         const objsByType = children.filter(_o => _o.shapeType === shapeObj.shapeType);
         if (objsByType.length) {
           shapeObj.title = shapeTitleAutoIncrement(shapeObj, objsByType);
@@ -307,21 +291,14 @@ const actions = {
         }
         children.push(shapeObj);
         setTimeout(() => {
-          window.axios.post('api/projects-all/add-case', {
-            userId: currentUser.id,
-            caseData: {
-              cases: state.cases,
-              casesComments: state.casesComments,
-              selectedCase: state.selectedCase,
-            }
-          }).then(() => {
+          dispatch('updateCaseInfoOnServer').then(() => {
             // const data = response.data;
             commit('ADD_SHAPE_TO_CASE', {
               case: foundCase,
               children
             });
             resolve(shapeObj);
-          }, error => {
+          }).catch(error => {
             console.log('error addShapeToCase', error);
           });
         }, 30);
@@ -333,30 +310,28 @@ const actions = {
   selectCaseChild({commit}, payload) {
     commit('SELECT_CASE_CHILD', payload);
   },
-  removeCaseChild({commit, getters}, payload) {
+  removeCaseChild({commit, dispatch}, payload) {
     const _caseChild = payload.caseChild;
     return new Promise((resolve) => {
-      const currentUser = getters.getCurrentUser;
-      const activeCase = state.cases.find(_c => _c.id === state.selectedCase.id);
+      const activeCase = payload._case || state.cases.find(_c => _c.id === state.selectedCase.id);
       if (activeCase) {
+        console.log('activeCase', activeCase);
         activeCase.children = activeCase.children
-          .filter(_ch => _ch.id !== _caseChild.id);
+          .filter(_ch => {
+            console.log('_ch', _ch);
+            if (_ch.id !== _caseChild.id) {
+              return _ch;
+            }
+          });
         commit('REMOVE_CASE_CHILD', {
           activeCase,
           caseChildId: _caseChild.id
         });
         if (!payload.removeOnlyOnCanvas) {
           setTimeout(() => {
-            window.axios.post('api/projects-all/add-case', {
-              userId: currentUser.id,
-              caseData: {
-                cases: state.cases,
-                casesComments: state.casesComments,
-                selectedCase: state.selectedCase,
-              }
-            }).then(() => {
+            dispatch('updateCaseInfoOnServer').then(() => {
               resolve(activeCase);
-            }, error => {
+            }).catch(error => {
               console.log('error removeCaseChild', error);
             });
           }, 30);
@@ -364,45 +339,20 @@ const actions = {
       }
     });
   },
-  changeCaseStatus({commit, getters}, payload) {
-    const currentUser = getters.getCurrentUser;
+  changeCaseStatus({commit, dispatch}, payload) {
     commit('CHANGE_CASE_STATUS', payload);
     setTimeout(() => {
-      window.axios.post('api/projects-all/add-case', {
-        userId: currentUser.id,
-        caseData: {
-          cases: state.cases,
-          casesComments: state.casesComments,
-          selectedCase: state.selectedCase,
-        }
-      }).then(() => {
-
-      }, error => {
-        console.log('error changeCaseStatus', error);
-      });
+      dispatch('updateCaseInfoOnServer');
     }, 30);
   },
-  caseRename({getters}) {
-    const currentUser = getters.getCurrentUser;
-    window.axios.post('api/projects-all/add-case', {
-      userId: currentUser.id,
-      caseData: {
-        cases: state.cases,
-        casesComments: state.casesComments,
-        selectedCase: state.selectedCase,
-      }
-    }).then(() => {
-
-    }, error => {
-      console.log('error caseRename', error);
-    });
+  caseRename({dispatch}) {
+    dispatch('updateCaseInfoOnServer');
   },
   changeCasesParamsByOffset({commit}, payload) {
     commit('CHANGE_CASES_PARAMS_BY_OFFSET', payload);
   },
-  changeCaseElemFields({commit, getters}, fields) {
+  changeCaseElemFields({commit, dispatch}, fields) {
     return new Promise((resolve, reject) => {
-      const currentUser = getters.getCurrentUser;
       const foundCase = state.cases.find(_c => _c.id === state.selectedCase.id);
       if (foundCase) {
         commit('CHANGE_CASE_ELEM_FIELDS', {
@@ -410,17 +360,8 @@ const actions = {
           foundCase
         });
         setTimeout(() => {
-          window.axios.post('api/projects-all/add-case', {
-            userId: currentUser.id,
-            caseData: {
-              cases: state.cases,
-              casesComments: state.casesComments,
-              selectedCase: state.selectedCase,
-            }
-          }).then(() => {
+          dispatch('updateCaseInfoOnServer').then(() => {
             resolve(foundCase);
-          }, error => {
-            console.log('error changeCaseElemFields', error);
           });
         }, 30);
       } else {
@@ -461,7 +402,9 @@ const mutations = {
     })
   },
   REMOVE_CASE_CHILD(state, payload) {
-    state.selectedCase = payload.activeCase;
+    if (payload.activeCase.isSelected) {
+      state.selectedCase = payload.activeCase;
+    }
   },
   CHANGE_CASE_STATUS(state, payload) {
     payload._case.caseStatus = payload.status;

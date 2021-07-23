@@ -29,7 +29,6 @@ const actions = {
               password: payload.password,
             })
               .then(response => {
-                console.log('response', response);
                 const info = response.data;
                 commit('LOGIN', info);
                 dispatch('setCurrentUser', new CurrentUserModel(info.userId, payload.fullName, shortFullName(payload.fullName), '#7c4a4a'));

@@ -9,7 +9,7 @@
         <div v-if="cm.type === 'ShareModal'"
              class="share-first">
           <span class="share-first-pre">{{ $t('share.toShare') }}</span>
-          <span class="share-first-name">CaseMaker</span>
+          <span class="share-first-name">{{project && project.name}}</span>
         </div>
         <CaseNameWithStatusAndOptions v-if="selectedCase && cm.type === 'CommentsModal'"
                                       :isBlack="true" />
@@ -64,11 +64,14 @@ export default {
         }
       }
       return null;
-    }
+    },
+    project() {
+      return this.getSelectedProject();
+    },
   },
   methods: {
     ...mapActions(['setCentralModal']),
-    ...mapGetters(['getSimpleNotifyInside', 'getCases']),
+    ...mapGetters(['getSimpleNotifyInside', 'getCases', 'getSelectedProject']),
     close() {
       if (this.body && this.body.close) {
         this.body.close();
