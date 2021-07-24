@@ -12,17 +12,21 @@ import {ProjectModel} from "@/models/case-tracker/ProjectModel";
 // import {CaseModel} from "@/models/case-tracker/CaseModel";
 import {state as slidesState} from './slides';
 import {state as casesState} from './cases';
+import {CurrentUserModel} from "@/models/CurrentUserModel";
+import {shortFullName} from "@/functions/conversation";
 
 const state = {
     projects: [],
     selectedProject: null,
     activeColor: 'auto',
+    shareUsers: [],
 };
 
 const getters = {
     getProjects: state => state.projects,
     getSelectedProject: state => state.selectedProject,
     getActiveColor: state => state.activeColor,
+    getShareUsers: state => state.shareUsers,
 };
 
 const actions = {
@@ -133,6 +137,7 @@ const actions = {
                 }).then(() => {
                     projectDB.slides.slides = slidesState.slides;
                     projectDB.slides.slideLists = slidesState.slideLists;
+                    // TODO Убрать salt и password у юзера
                     setProjectDataLoad([projectDB], commit, dispatch);
                 });
                 resolve(projectDB);
@@ -175,7 +180,7 @@ const actions = {
     },
 
     /* INIT */
-    fetchInitData({commit, dispatch, getters}) {
+    async fetchInitData({commit, dispatch, getters}) {
         return new Promise((resolve, reject) => {
             const currentUser = getters.getCurrentUser;
             // console.log('currentUser', currentUser);
@@ -183,9 +188,18 @@ const actions = {
                 userId: currentUser.id
             }).then(response => {
                 const data = response.data;
-                // console.log('response projects-all by data id', data);
-                setProjectDataLoad(data, commit, dispatch);
-                resolve(data);
+                data.shareUsers.forEach(_user => {
+                    if (_user.id !== currentUser.id) {
+                        commit('ADD_SHARE_USER', new CurrentUserModel(
+                          _user.id,
+                          _user.fullName,
+                          shortFullName(_user.fullName),
+                          '#F30C0C'
+                        ));
+                    }
+                }) ;
+                setProjectDataLoad(data.projects, commit, dispatch);
+                resolve(data.projects);
             }, error => {
                 console.log('error projects-all', error);
                 reject(error);
@@ -203,7 +217,7 @@ const actions = {
     /*  */
     setActiveColor({commit}, color) {
         if (color && color !== '') {
-            // TODO Можно ещё поставить проверку, есть ли этот увет в массиве pickerColors (через Object.keys)
+            // TODO Можно ещё поставить проверку, есть ли этот цвет в массиве pickerColors (через Object.keys)
             commit('SET_ACTIVE_COLOR', color);
         }
     },
@@ -288,6 +302,41 @@ const actions = {
             // });
         }, 200);
     },
+    async shareProject({commit, getters, dispatch}, projectId) { /* Шерим чужой проект текущему юзеру */
+        dispatch('setIsLoading', true);
+        const currentUser = getters.getCurrentUser;
+        return new Promise(() => {
+            const foundProject = state.projects.find(_p => _p.id === projectId);
+            if (!foundProject) { /* Если проект есть в store, значит он уже пошарен */
+                window.axios.post('api/projects-all/share-project', {
+                    projectId,
+                    userId: currentUser.id
+                }).then(response => {
+                    const project = response.data;
+                    console.log('project', project);
+                    commit('SET_PROJECT', project);
+                    project.slides.slides.forEach(_slide => {
+                        commit('PUSH_SLIDE', _slide);
+                    });
+                    project.slides.slideLists.forEach(_sl => {
+                        commit('PUSH_SLIDE_LIST', _sl);
+                    });
+                    project.cases.cases.forEach(_case => {
+                        commit('PUSH_CASE', _case);
+                    });
+                    project.cases.casesComments.forEach(_cm => {
+                        commit('ADD_CASES_COMMENT', _cm);
+                    });
+                    setTimeout(() => {
+                        dispatch('selectProject', project);
+                    }, 300);
+                }, error => {
+                    console.log('error shareProject', error);
+                });
+            }
+        });
+    },
+
 };
 
 const mutations = {
@@ -321,6 +370,7 @@ const mutations = {
     },
     PUSH_PROJECT(state, _project) { state.projects.push(_project); },
     SET_ACTIVE_COLOR(state, color) { state.activeColor = color.replace(/#/g, ''); },
+    ADD_SHARE_USER(state, _user) { state.shareUsers.push(_user); },
 };
 
 /* FUNCTIONS */
@@ -361,23 +411,13 @@ const setProjectDataLoad = (projects, commit, dispatch, _query=null) => {
         cases.cases = allCases;
     }
 
-    // slides.slides.forEach(_s => {
-    //     if (_s.imgUrl) {
-    //         dispatch('getImgByUrl', _s.imgUrl)
-    //           .then(_imgBase64 => {
-    //               _s.imgBase64 = _imgBase64;
-    //           });
-    //     }
-    // });
-    // const cases = data.cases;
-
     if (query) {
         if (query.projectId) {
             const foundProject = projects.find(_p => _p.id === parseInt(query.projectId));
             projectsState.selectedProject = foundProject;
             commit('SELECT_PROJECT', foundProject);
             if (query.slideId) {
-                let foundSlide = slides.slides.find(_s => _s.id === parseInt(query.slideId));
+                let foundSlide = slides.slides.find(_s => _s.id === query.slideId);
                 if (foundSlide) {
                     if (foundSlide.slideState === 'archived' || foundSlide.projectId !== foundProject.id) {
                         foundSlide = slides.slides.find(_s => (_s.slideState !== 'archived') && (_s.projectId === foundProject.id));
@@ -406,6 +446,7 @@ const setProjectDataLoad = (projects, commit, dispatch, _query=null) => {
                 /* Доп. настройки компонентов */
                 setTimeout(() => {
                     dispatch('selectFoundSlideFromSlides', query).then(_case => {
+                        console.log('_case 1', _case);
                         setTimeout(() => {
                             dispatch('selectFoundCaseFromCases', _case);
                         }, 400);
@@ -413,6 +454,7 @@ const setProjectDataLoad = (projects, commit, dispatch, _query=null) => {
                 }, 100);
             } else {
                 dispatch('setIsLoading', false);
+                console.log('router push project 1.1');
                 router.push(
                   `/case-tracker?projectId=${projectsState.selectedProject.id}&slideId=${slides.activeSlide.id}&slideListId=${slides.activeSlideList.id}&caseId=${cases.selectedCase.id}`
                 );
@@ -427,15 +469,19 @@ const setProjectDataLoad = (projects, commit, dispatch, _query=null) => {
                   (_s.projectId === firstProject.id));
                 if (foundSlide) {
                     slideId = `&slideId=${foundSlide.id}`;
-                    slideListId = `&slideListId=${foundSlide.id}`;
-                    const foundCase = cases.cases.find(_c => _c.caseStatus !== 'archived' &&
-                      _c.slideId === foundSlide.id);
-                    if (foundCase) {
-                        caseId = `&caseId=${foundCase.id}`;
+                    const foundSlideList = slides.slideLists.find(_sl => _sl.slideId === foundSlide.id);
+                    if (foundSlideList) {
+                        slideListId = `&slideListId=${foundSlideList.id}`;
+                        const foundCase = cases.cases.find(_c => _c.caseStatus !== 'archived' &&
+                          _c.slideListId === slideListId.id);
+                        if (foundCase) {
+                            caseId = `&caseId=${foundCase.id}`;
+                        }
                     }
                 }
             }
             dispatch('setIsLoading', false);
+            console.log('router push project 1.2');
             router.push(`/case-tracker?${projectId}${slideId}${slideListId}${caseId}`);
             setProjectDataLoad(projects, commit, dispatch, _query);
         }

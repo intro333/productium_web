@@ -40,7 +40,7 @@ export default {
       const query = this.$route.query;
       if (query && query.caseId) {
         const filteredComments = this.getCasesComments()
-            .filter(_c => (_c.caseId === parseInt(query.caseId)) &&
+            .filter(_c => (_c.caseId === query.caseId) &&
                 _c.notifyInfo.status !== 'archived');
         return fillCasesCommentsTree(filteredComments);
       }

@@ -1,5 +1,6 @@
 import {getRandomInt} from "@/functions/calculations";
 import {pickerColors} from "@/data/consts";
+import { v4 as uuidv4 } from 'uuid';
 
 export function userRoleToTitle(role) {
   switch (role) {
@@ -43,4 +44,8 @@ export function sortCasesComments(a, b) {
 export function shortFullName(fullName) {
   const names = fullName.split(' ');
   return `${names[0][0]}${names[1][0]}`;
+}
+export function uuidHash() {
+  // return uuidv4().replace('-', '');
+  return uuidv4();
 }

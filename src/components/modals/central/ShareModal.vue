@@ -1,9 +1,11 @@
 <template>
   <div class="share-modal">
-    <div class="add-user-box share-modal-padding">
-      <input class="add-user-item add-user-input"
-             :placeholder="$t('share.placeholder1')">
-      <div class="add-user-item add-user-button">{{ $t('share.toInvite') }}</div>
+    <div v-if="shareUsers.length"
+         class="add-user-box share-modal-padding">
+      <p class="add-user-title">{{ $t('share.title') }}</p>
+<!--      <input class="add-user-item add-user-input"-->
+<!--             :placeholder="$t('share.placeholder1')">-->
+<!--      <div class="add-user-item add-user-button">{{ $t('share.toInvite') }}</div>-->
     </div>
     <div class="user-list share-modal-padding wout-top">
       <div v-for="(user, i) in shareUsers"
@@ -15,14 +17,39 @@
                :style="{'background-color': user.color}">{{user.shortName}}</div>
           <span class="ul-item-left-text">{{user.name}}</span>
         </div>
-        <div @click="openRolesSelect(i, user)"
-             class="ul-item-right">
+        <div class="ul-item-right">
           <span :ref="'roleNameRef_' + i"
-                class="ul-item-right-text">{{$t('userRole.' + user.role)}}</span>
+                class="ul-item-right-text">{{$t('userRole.editor')}}</span>
           <img src="@/assets/img/case-tracker/toolbar_panel/share/selectArrow.svg"
                class="ul-item-right-arrow select-arrow"
                alt="">
         </div>
+<!--        <div @click="openRolesSelect(i, user)"-->
+<!--             class="ul-item-right">-->
+<!--          <span :ref="'roleNameRef_' + i"-->
+<!--                class="ul-item-right-text">{{$t('userRole.' + user.role)}}</span>-->
+<!--          <img src="@/assets/img/case-tracker/toolbar_panel/share/selectArrow.svg"-->
+<!--               class="ul-item-right-arrow select-arrow"-->
+<!--               alt="">-->
+<!--        </div>-->
+      </div>
+      <div v-if="!shareUsers.length"
+           style="padding-top: 16px;">
+        <div style="display: flex; align-items: center;">
+          <span class="ul-item-left-text"
+                style="margin-right: 5px;">{{ $t('share.copyLinkDescription') }}</span>
+          <div class="share-modal-footer share-modal-footer-2">
+            <div @click="copyShareLink"
+                 class="text-link-box">
+              <!--            <img src="@/assets/img/common/linkIcon.svg"-->
+              <!--                 class="text-link-icon"-->
+              <!--                 alt="">-->
+              <a class="text-link">{{ $t('share.copyLink') }}</a>
+            </div>
+          </div>
+        </div>
+        <span class="ul-item-left-text"
+              style="margin-right: 5px;">{{ $t('share.copyLinkDescription2') }}.</span>
       </div>
     </div>
     <div class="share-modal-divider"> </div>
@@ -41,7 +68,7 @@
 <script>
 import {getModalPositionFunc} from "@/functions/calculations";
 import {ContextMenuBaseModel} from "@/models/modals/ContextMenuBaseModel";
-import {mapActions} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 // import {userRoleToTitle} from "@/functions/conversation";
 import {SimpleNotifyInsideModel} from "@/models/modals/SimpleNotifyInsideModel";
 
@@ -49,34 +76,38 @@ export default {
   name: "ShareModal",
   props: ['contextMenu'],
   data: () => ({
-    shareUsers: [
-      {
-        name: 'Dmitriy',
-        shortName: 'DD',
-        role: 'editor',
-        color: '#7c4a4a',
-      },
-      {
-        name: 'Alex Gour',
-        shortName: 'AG',
-        role: 'guest',
-        color: '#F30C0C',
-      },
-      {
-        name: 'Dmitriy M',
-        shortName: 'DM',
-        role: 'manager',
-        color: '#466a96',
-      },
-    ]
+    // shareUsers: [
+    //   {
+    //     name: 'Dmitriy',
+    //     shortName: 'DD',
+    //     role: 'editor',
+    //     color: '#7c4a4a',
+    //   },
+    //   {
+    //     name: 'Alex Gour',
+    //     shortName: 'AG',
+    //     role: 'guest',
+    //     color: '#F30C0C',
+    //   },
+    //   {
+    //     name: 'Dmitriy M',
+    //     shortName: 'DM',
+    //     role: 'manager',
+    //     color: '#466a96',
+    //   },
+    // ]
   }),
   computed: {
     cm() {
       return this.contextMenu();
-    }
+    },
+    shareUsers() {
+      return this.getShareUsers();
+    },
   },
   methods: {
     ...mapActions(['setContextMenuBase', 'setSimpleNotifyInside']),
+    ...mapGetters(['getShareUsers', 'getSelectedProject']),
     openRolesSelect(i, user) {
       if (this.$refs['roleNameRef_' + i]) {
         const _ref = this.$refs['roleNameRef_' + i];
@@ -132,7 +163,8 @@ export default {
     //   return userRoleToTitle(role);
     // },
     copyShareLink() {
-      const shareLink = '';
+      let shareLink = window.location.host;
+      shareLink += '/case-tracker?shareProjectId=' + this.getSelectedProject().id;
       this.$clipboard(shareLink);
       this.setSimpleNotifyInside(
           new SimpleNotifyInsideModel()

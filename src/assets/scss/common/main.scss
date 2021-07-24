@@ -291,10 +291,14 @@ p {
         }
       }
       .add-user {
+        &-title {
+          font-size: 16px;
+          font-weight: bold;
+        }
         &-box {
           display: flex;
           justify-content: space-between;
-          height: 30px;
+          //height: 30px;
         }
         &-item {
           border-radius: 2px;
@@ -374,6 +378,10 @@ p {
         align-items: center;
         padding: 0 24px;
         height: 50px;
+        &-2 {
+          padding: 0;
+          height: 20px;
+        }
         .text-link-box {
           display: flex;
           &:hover {

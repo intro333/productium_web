@@ -4,6 +4,7 @@ import {getRandomInt} from "@/functions/calculations";
 // import {CaseModel} from "@/models/case-tracker/CaseModel";
 import router from "@/router";
 import {mockSlideLists, mockSlides} from "@/data/testData";
+import {uuidHash} from "@/functions/conversation";
 
 export const state = {
   slides: [],
@@ -46,14 +47,14 @@ const actions = {
     return new Promise((resolve) => {
       const currentUser = getters.getCurrentUser;
       const newSlide = new SlideModel({
-        id: state.slides.length+1,
+        id: uuidHash(),
         slideState: 'in-work',
         projectId: payload.projectId,
         order: 0,
         img: null,
         isSelected: true
       });
-      const listId = state.slideLists.length+1;
+      const listId = uuidHash();
       const newSlideList = new SlideList({
         id: listId,
         slideId: newSlide.id,
@@ -216,10 +217,13 @@ const actions = {
     });
   },
   selectSlide({dispatch}, _slide) {
-    dispatch('setIsLoading', true);
-    dispatch('selectCaseListAndCaseOfActiveSlide', {
-      slide: _slide,
-    });
+    const query = router.currentRoute.query;
+    if (_slide.id !== query.slideId) {
+      dispatch('setIsLoading', true);
+      dispatch('selectCaseListAndCaseOfActiveSlide', {
+        slide: _slide,
+      });
+    }
   },
   setActiveSlide({commit}, _slide) {
     commit('SET_ACTIVE_SLIDE', _slide);
@@ -284,7 +288,7 @@ const actions = {
       const query = router.currentRoute.query;
       if (query && query.slideId) {
         const foundSlide = state.slides
-          .find(_s => _s.id === parseInt(query.slideId));
+          .find(_s => _s.id === query.slideId);
         if (foundSlide) {
           let formData = new FormData();
           formData.append('file', file);
@@ -337,7 +341,7 @@ const actions = {
         }
       };
       if (query && query.slideId) {
-        const _slideId = parseInt(query.slideId);
+        const _slideId = query.slideId;
         const foundSlide = slides.find(_s => _s.id === _slideId);
         if (foundSlide) {
           dispatch('selectCaseListAndCaseOfActiveSlide', {
@@ -367,7 +371,7 @@ const actions = {
       const slideLists = state.slideLists;
       let slideIdNotEqual = true;
       if (query && query.slideId) {
-        const _slideId = parseInt(currentQuery.slideId);
+        const _slideId = currentQuery.slideId;
         slideIdNotEqual = _slideId !== _slide.id;
       }
       if (payload.isNew || payload.isFirstLoad || payload.isRepaint || slideIdNotEqual) {
@@ -376,7 +380,7 @@ const actions = {
           let _slideList = null;
           if (payload.isFirstLoad || payload.isRepaint) {
             if (query && query.slideListId) {
-              const querySlideListId = parseInt(query.slideListId);
+              const querySlideListId = query.slideListId;
               _slideList = slideLists
                 .find(_sl => (_sl.id === querySlideListId) && (_sl.slideId === _slide.id));
               if (!_slideList) {
@@ -394,8 +398,8 @@ const actions = {
               const slideListId = _slideList.id;
               let _case = null;
               if (payload.isFirstLoad || payload.isRepaint) {
-                if (query && query.caseId && parseInt(query.caseId)) {
-                  const caseId = parseInt(query.caseId);
+                if (query && query.caseId && query.caseId) {
+                  const caseId = query.caseId;
                   _case = _cases
                     .find(_c => (_c.id === caseId) && (_c.slideListId === slideListId));
                   if (!_case) {
@@ -426,7 +430,7 @@ const actions = {
                       })
                     });
                   } else if (payload.isFirstLoad) {
-                    if (slideListId !== parseInt(query.slideListId) || _case.id !== parseInt(query.caseId)) {
+                    if (slideListId !== query.slideListId || _case.id !== query.caseId) {
                       console.log('router push slide 1.2');
                       router.push({
                         path: '/case-tracker',
@@ -529,7 +533,7 @@ const mutations = {
   SET_SLIDE_LISTS(state, _slideLists) {
     const query = router.currentRoute.query;
     if (query && query.slideListId) {
-      const _slideListId = parseInt(query.slideListId);
+      const _slideListId = query.slideListId;
       state.slideLists = _slideLists.map(_sl => {
         _sl.isSelected = _sl.id === _slideListId;
         return _sl;

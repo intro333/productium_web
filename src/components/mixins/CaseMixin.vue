@@ -44,8 +44,8 @@ export default {
       if (query && query.slideListId) {
         this.cases = this.getCases()
             .filter(_c => {
-              if (_c.caseStatus !== 'archived' && _c.slideListId === parseInt(query.slideListId)) {
-                _c.isSelected = _c.id === parseInt(query.caseId);
+              if (_c.caseStatus !== 'archived' && _c.slideListId === query.slideListId) {
+                _c.isSelected = _c.id === query.caseId;
                 return _c;
               }
             });

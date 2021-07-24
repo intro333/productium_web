@@ -91,7 +91,7 @@ export default {
         this.slides = slidesOfProjectFilterWithSelect(
             this.getSlides(),
             parseInt(query.projectId),
-            parseInt(query.slideId)
+            query.slideId
         );
       } else {
         this.slides = [];

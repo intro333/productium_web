@@ -22,7 +22,7 @@ const getters = {
 };
 
 const actions = {
-    login({ commit, dispatch }, payload) {
+    async login({ commit, dispatch }, payload) {
         return new Promise((resolve, reject) => {
             window.axios.post('api/auth/login/', {
               fullName: payload.fullName,
@@ -73,6 +73,7 @@ const actions = {
         });
     },
     setCurrentUser({commit}, user) {
+      console.log('user', user);
         commit('SET_CURRENT_USER', user);
     },
 };

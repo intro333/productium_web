@@ -6,7 +6,7 @@ import {mockCases, mockCaseComments} from "@/data/testData";
 import {shapeTitleAutoIncrement} from "@/functions/case-tracker/projectsF";
 import {CaseCommentModel} from "@/models/case-tracker/CaseCommentModel";
 import moment from 'moment';
-import { v4 as uuidv4 } from 'uuid';
+import {uuidHash} from "@/functions/conversation";
 
 export const state = {
   cases: [],
@@ -36,13 +36,13 @@ const actions = {
       const query = router.currentRoute.query;
       if (query && query.slideListId) {
         // TODO MOCK
-        const caseId = state.cases.length+1;
+        const caseId = uuidHash();
         const newSCase = new CaseModel({
           id: caseId,
           projectId: parseInt(query.projectId),
-          slideId: parseInt(query.slideId),
-          slideListId: parseInt(query.slideListId),
-          title: 'Case ' + caseId,
+          slideId: query.slideId,
+          slideListId: query.slideListId,
+          title: 'Case ' + (state.cases.length + 1),
           caseStatus: 'in-work',
           isOpen: true,
           discus: '',
@@ -91,7 +91,7 @@ const actions = {
       if (_case.isSelected) {
         const query = router.currentRoute.query;
         if (query && query.slideListId) {
-          const _slideListId = parseInt(query.slideListId);
+          const _slideListId = query.slideListId;
           const filteredCases = state.cases.filter(_s =>
             _s.caseStatus !== 'archived' && _s.slideListId === _slideListId);
           // const anotherCase = filteredCases.length ? filteredCases[filteredCases.length-1] : { id: 0 };
@@ -113,9 +113,10 @@ const actions = {
     }, 40);
   },
   goToSlideAndCase({dispatch, getters}, notify) {
-    const _slideId = parseInt(notify.slideId);
+    const _slideId = notify.slideId;
     const foundSlide = getters.getSlides.find(_s => _s.id === _slideId);
     if (foundSlide) {
+      console.log('router push case 1.1');
       router.push({
         path: '/case-tracker',
         query: {
@@ -142,10 +143,11 @@ const actions = {
   },
   goToSelectedCase({commit, dispatch}, payload) {
     const _case = payload.case;
+    console.log('_case 2', _case);
     const query = router.currentRoute.query;
     if (_case) {
       if (query && ("caseId" in query)) { /* caseId может быть 0 или null - это норм */
-        const caseId = parseInt(query.caseId);
+        const caseId = query.caseId;
         if (payload.isFirstLoad && _case) {
           commit('SELECT_CASE', payload);
         } else if (caseId !== _case.id) {
@@ -155,6 +157,7 @@ const actions = {
             dispatch('setCentralModal', new CentralModalModel());
           }
           setTimeout(() => {
+            console.log('router push case 1.2');
             router.push({
               path: '/case-tracker',
               query: Object.assign({}, query, {caseId: _case.id})
@@ -167,11 +170,13 @@ const actions = {
       commit('SET_ACTIVE_SHAPE_TOOL', 'rectangleTool');
       commit('SET_ACTIVE_TOOL', 'superTool');
       if (payload.isFirstLoad && query.caseId !== '0') {
+        console.log('router push case 1.3');
         router.push({
           path: '/case-tracker',
           query: Object.assign({}, query, {caseId: 0})
         });
       } else {
+        console.log('router push case 1.4');
         router.push({
           path: '/case-tracker',
           query: Object.assign({}, query, {caseId: null})
@@ -211,13 +216,13 @@ const actions = {
       const query = router.currentRoute.query;
       const currentUser = getters.getCurrentUser;
       if (query && query.caseId) {
-        const commentId = state.casesComments.length+1;
+        const commentId = uuidHash();
         const newComment = {
           id: commentId,
           projectId: parseInt(query.projectId),
-          slideId: parseInt(query.slideId),
-          slideListId: parseInt(query.slideListId),
-          caseId: parseInt(query.caseId),
+          slideId: query.slideId,
+          slideListId: query.slideListId,
+          caseId: query.caseId,
           parent: payload.parentKey || null,
           message: payload.commentMessage,
           user: currentUser,
@@ -262,6 +267,7 @@ const actions = {
                 caseId: query.caseId,
               }
               setTimeout(() => {
+                console.log('router push case 1.5');
                 router.push({
                   path: '/case-tracker',
                   query: newQuery
@@ -280,7 +286,7 @@ const actions = {
       }
       if (foundCase) {
         const children = foundCase.children;
-        shapeObj.id = uuidv4();
+        shapeObj.id = uuidHash();
         console.log('shapeObj.id', shapeObj.id);
         const objsByType = children.filter(_o => _o.shapeType === shapeObj.shapeType);
         if (objsByType.length) {

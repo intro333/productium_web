@@ -69,6 +69,7 @@
 @mixin scrollbarSlideBar() {
   &::-webkit-scrollbar {
     width: 3px;
+    height: 0;
   }
   &::-webkit-scrollbar-button { // кнопки края
     //background: transparent;

@@ -4,6 +4,7 @@ export class ProjectModel {
   activityStatus = 'active';
   isSelected = false;
   nameIsEdited = false;
+  users = [];
 
   constructor(_project) {
     this.id = _project.id;

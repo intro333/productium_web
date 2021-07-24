@@ -58,7 +58,7 @@ export default {
       const query = this.$route.query;
       if (query && query.caseId) {
         const foundCase = this.getCases()
-            .find(_c => _c.id === parseInt(query.caseId));
+            .find(_c => _c.id === query.caseId);
         if (foundCase) {
           return foundCase;
         }

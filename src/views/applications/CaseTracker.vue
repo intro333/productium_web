@@ -75,9 +75,9 @@
       </div>
     </div>
     <!-- COMPONENTS -->
+    <CaseDiscusBlock />
     <SlideSidebar />
     <CaseSidebar />
-    <CaseDiscusBlock />
     <WorkAreaTools />
 
     <!-- MODALS -->
@@ -140,14 +140,16 @@ export default {
     isScrolling: false,
     isShowVideoLearning: false,
   }),
-  created() {
+  async created() {
     /* Auth check */
     const token = localStorage.getItem('access_token');
     if (!token) {
       const fk = this.$faker();
       const fullName = `${fk.name.firstName()} ${fk.name.lastName()}`;
       const password = fk.internet.password();
-      this.login({fullName, password});
+      console.log(111);
+      await this.login({fullName, password});
+      console.log(222);
     } else {
       const decodeToken = VueJwtDecode.decode(token);
       this.setCurrentUser(
@@ -166,15 +168,25 @@ export default {
     } else {
       this.setIsLoading(true);
       if (this.isAuthorized) {
-        this.fetchInitData().then(() => {
-          setTimeout(() => {
+        console.log(333);
+        await this.fetchInitData().then(() => {
+          console.log(444);
+          // setTimeout(() => {
             this.fetchProjectsL();
-          }, 300);
+          // }, 300);
+          const query = router.currentRoute.query;
+          if (query) {
+            if (query.shareProjectId) {
+              console.log(555);
+              this.shareProject(parseInt(query.shareProjectId));
+            }
+            if (query.commentId) {
+              setTimeout(() => {
+                this.openCommentsModalByCommentId(query.commentId);
+              }, 500);
+            }
+          }
         });
-      }
-      const query = router.currentRoute.query;
-      if (query && query.commentId) {
-        this.openCommentsModalByCommentId(parseInt(query.commentId));
       }
     }
     const langCode = localStorage.getItem('lang_code');
@@ -202,7 +214,7 @@ export default {
     //   }
     // });
   },
-  mounted() {
+  async mounted() {
     window.addEventListener('wheel', this.handleScroll);
     const vl = localStorage.getItem('video_learning');
     if (!vl) {
@@ -236,7 +248,7 @@ export default {
     ...mapActions(['fetchProjects', 'fetchSlides', 'fetchSlideLists', 'fetchCases', 'fetchCaseComments',
       'openCommentsModalByCommentId', 'fetchInitData', 'setIsLoading', 'setIsNotAvailableForMobile',
       'setContextMenuBase', 'setCentralModal', 'fetchIpAddressAndSetOsInfo', 'fetchAdditionalIpInfo',
-      'login', 'setCurrentUser']),
+      'login', 'setCurrentUser', 'shareProject']),
     ...mapGetters(['getContextMenuBase', 'getCentralModal', 'getTooltip', 'getIsLoading', 'getNotAvailableForMobile',
       'getActiveSlide', 'geIsAuthorized']),
     handleScroll(e) {
