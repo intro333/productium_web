@@ -147,9 +147,7 @@ export default {
       const fk = this.$faker();
       const fullName = `${fk.name.firstName()} ${fk.name.lastName()}`;
       const password = fk.internet.password();
-      console.log(111);
       await this.login({fullName, password});
-      console.log(222);
     } else {
       const decodeToken = VueJwtDecode.decode(token);
       this.setCurrentUser(
@@ -167,18 +165,17 @@ export default {
       // return false;
     } else {
       this.setIsLoading(true);
-      if (this.isAuthorized) {
-        console.log(333);
+      if (token && this.isAuthorized) {
         await this.fetchInitData().then(() => {
-          console.log(444);
           // setTimeout(() => {
             this.fetchProjectsL();
           // }, 300);
           const query = router.currentRoute.query;
           if (query) {
             if (query.shareProjectId) {
-              console.log(555);
-              this.shareProject(parseInt(query.shareProjectId));
+              setTimeout(() => {
+                this.shareProject(parseInt(query.shareProjectId));
+              }, 100);
             }
             if (query.commentId) {
               setTimeout(() => {
@@ -187,6 +184,20 @@ export default {
             }
           }
         });
+      } else {
+        const query = router.currentRoute.query;
+        if (query) {
+          if (query.shareProjectId) {
+            setTimeout(() => {
+              this.shareProject(parseInt(query.shareProjectId));
+            }, 100);
+          }
+          if (query.commentId) {
+            setTimeout(() => {
+              this.openCommentsModalByCommentId(query.commentId);
+            }, 500);
+          }
+        }
       }
     }
     const langCode = localStorage.getItem('lang_code');

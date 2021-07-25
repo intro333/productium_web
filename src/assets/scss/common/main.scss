@@ -126,6 +126,10 @@ p {
           width: 8px;
           height: 8px;
         }
+        &-share2 {
+          width: 16px;
+          height: 15px;
+        }
         &:hover, &.is-hovered {
           background-color: $color-base;
         }

@@ -32,8 +32,9 @@ const actions = {
                 const info = response.data;
                 commit('LOGIN', info);
                 dispatch('setCurrentUser', new CurrentUserModel(info.userId, payload.fullName, shortFullName(payload.fullName), '#7c4a4a'));
-                dispatch('setData', info.userId);
-                resolve(info);
+                dispatch('setData', info.userId).then(() => {
+                  resolve(info);
+                });
               }, () => {
                   reject(false)
               });
@@ -74,7 +75,7 @@ const actions = {
     },
     setCurrentUser({commit}, user) {
       console.log('user', user);
-        commit('SET_CURRENT_USER', user);
+      commit('SET_CURRENT_USER', user);
     },
 };
 

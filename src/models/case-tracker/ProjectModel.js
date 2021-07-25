@@ -11,5 +11,7 @@ export class ProjectModel {
     this.name = _project.name;
     this.activityStatus = _project.activityStatus || 'active';
     this.isSelected = _project.isSelected || false;
+    this.isShared = _project.isShared || false;
+    this.creator = _project.creator || null;
   }
 }

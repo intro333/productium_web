@@ -519,6 +519,9 @@ const mutations = {
   SET_ACTIVE_SLIDE(state, _slide) {
     state.activeSlide = _slide;
   },
+  SET_ACTIVE_SLIDE_LIST(state, _slideLIst) {
+    state.activeSlideList = _slideLIst;
+  },
   RESET_SLIDES_STATUS(state, status) {
     state.slides.forEach(_s => {
       _s[status] = false;

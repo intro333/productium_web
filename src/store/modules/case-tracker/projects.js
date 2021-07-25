@@ -125,6 +125,7 @@ const actions = {
             window.axios.post('api/projects-all/set-data', {
                 name: newProject.name,
                 activityStatus: newProject.activityStatus,
+                creator: userId,
                 slides,
                 cases,
                 userId,
@@ -139,8 +140,8 @@ const actions = {
                     projectDB.slides.slideLists = slidesState.slideLists;
                     // TODO Убрать salt и password у юзера
                     setProjectDataLoad([projectDB], commit, dispatch);
+                    resolve(projectDB);
                 });
-                resolve(projectDB);
             }, error => {
                 console.log('error setData', error);
                 reject(error);
@@ -158,6 +159,7 @@ const actions = {
             window.axios.post('api/projects-all/add-project', {
                 name: 'Untitled' + id,
                 activityStatus: 'active',
+                creator: currentUser.id,
                 slides,
                 cases,
                 userId: currentUser.id,
@@ -255,13 +257,14 @@ const actions = {
     },
     selectProject({commit, dispatch}, _project) {
         dispatch('setIsLoading', true);
+        console.log('_project.id', _project.id);
         commit('SELECT_PROJECT', _project);
-        const _slidesState = slidesState;
-        const _casesState = casesState;
         let isFindSlide = false;
         let activeSlide = null;
         let activeSlideList = null;
-        _slidesState.slides.forEach(_s => {
+        console.log('_slidesState.slides', slidesState.slides);
+        slidesState.slides.forEach(_s => {
+            console.log('_s', _s);
             if (!isFindSlide && _s.slideState !== 'archived' && _s.projectId === _project.id) {
                 activeSlide = _s; // Записываем первый попавшийся слайд
                 _s.isSelected = true;
@@ -270,7 +273,7 @@ const actions = {
                 _s.isSelected = false;
             }
         });
-        _slidesState.slideLists.forEach(_l => {
+        slidesState.slideLists.forEach(_l => {
             if (activeSlide && activeSlide.id === _l.slideId) {
                 _l.isSelected = true;
                 activeSlideList = _l;
@@ -278,13 +281,14 @@ const actions = {
                 _l.isSelected = false;
             }
         });
-        _slidesState.activeSlide = activeSlide;
-        _slidesState.activeSlideList = activeSlideList;
-        _casesState.selectedCase = null;
+        commit('SET_ACTIVE_SLIDE', activeSlide);
+        commit('SET_ACTIVE_SLIDE_LIST', activeSlideList);
+        commit('SELECT_CASE', {case: null});
         setTimeout(() => {
             // const projects = state.projects;
             // projects.cases = casesState;
             // projects.slides = _slidesState;
+            console.log('activeSlide', activeSlide);
             setProjectDataLoad(state.projects, commit, dispatch, {
                 projectId: _project.id,
                 slideId: activeSlide.id,
@@ -307,6 +311,8 @@ const actions = {
         const currentUser = getters.getCurrentUser;
         return new Promise(() => {
             const foundProject = state.projects.find(_p => _p.id === projectId);
+            console.log('state.projects', state.projects.length);
+            console.log('foundProject', foundProject);
             if (!foundProject) { /* Если проект есть в store, значит он уже пошарен */
                 window.axios.post('api/projects-all/share-project', {
                     projectId,
@@ -316,6 +322,7 @@ const actions = {
                     console.log('project', project);
                     commit('SET_PROJECT', project);
                     project.slides.slides.forEach(_slide => {
+                        console.log('_slide', _slide);
                         commit('PUSH_SLIDE', _slide);
                     });
                     project.slides.slideLists.forEach(_sl => {
@@ -327,6 +334,8 @@ const actions = {
                     project.cases.casesComments.forEach(_cm => {
                         commit('ADD_CASES_COMMENT', _cm);
                     });
+                    delete project.slides;
+                    delete project.cases;
                     setTimeout(() => {
                         dispatch('selectProject', project);
                     }, 300);
@@ -413,7 +422,11 @@ const setProjectDataLoad = (projects, commit, dispatch, _query=null) => {
 
     if (query) {
         if (query.projectId) {
-            const foundProject = projects.find(_p => _p.id === parseInt(query.projectId));
+            let foundProject = projects.find(_p => _p.id === parseInt(query.projectId));
+            if (!foundProject) {
+                foundProject = projects[0];
+                query.projectId = foundProject.id;
+            }
             projectsState.selectedProject = foundProject;
             commit('SELECT_PROJECT', foundProject);
             if (query.slideId) {
@@ -441,24 +454,26 @@ const setProjectDataLoad = (projects, commit, dispatch, _query=null) => {
     }, 50);
     setTimeout(() => {
         if (query && query.projectId) {
-            const project = state.projects.find(_p => _p.id === parseInt(query.projectId));
-            if (project) {
+            let project = state.projects.find(_p => _p.id === parseInt(query.projectId));
+            if (!project) {
+                project = projects[0];
+            }
+            // if (project) {
                 /* Доп. настройки компонентов */
                 setTimeout(() => {
                     dispatch('selectFoundSlideFromSlides', query).then(_case => {
-                        console.log('_case 1', _case);
                         setTimeout(() => {
                             dispatch('selectFoundCaseFromCases', _case);
                         }, 400);
                     });
                 }, 100);
-            } else {
-                dispatch('setIsLoading', false);
-                console.log('router push project 1.1');
-                router.push(
-                  `/case-tracker?projectId=${projectsState.selectedProject.id}&slideId=${slides.activeSlide.id}&slideListId=${slides.activeSlideList.id}&caseId=${cases.selectedCase.id}`
-                );
-            }
+            // } else {
+            //     dispatch('setIsLoading', false);
+            //     console.log('router push project 1.1');
+            //     router.push(
+            //       `/case-tracker?projectId=${projectsState.selectedProject.id}&slideId=${slides.activeSlide.id}&slideListId=${slides.activeSlideList.id}&caseId=${cases.selectedCase.id}`
+            //     );
+            // }
         } else {
             let projectId, slideId, slideListId, caseId;
             projectId = slideId = slideListId = caseId = '';

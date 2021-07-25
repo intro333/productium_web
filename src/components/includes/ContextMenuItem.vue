@@ -11,6 +11,10 @@
          src="@/assets/img/common/context-menu-arrow.svg"
          class="cm-list-item-arrow"
          alt="">
+    <img v-if="item.isShared"
+         src="@/assets/img/common/share2.svg"
+         class="cm-list-item-share2"
+         alt="">
     <input v-if="item.isFileInput && !item.isDisable"
            accept="image/png,image/jpeg,image/jpg,image/svg"
            @change="item.fileAction"

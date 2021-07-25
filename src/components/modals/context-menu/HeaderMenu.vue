@@ -47,10 +47,12 @@ export default {
     myProjects() {
       return this.projects.filter(_project => _project.activityStatus === 'active')
           .map(_project => {
+            console.log('_project', _project);
             return {
               isItemOfMenu: true,
               isHovered: _project.isSelected,
               title: _project.name,
+              isShared: _project.isShared ? 'share2.svg' : false,
               action: () => {
                 if (!_project.isSelected) {
                   this.selectProject(_project);

@@ -15,7 +15,7 @@
         <div class="ul-item-left">
           <div class="p-flex-center ul-item-left-icon"
                :style="{'background-color': user.color}">{{user.shortName}}</div>
-          <span class="ul-item-left-text">{{user.name}}</span>
+          <span class="ul-item-left-text">{{user.fullName}}</span>
         </div>
         <div class="ul-item-right">
           <span :ref="'roleNameRef_' + i"

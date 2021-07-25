@@ -143,7 +143,6 @@ const actions = {
   },
   goToSelectedCase({commit, dispatch}, payload) {
     const _case = payload.case;
-    console.log('_case 2', _case);
     const query = router.currentRoute.query;
     if (_case) {
       if (query && ("caseId" in query)) { /* caseId может быть 0 или null - это норм */
