@@ -101,8 +101,11 @@ export default {
     cm() {
       return this.contextMenu();
     },
+    selectedProject() {
+      return this.getSelectedProject();
+    },
     shareUsers() {
-      return this.getShareUsers();
+      return this.getShareUsers().filter(_user => _user.projects.indexOf(this.selectedProject.id) !== -1);
     },
   },
   methods: {
@@ -164,7 +167,7 @@ export default {
     // },
     copyShareLink() {
       let shareLink = window.location.host;
-      shareLink += '/case-tracker?shareProjectId=' + this.getSelectedProject().id;
+      shareLink += '/case-tracker?shareProjectId=' + this.selectedProject.id;
       this.$clipboard(shareLink);
       this.setSimpleNotifyInside(
           new SimpleNotifyInsideModel()

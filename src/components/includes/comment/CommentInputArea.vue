@@ -68,7 +68,7 @@ export default {
     CommentImage
   },
   props: {
-    parentKey: Number,
+    parentKey: [String, Number],
     comment: Object,
     replyUser: Object,
     checkPCommentsBlockHeightFunc: Function,

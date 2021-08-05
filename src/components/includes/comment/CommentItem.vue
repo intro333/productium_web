@@ -69,15 +69,15 @@ import CommentInputArea from "@/components/includes/comment/CommentInputArea";
 import CommentImage from "@/components/includes/comment/CommentImage";
 import {getModalPositionFunc} from "@/functions/calculations";
 import {ContextMenuBaseModel} from "@/models/modals/ContextMenuBaseModel";
-import {mapActions} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 import {SimpleNotifyInsideModel} from "@/models/modals/SimpleNotifyInsideModel";
 
 export default {
   name: "CommentItem",
   props: {
     comment: Object,
-    cKey: Number,
-    selectedCommentId: Number,
+    cKey: String,
+    selectedCommentId: String,
     isChild: Boolean,
     parent: Object,
     focusInputAreaOfParentFunc: Function,
@@ -95,6 +95,9 @@ export default {
     isShowCommentOptions: false,
   }),
   computed: {
+    currentUser() {
+      return this.getCurrentUser();
+    },
     userLink() {
       if (this.comment.userLink) {
         const ul = this.comment.userLink;
@@ -127,10 +130,17 @@ export default {
           });
         }, 300);
       }
+    } else if (this.comment.notifyInfo[this.currentUser.id].status === 'notRead') {
+      this.isSelectableComment = true;
+      setTimeout(() => {
+        this.isSelectableComment = false;
+        // this.comment.notifyInfo[this.currentUser.id].status = 'read';
+      }, 1000);
     }
   },
   methods: {
     ...mapActions(['setContextMenuBase', 'removeCaseComment', 'setSimpleNotifyInside']),
+    ...mapGetters(['getCurrentUser']),
     getDateTime() {
       return getNearestWeekdayWithTime(this.comment.updatedAt)
     },

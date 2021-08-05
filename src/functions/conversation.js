@@ -32,10 +32,10 @@ export function generateColorFromPicker() {
 }
 
 export function sortCasesComments(a, b) {
-  if (a.notifyInfo.status !== 'notRead' && b.notifyInfo.status === 'notRead') {
+  if (a.niStatus !== 'notRead' && b.niStatus === 'notRead') {
     return 1;
   }
-  if (b.notifyInfo.status !== 'notRead' && a.notifyInfo.status === 'notRead') {
+  if (b.niStatus !== 'notRead' && a.niStatus === 'notRead') {
     return -1;
   }
   return 0;

@@ -12,6 +12,9 @@ const state = {
         userAgent: '',
     },
     additionalIpInfo: null,
+    /* PUSH connection */
+    sessionId: Math.random().toString(36).substring(2, 15),
+    pushConnectionActive: true,
 };
 
 const getters = {
@@ -19,6 +22,8 @@ const getters = {
     getOsInfo: state => state.osInfo,
     geIsAuthorized: state => state.isAuthorized,
     getAdditionalIpInfo: state => state.additionalIpInfo,
+    getSessionId: state => state.sessionId,
+    getPushConnectionActive: state => state.pushConnectionActive,
 };
 
 const actions = {
@@ -76,6 +81,9 @@ const actions = {
     setCurrentUser({commit}, user) {
       console.log('user', user);
       commit('SET_CURRENT_USER', user);
+    },
+    setPushConnectionActive (state, newActive) {
+      state.pushConnectionActive = newActive;
     },
 };
 

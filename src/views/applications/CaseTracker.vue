@@ -119,10 +119,13 @@ import LocaleMixin from "@/components/mixins/LocaleMixin";
 import VueJwtDecode from 'vue-jwt-decode';
 import {CurrentUserModel} from "@/models/CurrentUserModel";
 import {shortFullName} from "@/functions/conversation";
+// import {pushConnection} from "@/components/mixins/pushConnection";
 
 export default {
   name: "CaseTracker",
-  mixins: [ModalsMixin, ProjectMixin, LocaleMixin],
+  mixins: [ModalsMixin, ProjectMixin, LocaleMixin,
+    // pushConnection
+  ],
   components: {
     WorkArea,
     SlideSidebar,
@@ -139,6 +142,7 @@ export default {
   data: () => ({
     isScrolling: false,
     isShowVideoLearning: false,
+    timerId: 0,
   }),
   async created() {
     /* Auth check */
@@ -158,6 +162,7 @@ export default {
               '#7c4a4a'
           )
       );
+      // this.pushConnect();
     }
 
     if (this.$device.mobile || this.$device.ipad) {
@@ -234,6 +239,7 @@ export default {
         localStorage.setItem('video_learning', 'was_watched');
       }, 1500);
     }
+    // this.timerId = setInterval(() => this.updateAllDataPerTime(), 2000);
   },
   beforeDestroy() {
     window.removeEventListener('wheel', this.handleScroll);
@@ -256,10 +262,10 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['fetchProjects', 'fetchSlides', 'fetchSlideLists', 'fetchCases', 'fetchCaseComments',
+    ...mapActions(['fetchSlides', 'fetchSlideLists', 'fetchCases', 'fetchCaseComments',
       'openCommentsModalByCommentId', 'fetchInitData', 'setIsLoading', 'setIsNotAvailableForMobile',
       'setContextMenuBase', 'setCentralModal', 'fetchIpAddressAndSetOsInfo', 'fetchAdditionalIpInfo',
-      'login', 'setCurrentUser', 'shareProject']),
+      'login', 'setCurrentUser', 'shareProject', 'updateAllDataPerTime']),
     ...mapGetters(['getContextMenuBase', 'getCentralModal', 'getTooltip', 'getIsLoading', 'getNotAvailableForMobile',
       'getActiveSlide', 'geIsAuthorized']),
     handleScroll(e) {

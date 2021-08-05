@@ -19,7 +19,7 @@
 import CommentInputArea from "@/components/includes/comment/CommentInputArea";
 import CommentItem from "@/components/includes/comment/CommentItem";
 import {fillCasesCommentsTree} from "@/functions/case-tracker/projectsF";
-import {mapGetters} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 
 export default {
   name: "CommentsModal",
@@ -32,7 +32,22 @@ export default {
     pCommentsHeight: 'auto',
     selectedCommentId: 0
   }),
+  mounted() {
+    setTimeout(() => {
+      const ids = this.comments.filter(_c => {
+        if (_c.notifyInfo[this.currentUser.id].status === 'notRead') {
+          return _c;
+        }
+      });
+      if (ids.length) {
+        this.readAllMessageByIds(ids);
+      }
+    }, 1000);
+  },
   computed: {
+    currentUser() {
+      return this.getCurrentUser();
+    },
     cm() {
       return this.contextMenu();
     },
@@ -41,14 +56,15 @@ export default {
       if (query && query.caseId) {
         const filteredComments = this.getCasesComments()
             .filter(_c => (_c.caseId === query.caseId) &&
-                _c.notifyInfo.status !== 'archived');
+                _c.notifyInfo[this.currentUser.id].status !== 'archived');
         return fillCasesCommentsTree(filteredComments);
       }
       return [];
     }
   },
   methods: {
-    ...mapGetters(['getCasesComments']),
+    ...mapActions(['readAllMessageByIds']),
+    ...mapGetters(['getCasesComments', 'getCurrentUser']),
     checkPCommentsBlockHeight(pcInputAreaRef) {
       const _ref = this.$refs['pCommentsListRef'];
       if (_ref && pcInputAreaRef) {

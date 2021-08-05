@@ -62,6 +62,9 @@ export default {
 
   }),
   computed: {
+    currentUser() {
+      return this.getCurrentUser();
+    },
     discusBlockButtons() {
       return [
         {
@@ -79,16 +82,16 @@ export default {
           _c.caseId === this.selectedCase.id);
     },
     readCasesComments() {
-      return this.casesComments.filter(_c => _c.notifyInfo.status === 'read' ||
-          _c.notifyInfo.status === 'fromCurrentUser');
+      return this.casesComments.filter(_c => _c.notifyInfo[this.currentUser.id].status === 'read' ||
+          _c.notifyInfo[this.currentUser.id].status === 'fromCurrentUser');
     },
     notReadCasesComments() {
-      return this.casesComments.filter(_c => _c.notifyInfo.status === 'notRead');
+      return this.casesComments.filter(_c => _c.notifyInfo[this.currentUser.id].status === 'notRead');
     },
   },
   methods: {
     ...mapActions(['setCentralModal', 'updateCaseInfoOnServer']),
-    ...mapGetters(['getCasesComments']),
+    ...mapGetters(['getCasesComments', 'getCurrentUser']),
     isActiveDiscusBlockActivityState(_state) {
       return this.selectedCase.discusBlockActivityState === _state;
     },

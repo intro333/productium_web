@@ -27,6 +27,7 @@ export default {
     zoomOffsetX: 0,
     zoomOffsetY: 0,
     zoomZ: 0,
+    mouseClickPosition: 'UP' // UP, DOWN, MOVE
   }),
   created() {
     this.slideUnsubscribe = this.$store.subscribe((mutation) => {
@@ -36,6 +37,25 @@ export default {
         }
       } else if (mutation.type === 'SET_SLIDES' || mutation.type === 'SET_ALL_SLIDES_STATE') {
         this.fetchSlidesL();
+      } else if (mutation.type === 'UPDATE_SHAPES_FROM_SOCKET') {
+        if (this.activeSlide && this.activeSlide.canvas) {
+          const canvas = this.activeSlide.canvas;
+          const objs =  canvas.getObjects();
+          const children = mutation.payload.newCase.children;
+          // console.log('objs', objs);
+          objs.forEach(_obj => {
+            const foundChild = children.find(_ch => _ch.id === _obj.id);
+            if (foundChild) {
+              const params = foundChild.params;
+              console.log('this.mouseClickPosition', this.mouseClickPosition)
+              if (this.mouseClickPosition === 'UP') { /* Если двигаем элемент, то не обновлять */
+                _obj.left = params.left;
+              }
+            }
+          });
+          canvas.renderAll();
+          // this.setActiveColor('auto');
+        }
       }
     });
   },
@@ -156,6 +176,7 @@ export default {
           }
           /* CANVAS HANDLERS */
           slide.canvas.on('mouse:down', function(e) { /* MOUSE DOWN */
+            _this.mouseClickPosition = 'DOWN';
             const obj = e.target;
             const mouse = slide.canvas.getPointer(e.e);
             _this.drawX = mouse.x;
@@ -185,6 +206,7 @@ export default {
             }
           }); /* MOUSE DOWN END */
           slide.canvas.on('mouse:up', function(e) { /* MOUSE UP */
+            _this.mouseClickPosition = 'UP';
             if (_this.dragMode) {
               _this.panState = STATE_IDLE;
               const clX = slide.panLeftMouseUpPoint = e.e.clientX;
@@ -214,7 +236,7 @@ export default {
 
               slide.lastClientX = slide.isLeftDirection ? (slide.lastClientX - offsetLeft) : (slide.lastClientX + offsetLeft);
               slide.lastClientY = slide.isTopDirection ? (slide.lastClientY - offsetTop) : (slide.lastClientY + offsetTop);
-
+              console.log(1, slide)
               _this.lastClientX = 0;
               _this.lastClientY = 0;
               // _this.updateSlideInfoOnServer();
@@ -237,6 +259,9 @@ export default {
               }
               const setObjFields = (obj, objType) => {
                 if (obj.lineCoords) {
+                  // console.log('obj', obj);
+                  // console.log('obj.calcTransformMatrix()', obj.calcTransformMatrix());
+                  // console.log('slide.canvas.viewportTransform', slide.canvas.viewportTransform);
                   // const tl = obj.lineCoords.tl;
                   let fields = {
                     id: obj.id,
@@ -354,6 +379,7 @@ export default {
             }
           }); /* MOUSE UP END */
           slide.canvas.on('mouse:move', function(e) { /* MOUSE MOVE */
+            _this.mouseClickPosition = 'MOVE';
             if (_this.dragMode) {
               if ((_this.panState === STATE_PANNING) && e && e.e) {
                 const eClientX = e.e.clientX;
@@ -513,16 +539,18 @@ export default {
             slideImg.onload = function () {
               let imgLeft = 0;
               let imgTop = 0;
-              if (slide.canvasWidth) {
-                if (slideImg.width) {
-                  imgLeft = slide.imgLeft ? slide.imgLeft : ((slide.canvasWidth / 2) - (slideImg.width / 2));
-                }
-              }
-              if (slide.canvasHeight) {
-                if (slideImg.height) {
-                  imgTop = slide.imgTop ? slide.imgTop : (slide.canvasHeight / 2) - (slideImg.height / 2);
-                }
-              }
+              imgLeft = 202;
+              imgTop = 200;
+                  // if (slide.canvasWidth) {
+              //   if (slideImg.width) {
+              //     imgLeft = slide.imgLeft ? slide.imgLeft : ((slide.canvasWidth / 2) - (slideImg.width / 2));
+              //   }
+              // }
+              // if (slide.canvasHeight) {
+              //   if (slideImg.height) {
+              //     imgTop = slide.imgTop ? slide.imgTop : (slide.canvasHeight / 2) - (slideImg.height / 2);
+              //   }
+              // }
               slide.imgLeft = imgLeft;
               slide.imgTop = imgTop;
               slide.imgBase64 = imgBase64;

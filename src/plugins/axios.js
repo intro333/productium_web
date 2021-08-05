@@ -1,8 +1,9 @@
 import Vue from 'vue';
 import axios from "axios";
 
-axios.defaults.baseURL = 'http://localhost:3000/'; /* Для локальной разработки */
-// axios.defaults.baseURL = 'https://api.productium.org/'; /* Для DEV & PROD */
+export const baseURLConst = 'http://localhost:3000/'; /* Для локальной разработки */
+// export const baseURLConst = 'https://api.productium.org/'; /* Для DEV & PROD */
+axios.defaults.baseURL = baseURLConst;
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 axios.defaults.headers.put['Content-Type'] = 'application/json';
 axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';

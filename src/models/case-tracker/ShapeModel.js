@@ -67,6 +67,8 @@ export class ShapeModel {
       cornerSize: 6,
       transparentCorners: false,
       lockRotation: true,
+      // originX: 'center',
+      // originY: 'center',
     };
   }
 }

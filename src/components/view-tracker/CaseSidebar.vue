@@ -78,6 +78,9 @@ export default {
     caseFilterSelected: 0,
   }),
   computed: {
+    currentUser() {
+      return this.getCurrentUser();
+    },
     caseFilters() {
       return [
         {
@@ -124,9 +127,13 @@ export default {
             this.getCasesComments()
                 .filter(_c =>
                     (_c.projectId === parseInt(query.projectId)) &&
-                    (_c.notifyInfo.status !== 'archived') &&
-                    _c.notifyInfo.status !== 'fromCurrentUser'));
+                    (_c.notifyInfo[this.currentUser.id].status !== 'archived') &&
+                    _c.notifyInfo[this.currentUser.id].status !== 'fromCurrentUser'));
         return  filteredComments
+            .map(_c2 => {
+              _c2.niStatus = _c2.notifyInfo[this.currentUser.id].status
+              return _c2;
+            })
             .reverse()
             .sort(sortCasesComments);
       } else {
@@ -135,7 +142,7 @@ export default {
     },
     isNotReadNotifications() {
       return this.notifications
-          .filter(_n => _n.notifyInfo.status === 'notRead').length
+          .filter(_n => _n.notifyInfo[this.currentUser.id].status === 'notRead').length
     },
     numOfInWorkCases() {
       return this.cases.filter(_c => _c.caseStatus === 'in-work').length;
@@ -145,7 +152,7 @@ export default {
     },
   },
   methods: {
-    ...mapGetters(['getCasesComments', 'getContextMenuBase']),
+    ...mapGetters(['getCasesComments', 'getContextMenuBase', 'getCurrentUser']),
     selectTab(tabName) {
       this.selectedTab = tabName;
     },

@@ -77,8 +77,12 @@ const actions = {
       reloadWithSlide: true
     });
   },
-  removeCase({commit, dispatch}, _case) {
-    commit('REMOVE_CASE', _case);
+  removeCase({commit, dispatch, getters}, _case) {
+    const currentUser = getters.getCurrentUser;
+    commit('REMOVE_CASE', {
+      _case,
+      currentUser
+    });
     // _case.isSelected = false;
     _case.children.forEach(_shape => {
       dispatch('removeCaseChild', {
@@ -130,6 +134,10 @@ const actions = {
       dispatch('selectCaseListAndCaseOfActiveSlide', {
         slide: foundSlide,
         isRepaint: true
+      }).then(() => {
+        setTimeout(() => {
+          dispatch('updateCaseInfoOnServer');
+        }, 700);
       });
       dispatch('openCommentsModalByCommentId', notify.id);
     }
@@ -214,37 +222,39 @@ const actions = {
     return new Promise((resolve) => {
       const query = router.currentRoute.query;
       const currentUser = getters.getCurrentUser;
+      const shareUsers = getters.getShareUsers;
       if (query && query.caseId) {
         const commentId = uuidHash();
-        const newComment = {
-          id: commentId,
-          projectId: parseInt(query.projectId),
-          slideId: query.slideId,
-          slideListId: query.slideListId,
-          caseId: query.caseId,
-          parent: payload.parentKey || null,
-          message: payload.commentMessage,
-          user: currentUser,
-          images: payload.images,
-          updatedAt: nowDate,
-          notifyInfo: {
-            status: 'fromCurrentUser',
-          }, // Моё сообщение, оно не будет мне показано в оповещении
-          userLink: payload.isUserLink ? {
-            replyUser: payload.replyUser, // TODO по идее при отправке коммента на бэк отправляем лишь id юзера, а при получении данных мы по нему берём нужные данные, ибо они могут поменяться
-            replyCommentId: payload.comment.id
-          } : null,
-        };
-        commit('ADD_CASES_COMMENT', newComment);
+        const notifyInfo = { [currentUser.id]: { status: "read" } };
+        shareUsers.forEach(_user => { notifyInfo[_user.id] = { status: "notRead" } });
         setTimeout(() => {
+          const newComment = {
+            id: commentId,
+            projectId: parseInt(query.projectId),
+            slideId: query.slideId,
+            slideListId: query.slideListId,
+            caseId: query.caseId,
+            parent: payload.parentKey || null,
+            message: payload.commentMessage,
+            user: currentUser,
+            images: payload.images,
+            updatedAt: nowDate,
+            notifyInfo,
+            userLink: payload.isUserLink ? {
+              replyUser: payload.replyUser, // TODO по идее при отправке коммента на бэк отправляем лишь id юзера, а при получении данных мы по нему берём нужные данные, ибо они могут поменяться
+              replyCommentId: payload.comment.id
+            } : null,
+          };
+          commit('ADD_CASES_COMMENT', newComment);
           dispatch('updateCaseInfoOnServer');
           resolve(newComment);
         }, 100);
       }
     });
   },
-  removeCaseComment({commit, dispatch}, commentObj) {
-    commit('REMOVE_CASES_COMMENT', commentObj);
+  removeCaseComment({commit, dispatch, getters}, commentObj) {
+    const currentUser = getters.getCurrentUser;
+    commit('REMOVE_CASES_COMMENT', {commentObj, currentUser});
     setTimeout(() => {
       dispatch('updateCaseInfoOnServer');
     }, 100);
@@ -275,6 +285,13 @@ const actions = {
             }
           })
     );
+  },
+  readAllMessageByIds({commit, getters, dispatch}, ids) {
+    const currentUser = getters.getCurrentUser;
+    commit('READ_ALL_MESSAGES_BY_IDS', { ids, currentUser });
+    setTimeout(() => {
+      dispatch('updateCaseInfoOnServer');
+    }, 500);
   },
   /* SHAPES */
   addShapeToCase({commit, dispatch}, shapeObj) {
@@ -377,9 +394,34 @@ const actions = {
   clearCaseChildren({commit}, _case) {
     commit('CLEAR_CASE_CHILDREN', _case);
   },
+  updateCasesFromSocket({commit}, newCases) {
+    newCases.forEach(_nc => {
+      const foundCase = state.cases.find(_oc => _oc.id === _nc.id);
+      if (foundCase) {
+        // console.log('foundCase', foundCase);
+        if (foundCase.children && foundCase.children.length) {
+          commit('UPDATE_SHAPES_FROM_SOCKET', {newCase: _nc, oldCase: foundCase});
+        }
+      } else {
+//
+      }
+    });
+  },
 };
 
 const mutations = {
+  // UPDATE_CASES_FROM_SOCKET(state, newCases) {
+  //
+  // },
+  UPDATE_SHAPES_FROM_SOCKET(state, payload) {
+    payload.oldCase.children.forEach(_och => {
+      const foundNChild = payload.newCase.children.find(_nch => _nch.id === _och.id);
+      if (foundNChild) {
+        _och.params = foundNChild.params;
+        // console.log('foundNChild', foundNChild);
+      }
+    });
+  },
   /* CASES */
   SET_ALL_CASES_STATE(state, newState) {
     Object.keys(newState).forEach(_k => {
@@ -396,13 +438,13 @@ const mutations = {
   SELECT_CASE(state, payload) {
     state.selectedCase = payload.case;
   },
-  REMOVE_CASE(state, _case) {
-    _case.caseStatus = 'archived';
+  REMOVE_CASE(state, payload) {
+    payload._case.caseStatus = 'archived';
     // TODO На серваке поместим в архив кейс и что делать с оповещениями?
     // Можно оставить так и после перезагрузки страницы их не будет, а до этого они будут со статусом archived
     state.casesComments.forEach(_c => {
-      if (_c.caseId === _case.id) {
-        _c.notifyInfo.status = 'archived';
+      if (_c.caseId === payload._case.id) {
+        _c.notifyInfo[payload.currentUser.id].status = 'archived';
       }
     })
   },
@@ -425,10 +467,10 @@ const mutations = {
     state.casesComments.push(new CaseCommentModel(commentObj));
 
   },
-  REMOVE_CASES_COMMENT(state, commentObj) {
+  REMOVE_CASES_COMMENT(state, payload) {
     state.casesComments = state.casesComments.map(_c => {
-      if (_c.id === commentObj.id || _c.parent === commentObj.id) { /* Удаляем и дочерние (если они есть) */
-        _c.notifyInfo.status = 'archived';
+      if (_c.id === payload.commentObj.id || _c.parent === payload.commentObj.id) { /* Удаляем и дочерние (если они есть) */
+        _c.notifyInfo[payload.currentUser.id].status = 'archived';
       }
       return _c;
     });
@@ -462,6 +504,16 @@ const mutations = {
             // console.log(3, fields[field])
           }
         });
+      }
+    });
+  },
+  READ_ALL_MESSAGES_BY_IDS(state, payload) {
+    console.log(11, payload.ids)
+    console.log(22, payload.currentUser.id)
+    state.casesComments.forEach(_c => {
+      console.log(33, _c.notifyInfo)
+      if (_c.id.indexOf(payload.ids) !== -1) {
+        _c.notifyInfo[payload.currentUser.id].status = 'read';
       }
     });
   },

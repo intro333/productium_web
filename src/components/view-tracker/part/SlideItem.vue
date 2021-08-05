@@ -50,6 +50,12 @@ export default {
     isShowSlideOptions: false,
   }),
   computed: {
+    currentUser() {
+      return this.getCurrentUser();
+    },
+    activeSlideList() {
+      return this.getActiveSlideList();
+    },
     contextMenu() {
       return this.getContextMenuBase();
     },
@@ -58,7 +64,7 @@ export default {
           _c.slideId === this.slide.id);
     },
     isNotify() {
-      const result = this.casesComments.find(_c => _c.notifyInfo.status === 'notRead');
+      const result = this.casesComments.find(_c => _c.notifyInfo[this.currentUser.id].status === 'notRead');
       return !!result;
     },
     slideCases() {
@@ -79,7 +85,7 @@ export default {
   },
   methods: {
     ...mapActions(['setContextMenuBase', 'removeSlide', 'selectSlide']),
-    ...mapGetters(['getCasesComments', 'getContextMenuBase']),
+    ...mapGetters(['getCasesComments', 'getContextMenuBase', 'getActiveSlideList', 'getCurrentUser']),
     openOptionsMenu(width, _refStr) {
       const _ref = this.$refs[_refStr];
       if (_ref && _ref.getBoundingClientRect()) {

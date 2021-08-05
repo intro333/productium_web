@@ -5,6 +5,7 @@ export class ProjectModel {
   isSelected = false;
   nameIsEdited = false;
   users = [];
+  shareUsers = [];
 
   constructor(_project) {
     this.id = _project.id;
@@ -13,5 +14,6 @@ export class ProjectModel {
     this.isSelected = _project.isSelected || false;
     this.isShared = _project.isShared || false;
     this.creator = _project.creator || null;
+    this.shareUsers = _project.shareUsers || [];
   }
 }

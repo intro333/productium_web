@@ -72,6 +72,53 @@ const actions = {
     //     });
     // },
 
+    updateAllDataPerTime({commit, getters}) {
+        return new Promise((resolve, reject) => {
+            const currentUser = getters.getCurrentUser;
+            window.axios.post('api/projects-all/update-all-data-per-time', {
+              userId: currentUser.id,
+            }).then(response => {
+                const projectDB = response.data;
+                console.log('projectDB', projectDB)
+                let slides = [];
+                let slidesList = [];
+                let cases = [];
+                let casesComments = [];
+                commit('SET_ALL_PROJECTS_STATE', projectDB.map(_project => {
+                    let isSelected = false;
+                    if (state.selectedProject && state.selectedProject.id) {
+                        isSelected = state.selectedProject.id === _project.id;
+                    }
+                    return new ProjectModel({
+                        id: _project.id,
+                        name: _project.name,
+                        isSelected
+                    });
+                }));
+                projectDB.forEach(_pr => {
+                    slides = Object.assign(slides, _pr.slides.slides);
+                    slidesList = Object.assign(slidesList, _pr.slides.slideLists);
+                    cases = Object.assign(cases, _pr.cases.cases);
+                    casesComments = Object.assign(casesComments, _pr.cases.casesComments);
+                });
+                commit('SET_ALL_SLIDES_STATE', {slides, slidesList});
+                commit('SET_ALL_CASES_STATE', {cases, casesComments});
+            }, error => {
+              console.log('error updateAllDataPerTime', error);
+              reject(error);
+            });
+        });
+    },
+
+    updateCurrentProjectFromSocket({dispatch}, project) {
+        // const slides = project.slides;
+        const cases = project.cases;
+        dispatch('updateCasesFromSocket', cases.cases);
+        // commit('UPDATE_SLIDE_LISTS_FROM_SOCKET', slides.slideLists);
+        // commit('UPDATE_SLIDES_FROM_SOCKET', slides.slides);
+        // commit('UPDATE_CASES_FROM_SOCKET', cases.cases);
+    },
+
     /* SET DATA */
     setData({commit, dispatch}, userId) {
         return new Promise((resolve, reject) => {
@@ -190,13 +237,15 @@ const actions = {
                 userId: currentUser.id
             }).then(response => {
                 const data = response.data;
-                data.shareUsers.forEach(_user => {
+                Object.keys(data.shareUsers).forEach(_v => {
+                    const _user = data.shareUsers[_v]
                     if (_user.id !== currentUser.id) {
                         commit('ADD_SHARE_USER', new CurrentUserModel(
                           _user.id,
                           _user.fullName,
                           shortFullName(_user.fullName),
-                          '#F30C0C'
+                          '#F30C0C',
+                          _user.projects
                         ));
                     }
                 }) ;
@@ -257,14 +306,11 @@ const actions = {
     },
     selectProject({commit, dispatch}, _project) {
         dispatch('setIsLoading', true);
-        console.log('_project.id', _project.id);
         commit('SELECT_PROJECT', _project);
         let isFindSlide = false;
         let activeSlide = null;
         let activeSlideList = null;
-        console.log('_slidesState.slides', slidesState.slides);
         slidesState.slides.forEach(_s => {
-            console.log('_s', _s);
             if (!isFindSlide && _s.slideState !== 'archived' && _s.projectId === _project.id) {
                 activeSlide = _s; // Записываем первый попавшийся слайд
                 _s.isSelected = true;
@@ -288,7 +334,6 @@ const actions = {
             // const projects = state.projects;
             // projects.cases = casesState;
             // projects.slides = _slidesState;
-            console.log('activeSlide', activeSlide);
             setProjectDataLoad(state.projects, commit, dispatch, {
                 projectId: _project.id,
                 slideId: activeSlide.id,
@@ -319,10 +364,8 @@ const actions = {
                     userId: currentUser.id
                 }).then(response => {
                     const project = response.data;
-                    console.log('project', project);
                     commit('SET_PROJECT', project);
                     project.slides.slides.forEach(_slide => {
-                        console.log('_slide', _slide);
                         commit('PUSH_SLIDE', _slide);
                     });
                     project.slides.slideLists.forEach(_sl => {
@@ -392,6 +435,7 @@ const setProjectDataLoad = (projects, commit, dispatch, _query=null) => {
     const allSlides = [];
     const allSlideLists = [];
     const allCases = [];
+    const allCasesComments = [];
     projects.forEach(_project => {
         if (_project.slides) {
             _project.slides.slides.forEach(_s => {
@@ -409,6 +453,9 @@ const setProjectDataLoad = (projects, commit, dispatch, _query=null) => {
             _project.cases.cases.forEach(_c => {
                 allCases.push(_c);
             });
+            _project.cases.casesComments.forEach(_c => {
+                allCasesComments.push(_c);
+            });
             delete _project.slides;
             delete _project.cases;
         }
@@ -418,6 +465,7 @@ const setProjectDataLoad = (projects, commit, dispatch, _query=null) => {
         slides.slides = allSlides;
         slides.slideLists = allSlideLists;
         cases.cases = allCases;
+        cases.casesComments = allCasesComments;
     }
 
     if (query) {

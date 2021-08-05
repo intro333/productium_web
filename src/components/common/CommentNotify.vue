@@ -1,7 +1,7 @@
 <template>
   <div @click="goToSlideAndCaseL()"
        class="p-notifications-item"
-       :class="{'rgb-base-10' : notify.notifyInfo.status === 'notRead'}">
+       :class="{'rgb-base-10' : notify.notifyInfo[currentUser.id].status === 'notRead'}">
     <div class="nf-header">
       <div class="nf-header-user-icon"
            :style="{'background-color': notify.user.color}">{{notify.user.shortName}}</div>
@@ -27,6 +27,9 @@ export default {
     notify: Object
   },
   computed: {
+    currentUser() {
+      return this.getCurrentUser();
+    },
     slideOrder() {
       const foundSlide = this.getSlides()
           .find(_s => _s.id === this.notify.slideId);
@@ -38,12 +41,12 @@ export default {
   },
   methods: {
     ...mapActions(['goToSlideAndCase']),
-    ...mapGetters(['getSlides']),
+    ...mapGetters(['getSlides', 'getCurrentUser']),
     getNotifyDateTime(dateTime) {
       return getDefaultDateFormat(dateTime);
     },
     goToSlideAndCaseL() {
-      this.notify.notifyInfo.status = 'read';
+      this.notify.notifyInfo[this.currentUser.id].status = 'read';
       this.goToSlideAndCase(this.notify);
     },
   },

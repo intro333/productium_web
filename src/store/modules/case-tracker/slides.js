@@ -153,7 +153,7 @@ const actions = {
       const comments = getters.getCasesComments;
       comments.forEach(_c => {
         if (_c.slideId === slide.id) {
-          _c.notifyInfo.status = 'archived';
+          _c.notifyInfo[currentUser.id].status = 'archived';
         }
       });
     };
@@ -502,6 +502,7 @@ const actions = {
 const mutations = {
   /* SLIDES */
   SET_ALL_SLIDES_STATE(state, newState) {
+    console.log('newState', newState);
     Object.keys(newState).forEach(_k => {
       state[_k] = newState[_k];
     });
@@ -530,6 +531,31 @@ const mutations = {
   RESET_SLIDE_LISTS_STATUS(state, status) {
     state.slideLists.forEach(_s => {
       _s[status] = false;
+    });
+  },
+  UPDATE_SLIDE_LISTS_FROM_SOCKET(state, newSlideLists) {
+    const ids = newSlideLists.map(_nsl => _nsl.id);
+    state.slideLists = state.slideLists.filter(_sl => _sl.id.indexOf(ids) !== -1);
+    newSlideLists.forEach(_nsl => {
+      const foundSl = state.slideLists.find(_osl => _osl.id === _nsl.id);
+      if (foundSl) {
+        Object.assign(foundSl, _nsl);
+      } else {
+        state.slideLists.push(_nsl);
+      }
+    });
+  },
+  UPDATE_SLIDES_FROM_SOCKET(state, newSlide) {
+    const ids = newSlide.map(_ns => _ns.id);
+    state.slides = state.slides.filter(_s => _s.id.indexOf(ids) !== -1);
+    newSlide.forEach(_ns => {
+      const foundSlide = state.slides.find(_os => _os.id === _ns.id);
+      if (foundSlide) {
+        console.log('foundSlide', foundSlide)
+        foundSlide.imgUrl = _ns.imgUrl;
+      } else {
+        state.slideLists.push(_ns);
+      }
     });
   },
   /* SLIDE LISTS */
