@@ -237,18 +237,7 @@ const actions = {
                 userId: currentUser.id
             }).then(response => {
                 const data = response.data;
-                Object.keys(data.shareUsers).forEach(_v => {
-                    const _user = data.shareUsers[_v]
-                    if (_user.id !== currentUser.id) {
-                        commit('ADD_SHARE_USER', new CurrentUserModel(
-                          _user.id,
-                          _user.fullName,
-                          shortFullName(_user.fullName),
-                          '#F30C0C',
-                          _user.projects
-                        ));
-                    }
-                }) ;
+                dispatch('setShareUsers', {users: data.shareUsers, currentUser});
                 setProjectDataLoad(data.projects, commit, dispatch);
                 resolve(data.projects);
             }, error => {
@@ -363,10 +352,17 @@ const actions = {
                     projectId,
                     userId: currentUser.id
                 }).then(response => {
-                    const project = response.data;
+                    const data = response.data;
+                    const project = data.project;
+                    const shareUsers = data.shareUsers;
+                    dispatch('setShareUsers', {users: shareUsers, currentUser});
                     commit('SET_PROJECT', project);
                     project.slides.slides.forEach(_slide => {
-                        commit('PUSH_SLIDE', _slide);
+                        dispatch('getImgByUrl', _slide.imgUrl)
+                          .then(_imgBase64 => {
+                              _slide.imgBase64 = _imgBase64;
+                              commit('PUSH_SLIDE', _slide);
+                          });
                     });
                     project.slides.slideLists.forEach(_sl => {
                         commit('PUSH_SLIDE_LIST', _sl);
@@ -375,6 +371,7 @@ const actions = {
                         commit('PUSH_CASE', _case);
                     });
                     project.cases.casesComments.forEach(_cm => {
+                        // _cm.notifyInfo[currentUser.id] = { status: "read" };
                         commit('ADD_CASES_COMMENT', _cm);
                     });
                     delete project.slides;
@@ -388,7 +385,23 @@ const actions = {
             }
         });
     },
-
+    setShareUsers({commit}, payload) {
+        const {users, currentUser} = payload;
+        if (Object.keys(users).length) {
+            Object.keys(users).forEach(_v => {
+                const _user = users[_v]
+                if (_user.id !== currentUser.id) {
+                    commit('ADD_SHARE_USER', new CurrentUserModel(
+                      _user.id,
+                      _user.fullName,
+                      shortFullName(_user.fullName),
+                      '#F30C0C',
+                      _user.projects
+                    ));
+                }
+            });
+        }
+    },
 };
 
 const mutations = {

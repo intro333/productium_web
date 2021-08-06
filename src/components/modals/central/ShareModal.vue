@@ -76,26 +76,7 @@ export default {
   name: "ShareModal",
   props: ['contextMenu'],
   data: () => ({
-    // shareUsers: [
-    //   {
-    //     name: 'Dmitriy',
-    //     shortName: 'DD',
-    //     role: 'editor',
-    //     color: '#7c4a4a',
-    //   },
-    //   {
-    //     name: 'Alex Gour',
-    //     shortName: 'AG',
-    //     role: 'guest',
-    //     color: '#F30C0C',
-    //   },
-    //   {
-    //     name: 'Dmitriy M',
-    //     shortName: 'DM',
-    //     role: 'manager',
-    //     color: '#466a96',
-    //   },
-    // ]
+
   }),
   computed: {
     cm() {

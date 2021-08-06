@@ -286,12 +286,15 @@ const actions = {
           })
     );
   },
-  readAllMessageByIds({commit, getters, dispatch}, ids) {
-    const currentUser = getters.getCurrentUser;
-    commit('READ_ALL_MESSAGES_BY_IDS', { ids, currentUser });
-    setTimeout(() => {
-      dispatch('updateCaseInfoOnServer');
-    }, 500);
+  readAllMessageByIds({commit, getters, dispatch}, commentsIds) {
+    return new Promise((resolve) => {
+      const currentUser = getters.getCurrentUser;
+      commit('READ_ALL_MESSAGES_BY_IDS', { commentsIds, currentUser });
+      setTimeout(() => {
+        dispatch('updateCaseInfoOnServer');
+        resolve(true);
+      }, 500);
+    });
   },
   /* SHAPES */
   addShapeToCase({commit, dispatch}, shapeObj) {
@@ -337,10 +340,8 @@ const actions = {
     return new Promise((resolve) => {
       const activeCase = payload._case || state.cases.find(_c => _c.id === state.selectedCase.id);
       if (activeCase) {
-        console.log('activeCase', activeCase);
         activeCase.children = activeCase.children
           .filter(_ch => {
-            console.log('_ch', _ch);
             if (_ch.id !== _caseChild.id) {
               return _ch;
             }
@@ -508,11 +509,8 @@ const mutations = {
     });
   },
   READ_ALL_MESSAGES_BY_IDS(state, payload) {
-    console.log(11, payload.ids)
-    console.log(22, payload.currentUser.id)
     state.casesComments.forEach(_c => {
-      console.log(33, _c.notifyInfo)
-      if (_c.id.indexOf(payload.ids) !== -1) {
+      if (payload.commentsIds.indexOf(_c.id) !== -1) {
         _c.notifyInfo[payload.currentUser.id].status = 'read';
       }
     });

@@ -52,26 +52,29 @@
     <div class="t-pan-right">
       <div class="t-pan-user">
         <div class="p-flex-center tp-icon-user-i t-pan-user__item"
-             style="background-color: #EC368D;">D</div>
-        <div class="p-flex-center tp-icon-user-i t-pan-user__item"
-             style="background-color: #F30C0C;">4</div>
+             style="background-color: #EC368D;">{{currentUser.shortName}}</div>
+        <div v-if="shareUsers.length"
+             class="p-flex-center tp-icon-user-i t-pan-user__item"
+             style="background-color: #F30C0C;">{{shareUsers.length}}</div>
       </div>
-      <div @click="openShareModal"
-           class="t-pan-share">
-        <img src="@/assets/img/common/share2.svg"
-             class="t-pan-share-icon"
-             alt="">
-        <span class="t-pan-share-text">Share</span>
-      </div>
-      <div @click="openContextMenu('ScaleModal', 208, 'scaleRef', true, null, 20)"
-           ref="scaleRef"
-           class="t-pan-share-box"
-           :class="{active: (contextMenu.state && contextMenu.type === 'ScaleModal')}">
-        <p class="tp-icon-item tp-text tp-text-cursor-default">{{zoomPercent}}%</p>
-        <img src="@/assets/img/common/selectArrow.svg"
-             class="tp-icon-item select-arrow"
-             style="padding-right: 0;"
-             alt="">
+      <div style="display: flex">
+        <div @click="openShareModal"
+             class="t-pan-share">
+          <img src="@/assets/img/common/share2.svg"
+               class="t-pan-share-icon"
+               alt="">
+          <span class="t-pan-share-text">Share</span>
+        </div>
+        <div @click="openContextMenu('ScaleModal', 208, 'scaleRef', true, null, 20)"
+             ref="scaleRef"
+             class="t-pan-share-box"
+             :class="{active: (contextMenu.state && contextMenu.type === 'ScaleModal')}">
+          <p class="tp-icon-item tp-text tp-text-cursor-default">{{zoomPercent}}%</p>
+          <img src="@/assets/img/common/selectArrow.svg"
+               class="tp-icon-item select-arrow"
+               style="padding-right: 0;"
+               alt="">
+        </div>
       </div>
     </div>
     <!-- COMPONENTS -->
@@ -231,6 +234,7 @@ export default {
     // });
   },
   async mounted() {
+    console.log('currentUser', this.currentUser)
     window.addEventListener('wheel', this.handleScroll);
     const vl = localStorage.getItem('video_learning');
     if (!vl) {
@@ -245,6 +249,15 @@ export default {
     window.removeEventListener('wheel', this.handleScroll);
   },
   computed: {
+    currentUser() {
+      return this.getCurrentUser();
+    },
+    selectedProject() {
+      return this.getSelectedProject();
+    },
+    shareUsers() {
+      return this.getShareUsers().filter(_user => _user.projects.indexOf(this.selectedProject.id) !== -1);
+    },
     isAuthorized() {
       return this.geIsAuthorized();
     },
@@ -267,7 +280,7 @@ export default {
       'setContextMenuBase', 'setCentralModal', 'fetchIpAddressAndSetOsInfo', 'fetchAdditionalIpInfo',
       'login', 'setCurrentUser', 'shareProject', 'updateAllDataPerTime']),
     ...mapGetters(['getContextMenuBase', 'getCentralModal', 'getTooltip', 'getIsLoading', 'getNotAvailableForMobile',
-      'getActiveSlide', 'geIsAuthorized']),
+      'getActiveSlide', 'geIsAuthorized', 'getShareUsers', 'getSelectedProject', 'getCurrentUser']),
     handleScroll(e) {
       const self = this;
       window.clearTimeout( this.isScrolling );

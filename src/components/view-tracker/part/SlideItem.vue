@@ -49,6 +49,13 @@ export default {
   data: () => ({
     isShowSlideOptions: false,
   }),
+  // mounted() {
+  //   if (!this.slide.imgBase64 && this.slide.imgUrl) {
+  //     this.getImgByUrl(this.slide.imgUrl).then(_imgBase64 => {
+  //       console.log('_imgBase64', _imgBase64)
+  //     });
+  //   }
+  // },
   computed: {
     currentUser() {
       return this.getCurrentUser();
@@ -84,7 +91,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setContextMenuBase', 'removeSlide', 'selectSlide']),
+    ...mapActions(['setContextMenuBase', 'removeSlide', 'selectSlide', 'getImgByUrl']),
     ...mapGetters(['getCasesComments', 'getContextMenuBase', 'getActiveSlideList', 'getCurrentUser']),
     openOptionsMenu(width, _refStr) {
       const _ref = this.$refs[_refStr];

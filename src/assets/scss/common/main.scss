@@ -130,8 +130,13 @@ p {
           width: 16px;
           height: 15px;
         }
-        &:hover, &.is-hovered {
+        &:hover {
           background-color: $color-base;
+        }
+        &.is-hovered {
+          background-color: $color-base;
+          border-top: 1px solid #051923;
+          border-bottom: 1px solid #051923;
         }
       }
       &-shape {

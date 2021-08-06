@@ -30,17 +30,14 @@ export default {
   },
   data: () => ({
     pCommentsHeight: 'auto',
-    selectedCommentId: 0
+    selectedCommentId: 0,
+    idsCommentsToRemove: [],
   }),
   mounted() {
+    this.fillCommentsIdsToRemove(this.comments);
     setTimeout(() => {
-      const ids = this.comments.filter(_c => {
-        if (_c.notifyInfo[this.currentUser.id].status === 'notRead') {
-          return _c;
-        }
-      });
-      if (ids.length) {
-        this.readAllMessageByIds(ids);
+      if (this.idsCommentsToRemove.length) {
+        this.readAllMessageByIds(this.idsCommentsToRemove).then(() => this.idsCommentsToRemove = []);
       }
     }, 1000);
   },
@@ -74,6 +71,16 @@ export default {
           this.pCommentsHeight = 'auto';
         }
       }
+    },
+    fillCommentsIdsToRemove(comments) {
+      comments.forEach(_c => {
+        if (_c.notifyInfo[this.currentUser.id].status === 'notRead') {
+          this.idsCommentsToRemove.push(_c.id);
+        }
+        if (_c.children) {
+          this.fillCommentsIdsToRemove(_c.children);
+        }
+      });
     },
   },
 }
