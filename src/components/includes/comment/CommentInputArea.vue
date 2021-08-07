@@ -17,7 +17,7 @@
           >
           <textarea :ref="'commentInputAreaRef_' + parentKey"
                     @keyup.enter="sendMessage"
-                    @keyup.esc="escTextareaFunc()"
+                    @keyup.esc="escTextareaFuncL()"
                     @input="enteringMessage"
                     class="pc-input-area-text p-textarea-custom scroll-textarea"
                     :class="{'pc-input-area-text-empty': textIsEmpty,
@@ -51,7 +51,11 @@
       />
     </div>
     <div class="pc-input-area-right">
-      <span class="pc-input-area-descr">{{ $t('comments.pressEnterMessage') }}</span>
+      <span v-if="this.message.length <= messageLength"
+            class="pc-input-area-descr">{{ $t('comments.pressEnterMessage') }}</span>
+      <span v-if="this.message.length > messageLength"
+            class="pc-input-area-descr pc-input-area-descr-err"
+      >{{ $t('comments.messageErr', {counts: messageLength}) }}</span>
     </div>
   </div>
 </template>
@@ -72,12 +76,14 @@ export default {
     comment: Object,
     replyUser: Object,
     checkPCommentsBlockHeightFunc: Function,
-    escTextareaFunc: Function,
+    escTextareaFunc: [Function, undefined],
   },
   mixins: [ModalsMixin],
   data: () => ({
     textIsEmpty: true,
-    images: [] /* { src: '', orientation: '' } */
+    images: [], /* { src: '', orientation: '' } */
+    message: '',
+    messageLength: 500,
   }),
   computed: {
     imagesIsCanUpload() {
@@ -141,42 +147,51 @@ export default {
       if (e.shiftKey) return; /* Если нажали Shift+Enter, не отправляем сообщение, а только переносим строку */
       if (_val === '' && !this.images.length) return;
       if (_val !== '' || this.images.length) {
-        this.addCaseComment({
-          parentKey: this.parentKey,
-          replyUser: this.replyUser,
-          isUserLink: this.isUserLink,
-          comment: this.comment,
-          commentMessage: _val.replace(/^\s+|\s+$/g, ''),
-          images: this.images
-        }).then(() => {
-          this.images = [];
-          setTimeout(() => {
-            if (!this.parentKey) {
-              const _ref = this.$parent.$refs['pCommentsListRef'];
-              if (_ref) {
-                _ref.scrollTop = _ref.scrollHeight;
+        if (_val.length <= this.messageLength) {
+          this.addCaseComment({
+            parentKey: this.parentKey,
+            replyUser: this.replyUser,
+            isUserLink: this.isUserLink,
+            comment: this.comment,
+            commentMessage: _val.replace(/^\s+|\s+$/g, ''),
+            images: this.images
+          }).then(() => {
+            this.images = [];
+            setTimeout(() => {
+              if (!this.parentKey) {
+                const _ref = this.$parent.$refs['pCommentsListRef'];
+                if (_ref) {
+                  _ref.scrollTop = _ref.scrollHeight;
+                }
+              } else {
+                const commentItemBoxRef = this.$parent.$refs['commentItemBoxRef_' + this.parentKey];
+                if (commentItemBoxRef) {
+                  commentItemBoxRef.scrollIntoView({
+                    block: 'end',
+                    inline: 'nearest'
+                  });
+                }
               }
-            } else {
-              const commentItemBoxRef = this.$parent.$refs['commentItemBoxRef_' + this.parentKey];
-              if (commentItemBoxRef) {
-                commentItemBoxRef.scrollIntoView({
-                  block: 'end',
-                  inline: 'nearest'
-                });
-              }
-            }
-          }, 20);
-        });
+            }, 20);
+          });
+        }
         if (this.parentKey) { /* Current user message */
-          this.escTextareaFunc();
+          this.escTextareaFuncL();
         } else { /* Reply message */
-          this.commentInputAreaRef.value = '';
-          this.textIsEmpty = true;
+          if (_val.length <= this.messageLength) {
+            this.commentInputAreaRef.value = '';
+            this.textIsEmpty = true;
+          }
         }
       }
     },
+    escTextareaFuncL() {
+      if (this.escTextareaFunc) {
+        this.escTextareaFunc();
+      }
+    },
     enteringMessage($event) {
-      const _val = $event.target.value;
+      const _val = this.message = $event.target.value;
       const breakLines = (_val.match(/\n/g)||[]).length;
       const totalChars =(_val).length; /* Символы, включая переносы строк */
       if ((breakLines === 1 && totalChars === 1) || ((breakLines === 0 && totalChars === 0))) {

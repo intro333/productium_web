@@ -5,6 +5,9 @@ import {getRandomInt} from "@/functions/calculations";
 import router from "@/router";
 import {mockSlideLists, mockSlides} from "@/data/testData";
 import {uuidHash} from "@/functions/conversation";
+import {totalLimit} from "@/data/consts";
+import {SimpleNotifyModel} from "@/models/modals/SimpleNotifyModel";
+import i18n from "@/main";
 
 export const state = {
   slides: [],
@@ -42,62 +45,81 @@ const actions = {
   },
   pushSlide({commit, getters, dispatch}, payload) {
     dispatch('setIsLoading', true);
-    commit('RESET_SLIDES_STATUS', 'isSelected');
-    commit('RESET_SLIDE_LISTS_STATUS', 'isSelected');
     return new Promise((resolve) => {
-      const currentUser = getters.getCurrentUser;
-      const newSlide = new SlideModel({
-        id: uuidHash(),
-        slideState: 'in-work',
-        projectId: payload.projectId,
-        order: 0,
-        img: null,
-        isSelected: true
+      let slidesOfProjectLength = 0;
+      state.slides.forEach(_s => {
+        if (_s.projectId === payload.projectId) {
+          slidesOfProjectLength++;
+        }
       });
-      const listId = uuidHash();
-      const newSlideList = new SlideList({
-        id: listId,
-        slideId: newSlide.id,
-        name: 'Лист' + listId,
-        isSelected: true
-      });
-      commit('PUSH_SLIDE', newSlide);
-      commit('PUSH_SLIDE_LIST', newSlideList);
       setTimeout(() => {
-        const _slides = [];
-        state.slides.forEach((_s, _k) => {
-          if (_s.projectId === payload.projectId) {
-            const obj = Object.assign({}, state.slides[_k]);
-            obj.canvas = null;
-            obj.imgBase64 = null;
-            obj.imgObj = null;
-            _slides.push(obj);
-          }
-        });
-        window.axios.post('api/projects-all/add-slide', {
-          userId: currentUser.id,
-          projectId: payload.projectId,
-          slideData: {
-            slides: _slides,
-            slideLists: state.slideLists.filter(_l => _slides.find(_s => _s.id === _l.slideId)),
-          }
-        }).then(() => {
-          // const data = response.data;
+        if (slidesOfProjectLength <= totalLimit.slides-1) {
+          commit('RESET_SLIDES_STATUS', 'isSelected');
+          commit('RESET_SLIDE_LISTS_STATUS', 'isSelected');
+          const currentUser = getters.getCurrentUser;
+          const newSlide = new SlideModel({
+            id: uuidHash(),
+            slideState: 'in-work',
+            projectId: payload.projectId,
+            order: 0,
+            img: null,
+            isSelected: true
+          });
+          const listId = uuidHash();
+          const newSlideList = new SlideList({
+            id: listId,
+            slideId: newSlide.id,
+            name: 'Лист' + listId,
+            isSelected: true
+          });
+          commit('PUSH_SLIDE', newSlide);
+          commit('PUSH_SLIDE_LIST', newSlideList);
           setTimeout(() => {
-            const query = payload.query ? Object.assign(payload.query, {slideId: newSlide.id, slideListId: newSlideList.id}) : null;
-            dispatch('selectCaseListAndCaseOfActiveSlide', {
-              slide: newSlide,
-              isNew: true,
-              query,
-              noRoute: payload.noRoute
+            const _slides = [];
+            state.slides.forEach((_s, _k) => {
+              if (_s.projectId === payload.projectId) {
+                const obj = Object.assign({}, state.slides[_k]);
+                obj.canvas = null;
+                obj.imgBase64 = null;
+                obj.imgObj = null;
+                _slides.push(obj);
+              }
+            });
+            window.axios.post('api/projects-all/add-slide', {
+              userId: currentUser.id,
+              projectId: payload.projectId,
+              slideData: {
+                slides: _slides,
+                slideLists: state.slideLists.filter(_l => _slides.find(_s => _s.id === _l.slideId)),
+              }
             }).then(() => {
-              resolve(newSlide);
+              // const data = response.data;
+              setTimeout(() => {
+                const query = payload.query ? Object.assign(payload.query, {slideId: newSlide.id, slideListId: newSlideList.id}) : null;
+                dispatch('selectCaseListAndCaseOfActiveSlide', {
+                  slide: newSlide,
+                  isNew: true,
+                  query,
+                  noRoute: payload.noRoute
+                }).then(() => {
+                  resolve(newSlide);
+                });
+              }, 20);
+            }, error => {
+              console.log('error pushSlide', error);
             });
           }, 20);
-        }, error => {
-          console.log('error pushSlide', error);
-        });
-      }, 20);
+        } else {
+          dispatch('setIsLoading', false);
+          dispatch('setSimpleNotify', new SimpleNotifyModel()
+            .set(true,
+              450,
+              i18n.t('limit.exceeded'),
+              [i18n.t('limit.slides'), totalLimit.slides],
+              5000
+            ))
+        }
+      }, 200);
     });
   },
   pushSlide2({commit, getters, dispatch}) {
@@ -313,7 +335,28 @@ const actions = {
     });
   },
   /* OTHER */
-  setActiveTool({commit}, tool) {
+  setActiveTool({commit, getters, dispatch}, tool) {
+    if (tool === 'superTool') {
+      const cases = getters.getCases;
+      let casesOfSlidesLength = 0;
+      cases.forEach(_case => {
+        if (_case.slideId === state.activeSlide.id) {
+          casesOfSlidesLength++;
+        }
+      });
+      setTimeout(() => {
+        if (casesOfSlidesLength === totalLimit.cases) {
+          commit('SET_ACTIVE_TOOL', 'moveTool');
+          dispatch('setSimpleNotify', new SimpleNotifyModel()
+            .set(true,
+              450,
+              i18n.t('limit.exceeded'),
+              [i18n.t('limit.cases'), totalLimit.cases],
+              5000
+            ))
+        }
+      }, 100);
+    }
     commit('SET_ACTIVE_TOOL', tool);
   },
   setActiveShapeTool({commit}, shapeTool) {
@@ -502,7 +545,6 @@ const actions = {
 const mutations = {
   /* SLIDES */
   SET_ALL_SLIDES_STATE(state, newState) {
-    console.log('newState', newState);
     Object.keys(newState).forEach(_k => {
       state[_k] = newState[_k];
     });

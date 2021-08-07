@@ -58,6 +58,7 @@ export const messages = {
     comments: {
       comments: "Комментарии",
       pressEnterMessage: "Нажмите ENTER, чтобы отправить комментарий",
+      messageErr: "Сообщение не должно превышать {counts} символов",
       writeComment: 'Напишите комментарий...',
       imageToComment: 'Изображение к комментарию',
     },
@@ -78,6 +79,14 @@ export const messages = {
       guest: "Наблюдатель",
       editor: "Редактор",
       manager: "Управляющий",
+    },
+    limit: {
+      exceeded: 'Превышен лимит',
+      projects: 'Количество проектов не может превышать: ',
+      slides: 'Количество слайдов не может превышать: ',
+      cases: 'Количество кейсов не может превышать: ',
+      shapeOfCases: 'Количество аннотаций не может превышать: ',
+      comments: 'Количество комментариев не может превышать: ',
     }
   },
 
@@ -140,6 +149,7 @@ export const messages = {
     comments: {
       comments: "Comments",
       pressEnterMessage: "Press ENTER to send a comment",
+      messageErr: "Сообщение не должно превышать {counts} символов",
       writeComment: 'Write a comment...',
       imageToComment: 'Image to comment',
     },
@@ -160,6 +170,14 @@ export const messages = {
       guest: "Guest",
       editor: "Editor",
       manager: "Manager",
+    },
+    limit: {
+      exceeded: 'Превышен лимит',
+      projects: 'Количество проектов не может превышать: ',
+      slides: 'Количество слайдов не может превышать: ',
+      cases: 'Количество кейсов не может превышать: ',
+      shapeOfCases: 'Количество аннотаций не может превышать: ',
+      comments: 'Количество комментариев не может превышать: ',
     }
   },
 }

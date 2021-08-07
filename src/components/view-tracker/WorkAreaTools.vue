@@ -85,13 +85,16 @@ export default {
   name: "WorkAreaTools",
   mixins: [ModalsMixin, SlideMixin],
   computed: {
+    cases() {
+      return this.getCases();
+    },
     contextMenu() {
       return this.getContextMenuBase();
     },
   },
   methods: {
     ...mapActions(['setContextMenuBase']),
-    ...mapGetters(['getContextMenuBase']),
+    ...mapGetters(['getContextMenuBase', 'getCases']),
     openContextMenu(type, width, _refStr, isRight = null, _body = null, trianglePosition = 'up') {
       if (this.$refs[_refStr] && this.$refs[_refStr].getBoundingClientRect()) {
         let modalPosition = getModalPositionFunc(this.$refs[_refStr], isRight, width);

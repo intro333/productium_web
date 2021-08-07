@@ -104,7 +104,7 @@ export default {
       'changeCaseElemFields', 'addShapeToCase', 'pushCase', 'selectCaseChild', 'setActiveColor', 'openCase',
       'clearCaseChildren', 'changeSlideZoom', 'getImgByUrl', 'updateSlideInfoOnServer']),
     ...mapGetters(['getSlides', 'getActiveSlide',  'getActiveSlideList', 'getActiveTool', 'getActiveShapeTool', 'getCanvasInfo',
-      'getSelectedCase', 'getCases', 'getActiveColor']),
+      'getSelectedCase', 'getActiveColor']),
     fetchSlidesL() {
       const query = this.$route.query;
       if (query && query.projectId) {
@@ -347,6 +347,9 @@ export default {
                         shape.set({ id: shapeObj.id});
                         slide.canvas.renderAll();
                       }
+                    }).catch(() => {
+                      const objToRemove = slide.canvas.getObjects()[6];
+                      slide.canvas.remove(objToRemove);
                     });
                   }
                 }, 30);
@@ -374,6 +377,9 @@ export default {
                     lastObj.set({ hasControls: false});
                     slide.canvas.renderAll();
                   }
+                }).catch(() => {
+                  const objToRemove = slide.canvas.getObjects()[6];
+                  slide.canvas.remove(objToRemove);
                 });
               }
             }
@@ -430,36 +436,38 @@ export default {
                 _this.drawStarted = 'start';
               } else if (_this.drawStarted === 'start') {
                 const shape = slide.canvas.getActiveObject();
-                const mouse = slide.canvas.getPointer(e.e);
-                const w = Math.abs(mouse.x - _this.drawX),
-                    h = Math.abs(mouse.y - _this.drawY);
-                if (!w || !h) {
-                  return false;
-                }
-                if (shapeType === 'rectangle') {
-                  shape.set('width', w).set('height', h);
-                } else if (shapeType === 'ellipse') {
-                  let rx = Math.abs(w) / 2;
-                  let ry = Math.abs(h) / 2;
-                  if (rx > shape.strokeWidth) {
-                    rx -= shape.strokeWidth / 2
+                if (shape) {
+                  const mouse = slide.canvas.getPointer(e.e);
+                  const w = Math.abs(mouse.x - _this.drawX),
+                      h = Math.abs(mouse.y - _this.drawY);
+                  if (!w || !h) {
+                    return false;
                   }
-                  if (ry > shape.strokeWidth) {
-                    ry -= shape.strokeWidth / 2
+                  if (shapeType === 'rectangle') {
+                    shape.set('width', w).set('height', h);
+                  } else if (shapeType === 'ellipse') {
+                    let rx = Math.abs(w) / 2;
+                    let ry = Math.abs(h) / 2;
+                    if (rx > shape.strokeWidth) {
+                      rx -= shape.strokeWidth / 2
+                    }
+                    if (ry > shape.strokeWidth) {
+                      ry -= shape.strokeWidth / 2
+                    }
+                    shape.set({ rx: rx, ry: ry});
                   }
-                  shape.set({ rx: rx, ry: ry});
+                  if (_this.drawX > mouse.x) {
+                    shape.set({originX: 'right'});
+                  } else {
+                    shape.set({originX: 'left'});
+                  }
+                  if (_this.drawY > mouse.y){
+                    shape.set({originY: 'bottom'});
+                  } else {
+                    shape.set({originY: 'top'});
+                  }
+                  slide.canvas.renderAll();
                 }
-                if (_this.drawX > mouse.x) {
-                  shape.set({originX: 'right'});
-                } else {
-                  shape.set({originX: 'left'});
-                }
-                if (_this.drawY > mouse.y){
-                  shape.set({originY: 'bottom'});
-                } else {
-                  shape.set({originY: 'top'});
-                }
-                slide.canvas.renderAll();
               }
             }
           }); /* MOUSE MOVE END */

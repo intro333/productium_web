@@ -28,7 +28,7 @@ const i18n = new VueI18n({
   fallbackLocale: 'en', // set fallback locale
   messages, // set locale messages
 });
-
+export default i18n;
 router.beforeEach((to, from, next) => {
   if (!to.meta.middleware) {
     return next()

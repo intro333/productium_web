@@ -27,7 +27,7 @@ export default {
   mounted() {
     this.timeoutId = setTimeout(() => {
       this.close();
-    }, 1000);
+    }, this.nf.closeTimeout);
   },
   methods: {
     ...mapActions(['setSimpleNotifyInside']),

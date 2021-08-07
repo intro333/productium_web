@@ -14,6 +14,10 @@ import {state as slidesState} from './slides';
 import {state as casesState} from './cases';
 import {CurrentUserModel} from "@/models/CurrentUserModel";
 import {shortFullName} from "@/functions/conversation";
+import {totalLimit} from "@/data/consts";
+import {SimpleNotifyModel} from "@/models/modals/SimpleNotifyModel";
+import i18n from "@/main";
+// import {messages as i18n} from '@/plugins/i18n';
 
 const state = {
     projects: [],
@@ -196,36 +200,47 @@ const actions = {
         });
     },
     addNewProject({commit, getters, dispatch}) {
-        const currentUser = getters.getCurrentUser;
-        state.selectedProject.isSelected = false;
-        const slides = {slides: [], slideLists: []};
-        const cases = {cases: [], casesComments: []};
-        dispatch('setIsLoading', true);
-        return new Promise(() => {
-            const id = state.projects.length+1;
-            window.axios.post('api/projects-all/add-project', {
-                name: 'Untitled' + id,
-                activityStatus: 'active',
-                creator: currentUser.id,
-                slides,
-                cases,
-                userId: currentUser.id,
-            }).then(response => {
-                const newProject = new ProjectModel(response.data);
-                delete newProject.slides;
-                delete newProject.cases;
-                commit('SET_PROJECT', newProject);
-                dispatch('pushSlide', {
-                    projectId: newProject.id,
-                    query: {projectId: newProject.id},
-                    noRoute: true
-                }).then(() => {
-                    dispatch('selectProject', newProject);
+        if (state.projects.length <= totalLimit.projects-1) {
+            const currentUser = getters.getCurrentUser;
+            state.selectedProject.isSelected = false;
+            const slides = {slides: [], slideLists: []};
+            const cases = {cases: [], casesComments: []};
+            dispatch('setIsLoading', true);
+            return new Promise(() => {
+                const id = state.projects.length+1;
+                window.axios.post('api/projects-all/add-project', {
+                    name: 'Untitled' + id,
+                    activityStatus: 'active',
+                    creator: currentUser.id,
+                    slides,
+                    cases,
+                    userId: currentUser.id,
+                }).then(response => {
+                    const newProject = new ProjectModel(response.data);
+                    delete newProject.slides;
+                    delete newProject.cases;
+                    commit('SET_PROJECT', newProject);
+                    dispatch('pushSlide', {
+                        projectId: newProject.id,
+                        query: {projectId: newProject.id},
+                        noRoute: true,
+                        isFirstSlide: true
+                    }).then(() => {
+                        dispatch('selectProject', newProject);
+                    });
+                }, error => {
+                    console.log('error addNewProject', error);
                 });
-            }, error => {
-                console.log('error addNewProject', error);
             });
-        });
+        } else {
+            dispatch('setSimpleNotify', new SimpleNotifyModel()
+              .set(true,
+                450,
+                i18n.t('limit.exceeded'),
+                [i18n.t('limit.projects'), totalLimit.projects],
+                5000
+              ))
+        }
     },
 
     /* INIT */
@@ -251,9 +266,9 @@ const actions = {
     // fetchProjects({commit}) {
     //     commit('SET_PROJECTS', mockProjects);
     // },
-    pushProject({commit}) {
-        commit('PUSH_PROJECT', {});
-    },
+    // pushProject({commit}) {
+    //     commit('PUSH_PROJECT', {});
+    // },
     /*  */
     setActiveColor({commit}, color) {
         if (color && color !== '') {

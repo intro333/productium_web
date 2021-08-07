@@ -92,6 +92,8 @@
                      :tooltip="getTooltip" />
     <Loading v-if="getIsLoading()" />
     <NotAvailableForMobile v-if="getNotAvailableForMobile()" />
+    <SimpleNotify v-if="getSimpleNotify().state"
+                  :notify="getSimpleNotify" />
 
     <!-- video -->
     <VideoLearning v-if="isShowVideoLearning"
@@ -122,6 +124,7 @@ import LocaleMixin from "@/components/mixins/LocaleMixin";
 import VueJwtDecode from 'vue-jwt-decode';
 import {CurrentUserModel} from "@/models/CurrentUserModel";
 import {shortFullName} from "@/functions/conversation";
+import SimpleNotify from "@/components/modals/notify/SimpleNotify";
 // import {pushConnection} from "@/components/mixins/pushConnection";
 
 export default {
@@ -140,6 +143,7 @@ export default {
     Loading,
     Tooltip,
     NotAvailableForMobile,
+    SimpleNotify,
     VideoLearning,
   },
   data: () => ({
@@ -234,7 +238,6 @@ export default {
     // });
   },
   async mounted() {
-    console.log('currentUser', this.currentUser)
     window.addEventListener('wheel', this.handleScroll);
     const vl = localStorage.getItem('video_learning');
     if (!vl) {
@@ -280,7 +283,7 @@ export default {
       'setContextMenuBase', 'setCentralModal', 'fetchIpAddressAndSetOsInfo', 'fetchAdditionalIpInfo',
       'login', 'setCurrentUser', 'shareProject', 'updateAllDataPerTime']),
     ...mapGetters(['getContextMenuBase', 'getCentralModal', 'getTooltip', 'getIsLoading', 'getNotAvailableForMobile',
-      'getActiveSlide', 'geIsAuthorized', 'getShareUsers', 'getSelectedProject', 'getCurrentUser']),
+      'getActiveSlide', 'geIsAuthorized', 'getShareUsers', 'getSelectedProject', 'getCurrentUser', 'getSimpleNotify']),
     handleScroll(e) {
       const self = this;
       window.clearTimeout( this.isScrolling );

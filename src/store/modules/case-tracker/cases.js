@@ -7,6 +7,10 @@ import {shapeTitleAutoIncrement} from "@/functions/case-tracker/projectsF";
 import {CaseCommentModel} from "@/models/case-tracker/CaseCommentModel";
 import moment from 'moment';
 import {uuidHash} from "@/functions/conversation";
+import {totalLimit} from "@/data/consts";
+import {SimpleNotifyModel} from "@/models/modals/SimpleNotifyModel";
+import i18n from "@/main";
+import {SimpleNotifyInsideModel} from "@/models/modals/SimpleNotifyInsideModel";
 
 export const state = {
   cases: [],
@@ -31,41 +35,61 @@ const actions = {
       }, 200);
     });
   },
-  pushCase({commit, dispatch}) {
+  pushCase({commit, dispatch, getters}) {
+    const activeSlide = getters.getActiveSlide;
     return new Promise((resolve) => {
-      const query = router.currentRoute.query;
-      if (query && query.slideListId) {
-        // TODO MOCK
-        const caseId = uuidHash();
-        const newSCase = new CaseModel({
-          id: caseId,
-          projectId: parseInt(query.projectId),
-          slideId: query.slideId,
-          slideListId: query.slideListId,
-          title: 'Case ' + (state.cases.length + 1),
-          caseStatus: 'in-work',
-          isOpen: true,
-          discus: '',
-          resolut: '',
-          children: [],
-          order: 0,
-        });
-        commit('PUSH_CASE', newSCase);
-        commit('SET_ACTIVE_TOOL', 'moveTool');
-        setTimeout(() => {
-          dispatch('updateCaseInfoOnServer').then(() => {
-            dispatch('goToSelectedCase', {
-              case: newSCase,
-              reloadWithSlide: true
+      let casesOfSlidesLength = 0;
+      state.cases.forEach(_case => {
+        if (_case.slideId === activeSlide.id) {
+          casesOfSlidesLength++;
+        }
+      });
+      setTimeout(() => {
+        if (casesOfSlidesLength <= totalLimit.cases-1) {
+          const query = router.currentRoute.query;
+          if (query && query.slideListId) {
+            // TODO MOCK
+            const caseId = uuidHash();
+            const newSCase = new CaseModel({
+              id: caseId,
+              projectId: parseInt(query.projectId),
+              slideId: query.slideId,
+              slideListId: query.slideListId,
+              title: 'Case ' + (state.cases.length + 1),
+              caseStatus: 'in-work',
+              isOpen: true,
+              discus: '',
+              resolut: '',
+              children: [],
+              order: 0,
             });
+            commit('PUSH_CASE', newSCase);
+            commit('SET_ACTIVE_TOOL', 'moveTool');
             setTimeout(() => {
-              resolve(newSCase);
-            }, 500);
-          }).catch(err => {
-            console.log('error pushCase', err);
-          });
-        }, 20);
-      }
+              dispatch('updateCaseInfoOnServer').then(() => {
+                dispatch('goToSelectedCase', {
+                  case: newSCase,
+                  reloadWithSlide: true
+                });
+                setTimeout(() => {
+                  resolve(newSCase);
+                }, 500);
+              }).catch(err => {
+                console.log('error pushCase', err);
+              });
+            }, 20);
+          }
+        } else {
+          dispatch('setIsLoading', false);
+          dispatch('setSimpleNotify', new SimpleNotifyModel()
+            .set(true,
+              450,
+              i18n.t('limit.exceeded'),
+              [i18n.t('limit.cases'), totalLimit.cases],
+              5000
+            ))
+        }
+      }, 200);
     });
   },
   selectCase({commit, dispatch}, payload) {
@@ -224,31 +248,49 @@ const actions = {
       const currentUser = getters.getCurrentUser;
       const shareUsers = getters.getShareUsers;
       if (query && query.caseId) {
-        const commentId = uuidHash();
-        const notifyInfo = { [currentUser.id]: { status: "read" } };
-        shareUsers.forEach(_user => { notifyInfo[_user.id] = { status: "notRead" } });
+        let commentsOfCaseLength = 0;
+        state.casesComments.forEach(_s => {
+          if (_s.caseId === query.caseId && _s.notifyInfo[currentUser.id].status !== 'archived') {
+            commentsOfCaseLength++;
+          }
+        });
         setTimeout(() => {
-          const newComment = {
-            id: commentId,
-            projectId: parseInt(query.projectId),
-            slideId: query.slideId,
-            slideListId: query.slideListId,
-            caseId: query.caseId,
-            parent: payload.parentKey || null,
-            message: payload.commentMessage,
-            user: currentUser,
-            images: payload.images,
-            updatedAt: nowDate,
-            notifyInfo,
-            userLink: payload.isUserLink ? {
-              replyUser: payload.replyUser, // TODO по идее при отправке коммента на бэк отправляем лишь id юзера, а при получении данных мы по нему берём нужные данные, ибо они могут поменяться
-              replyCommentId: payload.comment.id
-            } : null,
-          };
-          commit('ADD_CASES_COMMENT', newComment);
-          dispatch('updateCaseInfoOnServer');
-          resolve(newComment);
-        }, 100);
+          if (commentsOfCaseLength <= totalLimit.comments-1) {
+            const commentId = uuidHash();
+            const notifyInfo = { [currentUser.id]: { status: "read" } };
+            shareUsers.forEach(_user => { notifyInfo[_user.id] = { status: "notRead" } });
+            setTimeout(() => {
+              const newComment = {
+                id: commentId,
+                projectId: parseInt(query.projectId),
+                slideId: query.slideId,
+                slideListId: query.slideListId,
+                caseId: query.caseId,
+                parent: payload.parentKey || null,
+                message: payload.commentMessage,
+                user: currentUser,
+                images: payload.images,
+                updatedAt: nowDate,
+                notifyInfo,
+                userLink: payload.isUserLink ? {
+                  replyUser: payload.replyUser, // TODO по идее при отправке коммента на бэк отправляем лишь id юзера, а при получении данных мы по нему берём нужные данные, ибо они могут поменяться
+                  replyCommentId: payload.comment.id
+                } : null,
+              };
+              commit('ADD_CASES_COMMENT', newComment);
+              dispatch('updateCaseInfoOnServer');
+              resolve(newComment);
+            }, 100);
+          } else {
+            dispatch('setIsLoading', false);
+            dispatch('setSimpleNotifyInside', new SimpleNotifyInsideModel()
+              .set(true,
+                300,
+                i18n.t('limit.comments') + totalLimit.comments,
+                1500
+              ))
+          }
+        }, 200);
       }
     });
   },
@@ -305,28 +347,39 @@ const actions = {
       }
       if (foundCase) {
         const children = foundCase.children;
-        shapeObj.id = uuidHash();
-        console.log('shapeObj.id', shapeObj.id);
-        const objsByType = children.filter(_o => _o.shapeType === shapeObj.shapeType);
-        if (objsByType.length) {
-          shapeObj.title = shapeTitleAutoIncrement(shapeObj, objsByType);
-        }
-        if (!foundCase.isOpen) {
-          foundCase.isOpen = true;
-        }
-        children.push(shapeObj);
-        setTimeout(() => {
-          dispatch('updateCaseInfoOnServer').then(() => {
-            // const data = response.data;
-            commit('ADD_SHAPE_TO_CASE', {
-              case: foundCase,
-              children
+        if (children.length <= totalLimit.shapeOfCases-1) {
+          shapeObj.id = uuidHash();
+          const objsByType = children.filter(_o => _o.shapeType === shapeObj.shapeType);
+          if (objsByType.length) {
+            shapeObj.title = shapeTitleAutoIncrement(shapeObj, objsByType);
+          }
+          if (!foundCase.isOpen) {
+            foundCase.isOpen = true;
+          }
+          children.push(shapeObj);
+          setTimeout(() => {
+            dispatch('updateCaseInfoOnServer').then(() => {
+              // const data = response.data;
+              commit('ADD_SHAPE_TO_CASE', {
+                case: foundCase,
+                children
+              });
+              resolve(shapeObj);
+            }).catch(error => {
+              console.log('error addShapeToCase', error);
             });
-            resolve(shapeObj);
-          }).catch(error => {
-            console.log('error addShapeToCase', error);
-          });
-        }, 30);
+          }, 30);
+        } else {
+          commit('SET_ACTIVE_TOOL', 'moveTool');
+          dispatch('setSimpleNotify', new SimpleNotifyModel()
+            .set(true,
+              450,
+              i18n.t('limit.exceeded'),
+              [i18n.t('limit.shapeOfCases'), totalLimit.shapeOfCases],
+              5000
+            ));
+          reject(null);
+        }
       } else {
         reject(null);
       }
@@ -471,7 +524,9 @@ const mutations = {
   REMOVE_CASES_COMMENT(state, payload) {
     state.casesComments = state.casesComments.map(_c => {
       if (_c.id === payload.commentObj.id || _c.parent === payload.commentObj.id) { /* Удаляем и дочерние (если они есть) */
-        _c.notifyInfo[payload.currentUser.id].status = 'archived';
+        Object.keys(_c.notifyInfo).forEach(_k => {
+          _c.notifyInfo[_k].status = 'archived';
+        });
       }
       return _c;
     });
