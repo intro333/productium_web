@@ -40,7 +40,7 @@ const actions = {
     return new Promise((resolve) => {
       let casesOfSlidesLength = 0;
       state.cases.forEach(_case => {
-        if (_case.slideId === activeSlide.id) {
+        if (_case.caseStatus !== 'archived' && _case.slideId === activeSlide.id) {
           casesOfSlidesLength++;
         }
       });
@@ -218,15 +218,21 @@ const actions = {
   openCase({commit}) {
     commit('OPEN_CASE');
   },
+  casesToArchiveBySlideId({commit}, slideId) {
+    commit('CASES_TO_ARCHIVE_BY_SLIDE_ID', slideId);
+  },
   updateCaseInfoOnServer({getters}) {
     return new Promise((resolve, reject) => {
       const project = getters.getSelectedProject;
+      const user = getters.getCurrentUser;
       setTimeout(() => {
         window.axios.post('api/projects-all/add-case', {
           projectId: project.id,
           caseData: {
             cases: state.cases.filter(_c => _c.caseStatus !== 'archived' && _c.projectId === project.id),
             casesComments: state.casesComments
+              .filter(_cCm => _cCm.projectId === project.id &&
+                _cCm.notifyInfo[user.id].status !== 'archived'),
           }
         }).then(() => {
           resolve();
@@ -338,6 +344,17 @@ const actions = {
       }, 500);
     });
   },
+  casesCommentsToArchiveBySlideId({commit, dispatch}, payload) {
+    const {slideId, comments} = payload;
+    comments.forEach(_c => {
+      if (_c.slideId === slideId) {
+        if (_c.children && _c.children.length) {
+          dispatch('casesCommentsToArchiveBySlideId', {comments: _c.children, slideId});
+        }
+        commit('CASE_COMMENT_TO_ARCHIVE', _c);
+      }
+    });
+  },
   /* SHAPES */
   addShapeToCase({commit, dispatch}, shapeObj) {
     return new Promise((resolve, reject) => {
@@ -347,6 +364,7 @@ const actions = {
       }
       if (foundCase) {
         const children = foundCase.children;
+        console.log('children', children)
         if (children.length <= totalLimit.shapeOfCases-1) {
           shapeObj.id = uuidHash();
           const objsByType = children.filter(_o => _o.shapeType === shapeObj.shapeType);
@@ -513,6 +531,13 @@ const mutations = {
   OPEN_CASE(state) {
     state.selectedCase.isOpen = true;
   },
+  CASES_TO_ARCHIVE_BY_SLIDE_ID(state, slideId) {
+    state.cases.forEach(_c => {
+      if (_c.slideId === slideId) {
+        _c.caseStatus = 'archived';
+      }
+    });
+  },
   /* CASE COMMENTS */
   SET_CASES_COMMENTS(state, comments) {
     state.casesComments = comments;
@@ -568,6 +593,11 @@ const mutations = {
       if (payload.commentsIds.indexOf(_c.id) !== -1) {
         _c.notifyInfo[payload.currentUser.id].status = 'read';
       }
+    });
+  },
+  CASE_COMMENT_TO_ARCHIVE(state, comment) {
+    Object.keys(comment.notifyInfo).forEach(_k => {
+      comment.notifyInfo[_k].status = 'archived';
     });
   },
   /* SHAPES */

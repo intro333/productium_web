@@ -43,12 +43,12 @@ const actions = {
       }, 200);
     });
   },
-  pushSlide({commit, getters, dispatch}, payload) {
+  pushSlide({commit, dispatch}, payload) {
     dispatch('setIsLoading', true);
     return new Promise((resolve) => {
       let slidesOfProjectLength = 0;
       state.slides.forEach(_s => {
-        if (_s.projectId === payload.projectId) {
+        if (_s.slideState !== 'archived' && _s.projectId === payload.projectId) {
           slidesOfProjectLength++;
         }
       });
@@ -56,12 +56,11 @@ const actions = {
         if (slidesOfProjectLength <= totalLimit.slides-1) {
           commit('RESET_SLIDES_STATUS', 'isSelected');
           commit('RESET_SLIDE_LISTS_STATUS', 'isSelected');
-          const currentUser = getters.getCurrentUser;
           const newSlide = new SlideModel({
             id: uuidHash(),
             slideState: 'in-work',
             projectId: payload.projectId,
-            order: 0,
+            order: slidesOfProjectLength,
             img: null,
             isSelected: true
           });
@@ -76,9 +75,9 @@ const actions = {
           commit('PUSH_SLIDE_LIST', newSlideList);
           setTimeout(() => {
             const _slides = [];
-            state.slides.forEach((_s, _k) => {
-              if (_s.projectId === payload.projectId) {
-                const obj = Object.assign({}, state.slides[_k]);
+            state.slides.forEach(_s => {
+              if (_s.projectId === payload.projectId && _s.slideState !== 'archived') {
+                const obj = Object.assign({}, _s);
                 obj.canvas = null;
                 obj.imgBase64 = null;
                 obj.imgObj = null;
@@ -86,7 +85,6 @@ const actions = {
               }
             });
             window.axios.post('api/projects-all/add-slide', {
-              userId: currentUser.id,
               projectId: payload.projectId,
               slideData: {
                 slides: _slides,
@@ -167,18 +165,9 @@ const actions = {
     });
   },
   removeSlide({commit, getters, dispatch}, payload) {
-    const currentUser = getters.getCurrentUser;
     const selectedProject = getters.getSelectedProject;
     dispatch('setIsLoading', true);
     const slide = payload.slide;
-    const removeNotifys = () => {
-      const comments = getters.getCasesComments;
-      comments.forEach(_c => {
-        if (_c.slideId === slide.id) {
-          _c.notifyInfo[currentUser.id].status = 'archived';
-        }
-      });
-    };
     return new Promise((resolve) => {
       if (payload.slidesLength > 1) {
         commit('REMOVE_SLIDE', slide);
@@ -202,29 +191,29 @@ const actions = {
         }
         setTimeout(() => {
           const _slides = [];
-          state.slides.forEach((_s, _k) => {
-            const obj = Object.assign({}, state.slides[_k]);
-            obj.canvas = null;
-            obj.imgBase64 = null;
-            obj.imgObj = null;
-            _slides.push(obj);
+          state.slides.forEach(_s => {
+            if (_s.projectId === selectedProject.id && _s.slideState !== 'archived') {
+              const obj = Object.assign({}, _s);
+              obj.canvas = null;
+              obj.imgBase64 = null;
+              obj.imgObj = null;
+              _slides.push(obj);
+            }
           });
           window.axios.post('api/projects-all/add-slide', {
-            userId: currentUser.id,
+            projectId: selectedProject.id,
             slideData: {
               slides: _slides,
-              slideLists: state.slideLists,
-              activeSlide: null,
-              activeSlideList: null,
-              activeTool: "moveTool",
-              activeShapeTool: "rectangleTool",
-              canvasInfo: {
-                canvasWidth: 0,
-                canvasHeight: 0
-              }
+              slideLists: state.slideLists.filter(_l => _slides.find(_s => _s.id === _l.slideId)),
             }
           }).then(() => {
             dispatch('setIsLoading', false);
+            const comments = getters.getCasesComments;
+            dispatch('casesToArchiveBySlideId', slide.id);
+            dispatch('casesCommentsToArchiveBySlideId', {comments, slideId: slide.id});
+            setTimeout(() => {
+              dispatch('updateCaseInfoOnServer');
+            }, 500);
           }, error => {
             console.log('error removeSlide', error);
           });
@@ -235,7 +224,6 @@ const actions = {
         dispatch('pushSlide', {projectId: selectedProject.id});
         resolve();
       }
-      removeNotifys();
     });
   },
   selectSlide({dispatch}, _slide) {
@@ -251,28 +239,22 @@ const actions = {
     commit('SET_ACTIVE_SLIDE', _slide);
   },
   updateSlideInfoOnServer({getters}) {
-    const currentUser = getters.getCurrentUser;
+    const selectedProject = getters.getSelectedProject;
     const _slides = [];
-    state.slides.forEach((_s, _k) => {
-      const obj = Object.assign({}, state.slides[_k]);
-      obj.canvas = null;
-      obj.imgBase64 = null;
-      obj.imgObj = null;
-      _slides.push(obj);
+    state.slides.forEach(_s => {
+      if (_s.projectId === selectedProject.id && _s.slideState !== 'archived') {
+        const obj = _s;
+        obj.canvas = null;
+        obj.imgBase64 = null;
+        obj.imgObj = null;
+        _slides.push(obj);
+      }
     });
     window.axios.post('api/projects-all/add-slide', {
-      userId: currentUser.id,
+      projectId: selectedProject.id,
       slideData: {
         slides: _slides,
-        slideLists: state.slideLists,
-        activeSlide: null,
-        activeSlideList: null,
-        activeTool: "moveTool",
-        activeShapeTool: "rectangleTool",
-        canvasInfo: {
-          canvasWidth: 0,
-          canvasHeight: 0
-        }
+        slideLists: state.slideLists.filter(_l => _slides.find(_s => _s.id === _l.slideId)),
       }
     }).then(() => {
       //
@@ -303,7 +285,7 @@ const actions = {
     });
   },
   /* SLIDE IMAGE */
-  setSlideImg({commit, getters}, file) {
+  setSlideImg({commit, getters, dispatch}, file) {
     const currentUser = getters.getCurrentUser;
     const project = getters.getSelectedProject;
     return new Promise((resolve, reject) => {
@@ -312,24 +294,43 @@ const actions = {
         const foundSlide = state.slides
           .find(_s => _s.id === query.slideId);
         if (foundSlide) {
-          let formData = new FormData();
-          formData.append('file', file);
-          formData.append('userId', currentUser.id);
-          formData.append('projectId', project.id);
-          formData.append('slideId', state.activeSlide.id);
-          window.axios.post('api/projects-all/upload-slide-img', formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data'
+          const isFileSizeCorrect = file.size <= (1 * 1024 * 1024); // Не больше 4MB
+          const isFileTypeCorrect = ['image/png', 'image/jpeg', 'image/jpg', 'image/svg'].indexOf(file.type) !== -1;
+          if (isFileSizeCorrect && isFileTypeCorrect) {
+            let formData = new FormData();
+            formData.append('file', file);
+            formData.append('userId', currentUser.id);
+            formData.append('projectId', project.id);
+            formData.append('slideId', state.activeSlide.id);
+            window.axios.post('api/projects-all/upload-slide-img', formData, {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            }).then(response => {
+              const data = response.data;
+              foundSlide.imgUrl = data.imgUrl;
+              commit('SET_SLIDE_IMG', {file, foundSlide});
+              resolve(data);
+            }, error => {
+              console.log('error setSlideImg', error);
+              reject(error);
+            });
+          } else {
+            let error = '';
+            if (!isFileSizeCorrect) {
+              error = [i18n.t('slide.uploadFileErrorSize'), '4MB'];
+            } else if (!isFileTypeCorrect) {
+              error = [i18n.t('slide.uploadFileErrorType')];
             }
-          }).then(response => {
-            const data = response.data;
-            foundSlide.imgUrl = data.imgUrl;
-            commit('SET_SLIDE_IMG', {file, foundSlide});
-            resolve(data);
-          }, error => {
-            console.log('error setSlideImg', error);
+            dispatch('setSimpleNotify', new SimpleNotifyModel()
+              .set(true,
+                450,
+                i18n.t('slide.uploadFileErrorTitle'),
+                error,
+                3000
+              ))
             reject(error);
-          });
+          }
         }
       }
     });

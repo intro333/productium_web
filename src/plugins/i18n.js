@@ -40,6 +40,9 @@ export const messages = {
       drop1: "перетащите файл сюда, или",
       drop2: "выберите файл",
       import: "импорт",
+      uploadFileErrorTitle: 'Ошибка загрузки файла',
+      uploadFileErrorSize: 'Размер файла не должен превышать: ',
+      uploadFileErrorType: 'Некорректный формат файла',
     },
     case: {
       case: "Кейс",
@@ -172,12 +175,12 @@ export const messages = {
       manager: "Manager",
     },
     limit: {
-      exceeded: 'Превышен лимит',
-      projects: 'Количество проектов не может превышать: ',
-      slides: 'Количество слайдов не может превышать: ',
-      cases: 'Количество кейсов не может превышать: ',
-      shapeOfCases: 'Количество аннотаций не может превышать: ',
-      comments: 'Количество комментариев не может превышать: ',
+      exceeded: 'Limit has been exceeded',
+      projects: 'Number of projects cannot exceed: ',
+      slides: 'Number of slides cannot exceed: ',
+      cases: 'Number of cases cannot exceed: ',
+      shapeOfCases: 'Number of annotations cannot exceed: ',
+      comments: 'Number of comments cannot exceed: ',
     }
   },
 }

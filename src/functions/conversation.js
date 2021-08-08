@@ -40,7 +40,9 @@ export function sortCasesComments(a, b) {
   }
   return 0;
 }
-
+export function sortSlidesByOrder(a, b) {
+  return parseFloat(a.order) - parseFloat(b.order);
+}
 export function shortFullName(fullName) {
   const names = fullName.split(' ');
   return `${names[0][0]}${names[1][0]}`;
@@ -48,4 +50,10 @@ export function shortFullName(fullName) {
 export function uuidHash() {
   // return uuidv4().replace('-', '');
   return uuidv4();
+}
+export function bytesToSize(bytes) {
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  if (bytes === 0) return '0 Byte';
+  const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+  return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
 }

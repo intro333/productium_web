@@ -8,7 +8,7 @@
       <div class="nf-header-user-name">{{notify.user.fullName}}</div>
     </div>
     <p class="nf-short-info nf-date-time rgb-black-50">{{getNotifyDateTime(notify.updatedAt)}}</p>
-    <p class="nf-short-info nf-slide-name rgb-black-50">{{ $t('slide.slide1') }} {{slideOrder+1}}</p>
+<!--    <p class="nf-short-info nf-slide-name rgb-black-50">{{ $t('slide.slide1') }} {{slideOrder+1}}</p>-->
     <textarea class="nf-comment p-textarea-custom tc-disabled"
               readonly disabled
               cols="181"
@@ -30,14 +30,14 @@ export default {
     currentUser() {
       return this.getCurrentUser();
     },
-    slideOrder() {
-      const foundSlide = this.getSlides()
-          .find(_s => _s.id === this.notify.slideId);
-      if (foundSlide) {
-        return foundSlide.order;
-      }
-      return 0;
-    },
+    // slideOrder() {
+    //   const foundSlide = this.getSlides()
+    //       .find(_s => _s.id === this.notify.slideId);
+    //   if (foundSlide) {
+    //     return foundSlide.order;
+    //   }
+    //   return 0;
+    // },
   },
   methods: {
     ...mapActions(['goToSlideAndCase']),

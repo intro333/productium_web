@@ -259,7 +259,11 @@ export default {
       return this.getSelectedProject();
     },
     shareUsers() {
-      return this.getShareUsers().filter(_user => _user.projects.indexOf(this.selectedProject.id) !== -1);
+      if (this.selectedProject) {
+        return this.getShareUsers()
+            .filter(_user => _user.projects.indexOf(this.selectedProject.id) !== -1);
+      }
+      return [];
     },
     isAuthorized() {
       return this.geIsAuthorized();

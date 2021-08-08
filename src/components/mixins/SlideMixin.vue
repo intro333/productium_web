@@ -5,6 +5,7 @@ import {fabric} from "fabric";
 import CanvasMixin from "@/components/mixins/CanvasMixin";
 import {ShapeModel} from "@/models/case-tracker/ShapeModel";
 import {zoomConst} from "@/data/consts";
+import {sortSlidesByOrder} from "@/functions/conversation";
 
 const STATE_IDLE = 'idle';
 const STATE_PANNING = 'panning';
@@ -112,7 +113,7 @@ export default {
             this.getSlides(),
             parseInt(query.projectId),
             query.slideId
-        );
+        ).sort(sortSlidesByOrder);
       } else {
         this.slides = [];
       }

@@ -273,7 +273,7 @@ export default {
     setFile(files) {
       if (files && files[0]) {
         const file = files[0];
-        this.setSlideImg(file);
+        this.setSlideImg(file).then(() => {}).catch(() => {});
       }
     },
     browserResize() {

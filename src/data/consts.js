@@ -13,7 +13,7 @@ export const zoomConst = {
   minZoomOut: 0.1,
 }
 export const totalLimit = {
-  projects: 2,
+  projects: 5,
   slides: 5,
   cases: 5,
   shapeOfCases: 5,

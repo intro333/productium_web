@@ -114,7 +114,7 @@ export default {
                   const files = $event.target.files;
                   if (files && files[0]) {
                     const file = files[0];
-                    this.setSlideImg(file);
+                    this.setSlideImg(file).then(() => {}).catch(() => {});
                   }
                 }
               },
