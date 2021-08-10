@@ -134,6 +134,9 @@ export const messages = {
       drop1: "drag the file here, or",
       drop2: "select a file",
       import: "import",
+      uploadFileErrorTitle: 'File Upload error',
+      uploadFileErrorSize: 'The file size must not exceed: ',
+      uploadFileErrorType: 'Invalid file format',
     },
     case: {
       case: "Case",

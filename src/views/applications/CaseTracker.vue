@@ -125,12 +125,12 @@ import VueJwtDecode from 'vue-jwt-decode';
 import {CurrentUserModel} from "@/models/CurrentUserModel";
 import {shortFullName} from "@/functions/conversation";
 import SimpleNotify from "@/components/modals/notify/SimpleNotify";
-// import {pushConnection} from "@/components/mixins/pushConnection";
+import {pushConnection} from "@/components/mixins/pushConnection";
 
 export default {
   name: "CaseTracker",
   mixins: [ModalsMixin, ProjectMixin, LocaleMixin,
-    // pushConnection
+    pushConnection
   ],
   components: {
     WorkArea,
@@ -169,7 +169,10 @@ export default {
               '#7c4a4a'
           )
       );
-      // this.pushConnect();
+      // this.$socket.on('msgToServer', (data) => {
+      //   console.log('data', data);
+      // });
+      this.pushConnect();
     }
 
     if (this.$device.mobile || this.$device.ipad) {

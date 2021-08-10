@@ -9,7 +9,7 @@ export const pushConnection = mixins()
       reconnectTimeout: null,
     }),
     created() {
-      const connectionUrl = `${baseURLConst}push?sessionId=${this.sessionId}`;
+      const connectionUrl = `${baseURLConst}/push?sessionId=${this.sessionId}`;
       this.eventSource = new EventSource(connectionUrl);
     },
     computed: {
@@ -38,7 +38,7 @@ export const pushConnection = mixins()
       pushConnect() {
         this.pushDisconnect();
 
-        const connectionUrl = `${baseURLConst}push?sessionId=${this.sessionId}&userId=${this.currentUser.id}`;
+        const connectionUrl = `${baseURLConst}/push?sessionId=${this.sessionId}&userId=${this.currentUser.id}`;
         this.eventSource = new EventSource(connectionUrl);
 
         this.eventSource.addEventListener('open', () => {
@@ -76,9 +76,12 @@ export const pushConnection = mixins()
       pushMessageReceived(event) {
         const data = JSON.parse(event.data);
         // console.log('FROM pushMessageReceived', data);
-        const foundProject = data.find(_p => _p.id === this.selectedProject.id);
-        if (foundProject) { /* Обновляем только текущий проект (пошаренный) */
-          this.updateCurrentProjectFromSocket(foundProject);
+        if (data.projects.length) {
+          const foundProject = data.projects.find(_p => _p.id === this.selectedProject.id);
+          if (foundProject) { /* Обновляем только текущий проект (пошаренный) */
+            console.log('foundProject', foundProject)
+            this.updateCurrentProjectFromSocket(foundProject);
+          }
         }
       }
     }
