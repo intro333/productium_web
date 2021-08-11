@@ -79,7 +79,7 @@ export const pushConnection = mixins()
         if (data.projects.length) {
           const foundProject = data.projects.find(_p => _p.id === this.selectedProject.id);
           if (foundProject) { /* Обновляем только текущий проект (пошаренный) */
-            console.log('foundProject', foundProject)
+            // console.log('foundProject', foundProject)
             this.updateCurrentProjectFromSocket(foundProject);
           }
         }

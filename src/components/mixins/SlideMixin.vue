@@ -38,22 +38,38 @@ export default {
         }
       } else if (mutation.type === 'SET_SLIDES' || mutation.type === 'SET_ALL_SLIDES_STATE') {
         this.fetchSlidesL();
+      }  else if (mutation.type === 'ADD_SHAPE_TO_CASE') {
+        if (mutation.payload.shapeObj && this.activeSlide && this.activeSlide.canvas) {
+          const canvas = this.activeSlide.canvas;
+          const so = mutation.payload.shapeObj;
+          const objs =  canvas.getObjects();
+          const fo = objs.find(_o => _o.id === so.id);
+          if (!fo) {
+            const newShapeObj = new ShapeModel(
+                so.id,
+                so.title,
+                so.shapeType,
+                so.params);
+            const shape = this.createShapeObjByCaseChild(newShapeObj);
+            canvas.add(shape);
+            canvas.renderAll();
+            canvas.setActiveObject(shape);
+          }
+        }
       } else if (mutation.type === 'UPDATE_SHAPES_FROM_SOCKET') {
         if (this.activeSlide && this.activeSlide.canvas) {
           const canvas = this.activeSlide.canvas;
           const objs =  canvas.getObjects();
-          const children = mutation.payload.newCase.children;
-          // console.log('objs', objs);
-          objs.forEach(_obj => {
-            const foundChild = children.find(_ch => _ch.id === _obj.id);
-            if (foundChild) {
-              const params = foundChild.params;
-              console.log('this.mouseClickPosition', this.mouseClickPosition)
-              if (this.mouseClickPosition === 'UP') { /* Если двигаем элемент, то не обновлять */
-                _obj.left = params.left;
-              }
+          const _child = mutation.payload.newChild;
+          const foundObj = objs.find(_obj => _obj.id === _child.id);
+          if (foundObj) {
+            if (foundObj.stroke !== _child.params.stroke) {
+              console.log('foundObj stroke', foundObj.stroke)
+              console.log('_child.params stroke', _child.params.stroke)
+              foundObj.set('stroke', 'auto');
             }
-          });
+            Object.assign(foundObj, _child.params);
+          }
           canvas.renderAll();
           // this.setActiveColor('auto');
         }

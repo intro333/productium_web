@@ -379,8 +379,9 @@ const actions = {
             dispatch('updateCaseInfoOnServer').then(() => {
               // const data = response.data;
               commit('ADD_SHAPE_TO_CASE', {
-                case: foundCase,
-                children
+                _case: foundCase,
+                children,
+                shapeObj: null
               });
               resolve(shapeObj);
             }).catch(error => {
@@ -466,15 +467,37 @@ const actions = {
   clearCaseChildren({commit}, _case) {
     commit('CLEAR_CASE_CHILDREN', _case);
   },
-  updateCasesFromSocket({commit}, newCases) {
+  updateCasesFromSocket({commit, dispatch}, newCases) {
     newCases.forEach(_nc => {
-      const foundCase = state.cases.find(_oc => _oc.id === _nc.id);
-      if (foundCase) {
-        // console.log('foundCase', foundCase);
-        if (foundCase.children && foundCase.children.length) {
-          commit('UPDATE_SHAPES_FROM_SOCKET', {newCase: _nc, oldCase: foundCase});
+      const foundOldCase = state.cases.find(_oc => _oc.id === _nc.id);
+      if (foundOldCase) {
+        if (foundOldCase.children && foundOldCase.children.length) {
+          _nc.children.forEach(_nch => {
+            const foundOChild = foundOldCase.children.find(_och => _och.id === _nch.id);
+            if (foundOChild) { /* Обновить параметры фигуры */
+              commit('UPDATE_SHAPES_FROM_SOCKET', {oldChild: foundOChild, newChild: _nch});
+            } else { /* Значит добавили новый child */
+              const children = foundOldCase.children;
+              children.push(_nch);
+              commit('ADD_SHAPE_TO_CASE', {
+                _case: foundOldCase,
+                children,
+                shapeObj: _nch
+              });
+            }
+          });
+          foundOldCase.children.forEach(_och => { /* Если child не найдётся, значит его удалили */
+            const foundNChild = _nc.children.find(_nch => _nch.id === _och.id);
+            if (!foundNChild) { /* В старом есть, а в новом нет, удаляем */
+              dispatch('removeCaseChild', {
+                caseChild: _och,
+                _case: foundOldCase,
+                removeOnlyOnCanvas: true
+              });
+            }
+          });
         }
-      } else {
+      } else { /* Значит добавили новый кейс */
 //
       }
     });
@@ -486,13 +509,8 @@ const mutations = {
   //
   // },
   UPDATE_SHAPES_FROM_SOCKET(state, payload) {
-    payload.oldCase.children.forEach(_och => {
-      const foundNChild = payload.newCase.children.find(_nch => _nch.id === _och.id);
-      if (foundNChild) {
-        _och.params = foundNChild.params;
-        // console.log('foundNChild', foundNChild);
-      }
-    });
+    const {oldChild, newChild} = payload;
+    oldChild.params = Object.assign({}, newChild.params);
   },
   /* CASES */
   SET_ALL_CASES_STATE(state, newState) {
@@ -521,7 +539,7 @@ const mutations = {
     })
   },
   REMOVE_CASE_CHILD(state, payload) {
-    if (payload.activeCase.isSelected) {
+    if (payload.activeCase && payload.activeCase.isSelected) {
       state.selectedCase = payload.activeCase;
     }
   },
@@ -576,13 +594,11 @@ const mutations = {
   },
   CHANGE_CASE_ELEM_FIELDS(state, payload) {
     const fields = payload.fields;
-    // console.log(2, fields)
     payload.foundCase.children.forEach(_child => {
       if (_child.id === fields.id) {
         Object.keys(fields).forEach(field => {
           if (field !== 'id') {
             _child.params[field] = fields[field];
-            // console.log(3, fields[field])
           }
         });
       }
@@ -602,8 +618,8 @@ const mutations = {
   },
   /* SHAPES */
   ADD_SHAPE_TO_CASE(state, payload) {
-    const _case = payload.case;
-    _case.children = payload.children;
+    const {_case, children} = payload;
+    _case.children = children;
   },
   SELECT_CASE_CHILD(state, payload) {
     if (payload._case) {

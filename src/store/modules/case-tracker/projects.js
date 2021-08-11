@@ -114,11 +114,13 @@ const actions = {
         });
     },
 
-    updateCurrentProjectFromSocket({commit, dispatch}, project) {
-        const slides = project.slides;
+    // updateCurrentProjectFromSocket({commit, dispatch}, project) {
+    updateCurrentProjectFromSocket({dispatch}, project) {
+        // const slides = project.slides;
         const cases = project.cases;
-        commit('UPDATE_SLIDES_FROM_SOCKET', slides.slides);
-        commit('UPDATE_SLIDE_LISTS_FROM_SOCKET', slides.slideLists);
+        // console.log('cases', cases);
+        // commit('UPDATE_SLIDES_FROM_SOCKET', slides.slides);
+        // commit('UPDATE_SLIDE_LISTS_FROM_SOCKET', slides.slideLists);
         dispatch('updateCasesFromSocket', cases.cases);
         // commit('UPDATE_CASES_FROM_SOCKET', cases.cases);
     },
