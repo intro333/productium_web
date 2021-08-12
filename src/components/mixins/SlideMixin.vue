@@ -41,37 +41,65 @@ export default {
       }  else if (mutation.type === 'ADD_SHAPE_TO_CASE') {
         if (mutation.payload.shapeObj && this.activeSlide && this.activeSlide.canvas) {
           const canvas = this.activeSlide.canvas;
-          const so = mutation.payload.shapeObj;
-          const objs =  canvas.getObjects();
-          const fo = objs.find(_o => _o.id === so.id);
-          if (!fo) {
-            const newShapeObj = new ShapeModel(
-                so.id,
-                so.title,
-                so.shapeType,
-                so.params);
-            const shape = this.createShapeObjByCaseChild(newShapeObj);
-            canvas.add(shape);
-            canvas.renderAll();
-            canvas.setActiveObject(shape);
+          const caseOfChild = mutation.payload._case;
+          if (caseOfChild.id === this.selectedCase.id) {
+            const so = mutation.payload.shapeObj;
+            const objs =  canvas.getObjects();
+            const fo = objs.find(_o => _o.id === so.id);
+            if (!fo) {
+              const newShapeObj = new ShapeModel(
+                  so.id,
+                  so.title,
+                  so.shapeType,
+                  so.params);
+              const shape = this.createShapeObjByCaseChild(newShapeObj);
+              canvas.add(shape);
+              canvas.renderAll();
+              canvas.setActiveObject(shape);
+            }
           }
         }
       } else if (mutation.type === 'UPDATE_SHAPES_FROM_SOCKET') {
         if (this.activeSlide && this.activeSlide.canvas) {
           const canvas = this.activeSlide.canvas;
-          const objs =  canvas.getObjects();
-          const _child = mutation.payload.newChild;
-          const foundObj = objs.find(_obj => _obj.id === _child.id);
-          if (foundObj) {
-            if (foundObj.stroke !== _child.params.stroke) {
-              console.log('foundObj stroke', foundObj.stroke)
-              console.log('_child.params stroke', _child.params.stroke)
-              foundObj.set('stroke', 'auto');
+          const caseOfChild = mutation.payload._case;
+          if (caseOfChild.id === this.selectedCase.id) {
+            const objs =  canvas.getObjects();
+            // const activeObj =  canvas.getActiveObject();
+            const _child = mutation.payload.newChild;
+            const params = _child.params;
+            const foundObj = objs.find(_obj => _obj.id === _child.id);
+            if (foundObj) {
+              if (foundObj.stroke !== params.stroke) {
+                foundObj.set('stroke', params.stroke);
+              }
+              // console.log('_child', _child)
+              // canvas.remove(foundObj);
+              // foundObj.id = _child.id;
+              foundObj.left = params.left;
+              foundObj.top = params.top;
+              foundObj.stroke = params.stroke;
+              // foundObj.originX = params.originX;
+              // foundObj.originY = params.originY;
+              // if (_child.shapeType === 'rectangle') {
+              //   foundObj.height = params.height;
+              //   foundObj.width = params.width;
+              // } else if (_child.shapeType === 'ellipse') {
+              //   foundObj.angle = params.angle;
+              //   foundObj.radius = params.radius;
+              //   foundObj.rx = params.rx;
+              //   foundObj.ry = params.ry;
+              // } else if (_child.shapeType === 'marker') {
+              //   //
+              // }
+              // Object.assign(foundObj, params);
+              // canvas.add(foundObj);
+              canvas.renderAll()
+              // if (activeObj && foundObj && activeObj.id === foundObj.id) {
+              //   canvas.setActiveObject(foundObj);
+              // }
             }
-            Object.assign(foundObj, _child.params);
           }
-          canvas.renderAll();
-          // this.setActiveColor('auto');
         }
       }
     });
@@ -119,7 +147,7 @@ export default {
   methods: {
     ...mapActions(['setActiveTool', 'setActiveShapeTool', 'setCanvasInfo', 'setActiveSlide', 'changeCasesParamsByOffset',
       'changeCaseElemFields', 'addShapeToCase', 'pushCase', 'selectCaseChild', 'setActiveColor', 'openCase',
-      'clearCaseChildren', 'changeSlideZoom', 'getImgByUrl', 'updateSlideInfoOnServer']),
+      'clearCaseChildren', 'changeSlideZoom', 'getImgByUrl', 'updateSlideInfoOnServer', 'setIsLoading']),
     ...mapGetters(['getSlides', 'getActiveSlide',  'getActiveSlideList', 'getActiveTool', 'getActiveShapeTool', 'getCanvasInfo',
       'getSelectedCase', 'getActiveColor']),
     fetchSlidesL() {
@@ -346,17 +374,22 @@ export default {
                 slide.canvas.renderAll();
                 setTimeout(() => {
                   if (currentActiveTool === 'superTool') {
+                    _this.setIsLoading(true);
                     /* Если супертул, то создаём новый кейс и рисуем прямоугольник */
                     _this.pushCase().then(_newCase => {
                       _this.newShapeObj.id = _newCase.id;
-                      _this.addShapeToCase(_this.newShapeObj).then((shapeObj) => {
-                        if (shapeObj) {
-                          shape.set({ id: shapeObj.id});
-                          slide.canvas.add(shape);
-                          // slide.canvas.setActiveObject(shape); // TODO Убрал выделение. Нужно выделять тогда и справа в кейс-баре
-                          slide.canvas.renderAll();
-                        }
-                      });
+                      _this.setIsLoading(true);
+                      setTimeout(() => {
+                        _this.addShapeToCase(_this.newShapeObj).then((shapeObj) => {
+                          _this.setIsLoading(false);
+                          if (shapeObj) {
+                            shape.set({ id: shapeObj.id});
+                            slide.canvas.add(shape);
+                            // slide.canvas.setActiveObject(shape); // TODO Убрал выделение. Нужно выделять тогда и справа в кейс-баре
+                            slide.canvas.renderAll();
+                          }
+                        });
+                      }, 1100);
                     });
                   } else {
                     _this.addShapeToCase(_this.newShapeObj).then((shapeObj) => {

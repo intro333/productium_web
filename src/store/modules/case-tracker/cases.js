@@ -471,11 +471,21 @@ const actions = {
     newCases.forEach(_nc => {
       const foundOldCase = state.cases.find(_oc => _oc.id === _nc.id);
       if (foundOldCase) {
-        if (foundOldCase.children && foundOldCase.children.length) {
+        foundOldCase.title = _nc.title;
+        foundOldCase.caseStatus = _nc.caseStatus;
+        foundOldCase.isOpen = _nc.isOpen;
+        foundOldCase.discus = _nc.discus;
+        foundOldCase.resolut = _nc.resolut;
+        foundOldCase.discusBlockActivityState = _nc.discusBlockActivityState;
+        if (foundOldCase.children && foundOldCase.children.length || _nc.children && _nc.children.length) {
           _nc.children.forEach(_nch => {
             const foundOChild = foundOldCase.children.find(_och => _och.id === _nch.id);
             if (foundOChild) { /* Обновить параметры фигуры */
-              commit('UPDATE_SHAPES_FROM_SOCKET', {oldChild: foundOChild, newChild: _nch});
+              commit('UPDATE_SHAPES_FROM_SOCKET', {
+                oldChild: foundOChild,
+                newChild: _nch,
+                _case: foundOldCase
+              });
             } else { /* Значит добавили новый child */
               const children = foundOldCase.children;
               children.push(_nch);
@@ -498,9 +508,17 @@ const actions = {
           });
         }
       } else { /* Значит добавили новый кейс */
-//
+        commit('PUSH_CASE_FROM_SOCKET', _nc);
       }
     });
+    setTimeout(() => {
+      state.cases.forEach(_oc => { /* Если case не найдётся, значит его удалили */
+        const foundNCase = newCases.find(_nc => _nc.id === _oc.id);
+        if (!foundNCase) { /* В старом есть, а в новом нет, удаляем */
+          dispatch('removeCase', _oc);
+        }
+      });
+    }, 500);
   },
 };
 
@@ -524,6 +542,10 @@ const mutations = {
   PUSH_CASE(state, _case) {
     state.cases.push(_case);
     state.selectedCase = _case;
+  },
+  PUSH_CASE_FROM_SOCKET(state, _case) {
+    console.log('_case 34', _case)
+    state.cases.push(_case);
   },
   SELECT_CASE(state, payload) {
     state.selectedCase = payload.case;

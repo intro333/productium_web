@@ -67,6 +67,8 @@ export class ShapeModel {
       cornerSize: 6,
       transparentCorners: false,
       lockRotation: true,
+      lockScalingY: true,
+      lockScalingX: true,
       // originX: 'center',
       // originY: 'center',
     };

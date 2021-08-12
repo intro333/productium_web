@@ -16,7 +16,7 @@ export default {
         if (mutation.payload) {
           this.fetchCasesL();
         }
-      } else if (mutation.type === 'SET_CASES' || mutation.type === 'SET_ALL_CASES_STATE') {
+      } else if (mutation.type === 'SET_CASES' || mutation.type === 'PUSH_CASE_FROM_SOCKET' || mutation.type === 'SET_ALL_CASES_STATE') {
         this.fetchCasesL();
       } else if (mutation.type === 'SELECT_CASE') {
         const _case = mutation.payload.case;
