@@ -42,7 +42,7 @@ export default {
         if (mutation.payload.shapeObj && this.activeSlide && this.activeSlide.canvas) {
           const canvas = this.activeSlide.canvas;
           const caseOfChild = mutation.payload._case;
-          if (caseOfChild.id === this.selectedCase.id) {
+          if (this.selectedCase && caseOfChild.id === this.selectedCase.id) {
             const so = mutation.payload.shapeObj;
             const objs =  canvas.getObjects();
             const fo = objs.find(_o => _o.id === so.id);
@@ -63,7 +63,7 @@ export default {
         if (this.activeSlide && this.activeSlide.canvas) {
           const canvas = this.activeSlide.canvas;
           const caseOfChild = mutation.payload._case;
-          if (caseOfChild.id === this.selectedCase.id) {
+          if (this.selectedCase && caseOfChild.id === this.selectedCase.id) {
             const objs =  canvas.getObjects();
             // const activeObj =  canvas.getActiveObject();
             const _child = mutation.payload.newChild;

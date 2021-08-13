@@ -124,6 +124,8 @@ const actions = {
             _s.caseStatus !== 'archived' && _s.slideListId === _slideListId);
           // const anotherCase = filteredCases.length ? filteredCases[filteredCases.length-1] : { id: 0 };
           const anotherCase = filteredCases.length ? filteredCases[filteredCases.length-1] : null;
+          console.log('filteredCases', filteredCases)
+          console.log('anotherCase', anotherCase)
           dispatch('goToSelectedCase', {
             case: anotherCase,
             reloadWithSlide: true,
@@ -177,6 +179,7 @@ const actions = {
     const _case = payload.case;
     const query = router.currentRoute.query;
     if (_case) {
+      console.log('_case', _case)
       if (query && ("caseId" in query)) { /* caseId может быть 0 или null - это норм */
         const caseId = query.caseId;
         if (payload.isFirstLoad && _case) {
@@ -423,6 +426,7 @@ const actions = {
           caseChildId: _caseChild.id
         });
         if (!payload.removeOnlyOnCanvas) {
+          console.log(1111111)
           setTimeout(() => {
             dispatch('updateCaseInfoOnServer').then(() => {
               resolve(activeCase);
@@ -467,9 +471,10 @@ const actions = {
   clearCaseChildren({commit}, _case) {
     commit('CLEAR_CASE_CHILDREN', _case);
   },
-  updateCasesFromSocket({commit, dispatch}, newCases) {
+  updateCasesFromSocket({commit, dispatch, getters}, newCases) {
+    const activeSlide = getters.getActiveSlide;
     newCases.forEach(_nc => {
-      const foundOldCase = state.cases.find(_oc => _oc.id === _nc.id);
+      const foundOldCase = state.cases.find(_oc => _oc.caseStatus !== 'archived' && _oc.id === _nc.id);
       if (foundOldCase) {
         foundOldCase.title = _nc.title;
         foundOldCase.caseStatus = _nc.caseStatus;
@@ -509,13 +514,23 @@ const actions = {
         }
       } else { /* Значит добавили новый кейс */
         commit('PUSH_CASE_FROM_SOCKET', _nc);
+        setTimeout(() => {
+          if (activeSlide.id === _nc.slideId && state.cases
+            .filter(_c => _c.caseStatus !== 'archived' && activeSlide.id === _c.slideId).length === 1) {
+            console.log(111111222)
+            dispatch('selectCase', {_case: _nc});
+            dispatch('setActiveTool', 'moveTool');
+          }
+        }, 50);
       }
     });
     setTimeout(() => {
       state.cases.forEach(_oc => { /* Если case не найдётся, значит его удалили */
-        const foundNCase = newCases.find(_nc => _nc.id === _oc.id);
-        if (!foundNCase) { /* В старом есть, а в новом нет, удаляем */
-          dispatch('removeCase', _oc);
+        if (_oc.caseStatus !== 'archived') {
+          const foundNCase = newCases.find(_nc => _nc.id === _oc.id);
+          if (!foundNCase) { /* В старом есть, а в новом нет, удаляем */
+            dispatch('removeCase', _oc);
+          }
         }
       });
     }, 500);
@@ -544,7 +559,6 @@ const mutations = {
     state.selectedCase = _case;
   },
   PUSH_CASE_FROM_SOCKET(state, _case) {
-    console.log('_case 34', _case)
     state.cases.push(_case);
   },
   SELECT_CASE(state, payload) {
